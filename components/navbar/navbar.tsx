@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/navbar/user-dropdown";
@@ -15,7 +15,7 @@ import { UserRole } from "@/types";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
-  { label: "How It Works / About", href: "/about" },
+  { label: "About", href: "/about" },
 ];
 
 export function Navbar() {
@@ -23,7 +23,7 @@ export function Navbar() {
   const router = useRouter();
 
   // Retrieve actual Better Auth session on the client
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending } = useSession();
   const user = session?.user as
     | {
       name?: string;

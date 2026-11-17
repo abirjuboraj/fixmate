@@ -58,7 +58,7 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
             if (onSignOut) {
               onSignOut();
             } else {
-              router.push("/");
+              router.push("/sign-in");
               router.refresh();
             }
           },
