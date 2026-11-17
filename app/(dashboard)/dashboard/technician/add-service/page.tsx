@@ -1,32 +1,52 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowLeft, Clock } from "lucide-react";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { AddServiceForm } from "./_components/add-service-form";
 
-export default function TechnicianAddServicePage() {
+export const metadata = {
+  title: "Add Repair Service | FixMate Technician Hub",
+  description: "List a new device repair or appliance service offering on FixMate.",
+};
+
+export default async function TechnicianAddServicePage() {
+  // Server-side session verification
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // Protect route: must be logged in
+  if (!session || !session.user) {
+    redirect("/sign-in");
+  }
+
+  const userRole = (session.user as { role?: string }).role || "customer";
+
+  // Role check: Only technicians can add services
+  if (userRole !== "technician") {
+
+    redirect(userRole === "admin" ? "/dashboard/admin" : "/dashboard/customer");
+  }
+
+
+  const technicianInfo = {
+    name: session.user.name || "Technician",
+    email: session.user.email || "",
+  };
+
   return (
     <div className="space-y-6">
+
       <div className="border-b border-border/60 pb-5">
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-500/10 px-2.5 py-0.5 rounded-full mb-2">
-          <Clock className="h-3.5 w-3.5" />
-          Dashboard Route Placeholder
-        </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Add Service
+          Add New Repair Service
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Service addition form will display here.
+          Publish a new device repair or appliance service. New listings are submitted for admin approval.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-8 text-center max-w-lg mx-auto">
-        <h2 className="text-base font-semibold">Route Active & Navigable</h2>
-        <Button variant="outline" size="sm" asChild className="mt-4">
-          <Link href="/dashboard/technician" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-        </Button>
-      </div>
+
+      <AddServiceForm technician={technicianInfo} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use server'
 
-export const uploadProfileImage = async (file: File) => {
+export const uploadImage = async (file: File) => {
     try {
         const apiKey = process.env.IMGBB_API_KEY;
 

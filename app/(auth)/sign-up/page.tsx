@@ -29,7 +29,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { signUp } from "@/lib/auth-client";
-import { uploadProfileImage } from "@/lib/uploadImage";
+import { uploadImage } from "@/lib/uploadImage";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 
@@ -127,7 +127,7 @@ export default function SignUpPage() {
 
         try {
 
-            const uploadResult = await uploadProfileImage(imageFile);
+            const uploadResult = await uploadImage(imageFile);
 
             if (!uploadResult.success || !uploadResult.url) {
                 throw new Error(uploadResult.message || "Image upload failed")
