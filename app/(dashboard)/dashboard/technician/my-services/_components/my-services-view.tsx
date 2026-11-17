@@ -23,7 +23,6 @@ interface MyServicesViewProps {
   fetchError: string | null;
 }
 
-// Approval status -> badge label + colors (Pending = amber, Approved = green, Rejected = red)
 const getApprovalBadge = (status: string) => {
   switch (status) {
     case "approved":
@@ -125,7 +124,7 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
   };
 
   // ---------- Edit ----------
-  // Called by the edit modal after the backend successfully saved the changes.
+
   const handleServiceUpdated = (updated: ServiceItem) => {
     setServiceList((prev) =>
       prev.map((s) => (s._id === updated._id ? updated : s))
@@ -178,7 +177,6 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
         <h2 className="mt-3 text-base font-semibold">
           Could not load your services
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">{fetchError}</p>
         <Button
           variant="outline"
           size="sm"

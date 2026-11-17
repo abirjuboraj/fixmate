@@ -28,15 +28,13 @@ interface EditServiceModalProps {
   onClose: () => void;
 }
 
-// CLIENT COMPONENT — a simple modal with a pre-filled edit form.
-// Renders inside a fixed overlay. Clicking the dark backdrop or the X closes it.
+
 export function EditServiceModal({
   service,
   onUpdated,
   onClose,
 }: EditServiceModalProps) {
-  // Every field starts pre-filled from the service being edited.
-  // (These initializers only run once, when the modal first opens.)
+
   const [title, setTitle] = useState(service.title);
   const [category, setCategory] = useState(service.category);
   const [serviceMode, setServiceMode] = useState(service.serviceMode);
@@ -55,7 +53,6 @@ export function EditServiceModal({
     e.preventDefault();
     setErrorMessage(null);
 
-    // Simple client-side checks (same style as the add-service form)
     if (!title.trim()) {
       setErrorMessage("Please enter a service title.");
       return;
@@ -104,8 +101,6 @@ export function EditServiceModal({
         image: image.trim(),
       };
 
-      // Send the update to the backend.
-      // The backend sets approvalStatus back to "pending" after every edit.
       const result = await updateService(service._id as string, payload);
 
       if (!result?.success) {

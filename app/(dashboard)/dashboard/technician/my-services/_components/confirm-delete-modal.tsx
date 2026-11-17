@@ -10,8 +10,7 @@ interface ConfirmDeleteModalProps {
   onClose: () => void;
 }
 
-// CLIENT COMPONENT — a simple "are you sure?" confirmation modal.
-// The actual delete API call happens in the parent (MyServicesView).
+
 export function ConfirmDeleteModal({
   serviceName,
   isDeleting,
