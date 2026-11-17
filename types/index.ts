@@ -1,6 +1,4 @@
 
-// Base URL of the Express backend (NOT the Next.js origin — that is
-// NEXT_PUBLIC_BASE_URL, used by the BetterAuth client).
 export const AUTH_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
@@ -82,9 +80,6 @@ export interface AddServicePayload {
   isAvailable: boolean;
 }
 
-// Fields a technician can edit on an existing service.
-// technicianName / technicianEmail / approvalStatus / isAvailable are NOT here:
-// the backend owns them.
 export interface UpdateServicePayload {
   title: string;
   category: string;

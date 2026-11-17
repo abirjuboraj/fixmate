@@ -64,12 +64,11 @@ const ServiceImage = ({ src, alt }: { src: string; alt: string }) => {
   );
 };
 
-// CLIENT COMPONENT — all interactivity lives here
+
 export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
-  // Local copy of the list, so edit/delete/toggle update the screen instantly
+
   const [serviceList, setServiceList] = useState<ServiceItem[]>(services);
 
-  // Which service is being edited / deleted (null = modal closed)
   const [editingService, setEditingService] = useState<ServiceItem | null>(null);
   const [deletingService, setDeletingService] = useState<ServiceItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -79,8 +78,7 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
     serviceId: string,
     nextValue: boolean
   ) => {
-    // 1. Update the screen right away so the switch feels instant
-    //    (this is called an "optimistic update")
+  
     setServiceList((prev) =>
       prev.map((s) =>
         s._id === serviceId ? { ...s, isAvailable: nextValue } : s

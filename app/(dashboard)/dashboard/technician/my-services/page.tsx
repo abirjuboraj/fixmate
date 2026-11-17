@@ -2,23 +2,20 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { authFetch } from "@/lib/server";
 import { AUTH_URL } from "@/types";
 import type { ServiceItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Wrench } from "lucide-react";
 import { MyServicesView } from "./_components/my-services-view";
+import { getTechnicianServices } from "@/lib/api/services";
 
 export const metadata = {
   title: "My Services | FixMate Technician Hub",
   description: "Manage your repair service listings.",
 };
 
-// SERVER COMPONENT
-// Does two jobs: (1) protects the route, (2) fetches the technician's
-// services from the Express backend, then hands the data to the client view.
 export default async function TechnicianMyServicesPage() {
-  // 1. Session check (same pattern as the add-service page)
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -29,18 +26,18 @@ export default async function TechnicianMyServicesPage() {
 
   const userRole = (session.user as { role?: string }).role || "customer";
 
-  // 2. Role check: only technicians can manage services
+
   if (userRole !== "technician") {
     redirect(userRole === "admin" ? "/dashboard/admin" : "/dashboard/customer");
   }
 
-  // 3. Fetch this technician's services (GET /api/services/mine)
-  //    authFetch attaches the session token automatically.
+
   let services: ServiceItem[] = [];
   let fetchError: string | null = null;
 
   try {
-    const result = await authFetch(`${AUTH_URL}/api/services/mine`);
+    const result = await getTechnicianServices(`${AUTH_URL}/api/services/own`);
+    console.log(result);
     services = (result?.data as ServiceItem[]) ?? [];
   } catch (error) {
     fetchError =
