@@ -10,8 +10,9 @@ function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      // Light-first: the polished light palette is the default experience.
+      // Users can still toggle dark mode (Ctrl+D hotkey or theme controls).
+      defaultTheme="light"
       disableTransitionOnChange
       {...props}
     >

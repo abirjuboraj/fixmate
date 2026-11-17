@@ -9,6 +9,7 @@ import {
     EyeOff,
     ArrowRight,
     ShieldAlert,
+    Loader2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,10 @@ export default function SignInPage() {
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            "Signing in..."
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Signing in...
+                            </>
                         ) : (
                             <>
                                 Sign In

@@ -10,6 +10,7 @@ import { UserDropdown } from "@/components/navbar/user-dropdown";
 import { MobileNavDrawer } from "@/components/navbar/mobile-nav-drawer";
 import { ROLE_DEFAULT_ROUTES } from "@/lib/navigation";
 import { UserRole } from "@/types";
+import { toast } from "@/components/ui/toast";
 
 // Public navigation items
 const NAV_LINKS = [
@@ -43,12 +44,22 @@ export function Navbar() {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            toast.add({
+              title: "Signed out successfully",
+              description: "See you soon!",
+              type: "success",
+            });
             router.push("/");
             router.refresh();
           },
         },
       });
     } catch {
+      toast.add({
+        title: "Sign out failed",
+        description: "Something went wrong. Please try again.",
+        type: "error",
+      });
       router.push("/");
       router.refresh();
     }

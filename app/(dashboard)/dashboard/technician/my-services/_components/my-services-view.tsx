@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast";
 import type { ServiceItem } from "@/types";
-import { deleteService } from "@/lib/action/services";
+import { deleteService, toggleServiceAvailability } from "@/lib/action/services";
 import { EditServiceModal } from "./edit-service-modal";
 import { ConfirmDeleteModal } from "./confirm-delete-modal";
 
@@ -84,43 +84,25 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
       )
     );
 
-    // TODO: 2. Save the change to the database through the backend.
-    //
-    // Step 1 (backend): add a dedicated endpoint in services.routes.js:
-    //   router.patch("/:id/availability", verifyToken, verifyTechnician, toggleAvailability);
-    //   Do NOT reuse PATCH /:id for this — that endpoint resets approvalStatus
-    //   to "pending", and toggling availability should NOT send the service
-    //   back for re-approval.
-    //
-    // Step 2 (frontend): add a server action in lib/action/services.ts:
-    //   export const toggleServiceAvailability = async (
-    //     serviceId: string,
-    //     isAvailable: boolean
-    //   ) => {
-    //     const api = `${AUTH_URL}/api/services/${serviceId}/availability`;
-    //     return protectedMutation(api, "PATCH", { isAvailable });
-    //   };
-    //
-    // Step 3: call the action here and revert the switch if it fails:
-    //   const result = await toggleServiceAvailability(serviceId, nextValue);
-    //   if (!result?.success) {
-    //     // revert the optimistic update so the switch shows the old value
-    //     setServiceList((prev) =>
-    //       prev.map((s) =>
-    //         s._id === serviceId ? { ...s, isAvailable: !nextValue } : s
-    //       )
-    //     );
-    //     toast.add({
-    //       title: "Could not update availability",
-    //       description: result?.message,
-    //       type: "error",
-    //     });
-    //   } else {
-    //     toast.add({
-    //       title: nextValue ? "Service is now available" : "Service is now hidden",
-    //       type: "success",
-    //     });
-    //   }
+ 
+     const result = await toggleServiceAvailability(serviceId, nextValue);
+      if (!result?.success) {
+        setServiceList((prev) =>
+          prev.map((s) =>
+            s._id === serviceId ? { ...s, isAvailable: !nextValue } : s
+          )
+        );
+        toast.add({
+          title: "Could not update availability",
+          description: result?.message,
+          type: "error",
+        });
+      } else {
+        toast.add({
+          title: nextValue ? "Service is now available" : "Service is now hidden",
+          type: "success",
+        });
+      }
   };
 
   // ---------- Edit ----------
@@ -286,7 +268,7 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
 
                   {/* Availability switch */}
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 cursor-pointer">
                       <Switch
                         checked={service.isAvailable}
                         onCheckedChange={(checked) =>

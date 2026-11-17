@@ -51,16 +51,19 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
   const initials = getUserInitials(user.name);
 
   const handleSignOut = async () => {
+    // When the navbar provides its own sign-out handler (with toast feedback),
+    // delegate to it instead of calling signOut twice.
+    if (onSignOut) {
+      onSignOut();
+      return;
+    }
+
     try {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            if (onSignOut) {
-              onSignOut();
-            } else {
-              router.push("/sign-in");
-              router.refresh();
-            }
+            router.push("/sign-in");
+            router.refresh();
           },
         },
       });

@@ -24,6 +24,16 @@ export const updateService = async (serviceId: string, servicePayload: UpdateSer
 
 }
 
+// availability toggle --> /api/services/:id/availability
+
+export const toggleServiceAvailability = async (serviceId: string, isAvailable: boolean) => {
+
+    const api = `${AUTH_URL}/api/services/${serviceId}/availability`;
+
+    return protectedMutation(api, "PATCH", { isAvailable });
+
+}
+
 
 // DELETE /api/services/:id — delete a service
 export const deleteService = async (serviceId: string) => {

@@ -15,6 +15,7 @@ import {
     ShieldAlert,
     UploadCloud,
     Image as ImageIcon,
+    Loader2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -408,7 +409,10 @@ export default function SignUpPage() {
                         disabled={isLoading || (password.length > 0 && !isPasswordValid)}
                     >
                         {isLoading ? (
-                            "Creating account..."
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Creating account...
+                            </>
                         ) : (
                             <>
                                 Sign Up as {role === "customer" ? "Customer" : "Technician"}
