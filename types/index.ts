@@ -1,6 +1,9 @@
-// ==========================================
-// User & Authentication Types
-// ==========================================
+
+// Base URL of the Express backend (NOT the Next.js origin — that is
+// NEXT_PUBLIC_BASE_URL, used by the BetterAuth client).
+export const AUTH_URL = process.env.NEXT_PUBLIC_API_URL;
+
+
 
 export type UserRole = "customer" | "technician" | "admin";
 
@@ -18,9 +21,6 @@ export interface CustomUser {
   updatedAt?: Date;
 }
 
-// ==========================================
-// Navigation & Layout Types
-// ==========================================
 
 export interface MenuItem {
   title: string;
@@ -33,10 +33,6 @@ export interface NavLinkItem {
   label: string;
   href: string;
 }
-
-// ==========================================
-// Service Types (FixMate Services Collection)
-// ==========================================
 
 export const SERVICE_CATEGORIES = [
   "Smartphone",
@@ -86,9 +82,19 @@ export interface AddServicePayload {
   isAvailable: boolean;
 }
 
-// ==========================================
-// Booking Types (FixMate Bookings Collection)
-// ==========================================
+// Fields a technician can edit on an existing service.
+// technicianName / technicianEmail / approvalStatus / isAvailable are NOT here:
+// the backend owns them.
+export interface UpdateServicePayload {
+  title: string;
+  category: string;
+  serviceMode: string;
+  basePrice: number;
+  estimatedDuration: string;
+  serviceArea: string;
+  description: string;
+  image: string;
+}
 
 export type BookingStatus =
   | "requested"
@@ -121,9 +127,6 @@ export interface BookingItem {
   createdAt?: Date;
 }
 
-// ==========================================
-// Payment Types (FixMate Payments Collection)
-// ==========================================
 
 export interface PaymentRecord {
   _id?: string;

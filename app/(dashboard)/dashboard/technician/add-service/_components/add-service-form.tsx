@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   Wrench,
   UploadCloud,
@@ -15,18 +15,14 @@ import {
   Image as ImageIcon,
   Loader2,
   ShieldAlert,
-} from "lucide-react";
+} from "lucide-react"
 
-import { uploadImage } from "@/lib/uploadImage";
-import {
-  SERVICE_CATEGORIES,
-  SERVICE_MODES,
-  AddServicePayload,
-} from "@/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { uploadImage } from "@/lib/uploadImage"
+import { SERVICE_CATEGORIES, SERVICE_MODES, AddServicePayload } from "@/types"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Card,
   CardContent,
@@ -34,117 +30,124 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
+import { addService } from "@/lib/action/services"
+import { toast } from "@/components/ui/toast"
 
 interface AddServiceFormProps {
   technician: {
-    name: string;
-    email: string;
-  };
+    name: string
+    email: string
+  }
 }
 
 export function AddServiceForm({ technician }: AddServiceFormProps) {
-  const router = useRouter();
+  const router = useRouter()
 
   // Form input states
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState<string>("");
-  const [serviceMode, setServiceMode] = useState<string>("");
-  const [basePrice, setBasePrice] = useState<string>("");
-  const [estimatedDuration, setEstimatedDuration] = useState("");
-  const [serviceArea, setServiceArea] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("")
+  const [category, setCategory] = useState<string>("")
+  const [serviceMode, setServiceMode] = useState<string>("")
+  const [basePrice, setBasePrice] = useState<string>("")
+  const [estimatedDuration, setEstimatedDuration] = useState("")
+  const [serviceArea, setServiceArea] = useState("")
+  const [description, setDescription] = useState("")
 
   // File and preview states
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   // Submission feedback states
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      setImageFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-      if (errorMessage) setErrorMessage(null);
+      setImageFile(file)
+      const previewUrl = URL.createObjectURL(file)
+      setImagePreview(previewUrl)
+      if (errorMessage) setErrorMessage(null)
     }
-  };
+  }
 
   // Remove selected image
   const handleRemoveImage = () => {
-    setImageFile(null);
+    setImageFile(null)
     if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-      setImagePreview(null);
+      URL.revokeObjectURL(imagePreview)
+      setImagePreview(null)
     }
-  };
+  }
 
   // Form submit handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    e.preventDefault()
+    setErrorMessage(null)
+    setSuccessMessage(null)
 
-    // 1. Client-side field validations
     if (!title.trim()) {
-      setErrorMessage("Please enter a service title.");
-      return;
+      setErrorMessage("Please enter a service title.")
+      return
     }
     if (!category) {
-      setErrorMessage("Please select a service category.");
-      return;
+      setErrorMessage("Please select a service category.")
+      return
     }
     if (!serviceMode) {
-      setErrorMessage("Please select a service mode (Home Visit or Shop Drop-off).");
-      return;
+      setErrorMessage(
+        "Please select a service mode (Home Visit or Shop Drop-off)."
+      )
+      return
     }
-    const parsedPrice = parseFloat(basePrice);
+    const parsedPrice = parseFloat(basePrice)
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      setErrorMessage("Base price must be a positive number greater than 0.");
-      return;
+      setErrorMessage("Base price must be a positive number greater than 0.")
+      return
     }
     if (!estimatedDuration.trim()) {
-      setErrorMessage("Please specify estimated duration (e.g. '2-3 hours' or '1 day').");
-      return;
+      setErrorMessage(
+        "Please specify estimated duration (e.g. '2-3 hours' or '1 day')."
+      )
+      return
     }
     if (!serviceArea.trim()) {
-      setErrorMessage("Please enter the service coverage area (e.g. 'Dhanmondi, Dhaka').");
-      return;
+      setErrorMessage(
+        "Please enter the service coverage area (e.g. 'Dhanmondi, Dhaka')."
+      )
+      return
     }
     if (!description.trim()) {
-      setErrorMessage("Please enter what the repair service includes.");
-      return;
+      setErrorMessage("Please enter what the repair service includes.")
+      return
     }
     if (!imageFile) {
-      setErrorMessage("Please choose a service banner image.");
-      return;
+      setErrorMessage("Please choose a service banner image.")
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
-      // 2. Upload service banner image to ImgBB using your uploadImage server action
-      const uploadResult = await uploadImage(imageFile);
+      const uploadResult = await uploadImage(imageFile)
 
       if (!uploadResult.success || !uploadResult.url) {
-        throw new Error(uploadResult.message || "Failed to upload service image to ImgBB.");
+        throw new Error(
+          uploadResult.message || "Failed to upload service image to ImgBB."
+        )
       }
 
-      const imageUrl = uploadResult.url;
+      const imageUrl = uploadResult.url
 
-      // 3. Prepare service payload typed with AddServicePayload
       const servicePayload: AddServicePayload = {
         title: title.trim(),
         category,
@@ -154,65 +157,61 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
         serviceArea: serviceArea.trim(),
         description: description.trim(),
         image: imageUrl,
-        approvalStatus: "pending", // Default per requirements
-        isAvailable: true,         // Default per requirements
-      };
-
-      console.log("Submitting service payload:", servicePayload);
-
-      // 4. Send service payload to backend API
-      const res = await fetch("/api/services", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(servicePayload),
-      });
-
-      const data = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        throw new Error(data?.message || "Failed to create service. Please check your backend route.");
+        approvalStatus: "pending",
+        isAvailable: true,
       }
 
-      // Success notification per PDF requirements:
-      // "Save with approvalStatus: 'pending' and isAvailable: true. Show a toast that says the service is waiting for admin approval."
-      setSuccessMessage("Service submitted successfully! It is now waiting for admin approval.");
+      const result = await addService(servicePayload)
 
-      // Reset form fields
-      setTitle("");
-      setCategory("");
-      setServiceMode("");
-      setBasePrice("");
-      setEstimatedDuration("");
-      setServiceArea("");
-      setDescription("");
-      handleRemoveImage();
+      if (!result?.success) {
+        throw new Error(
+          result?.message || "Failed to create service. Please try again."
+        )
+      }
 
-      // Redirect technician to their services list after a brief delay
+      toast.add({
+        title: "Service submitted successfully!",
+        description: "Waiting for admin approval",
+        type: "success",
+      })
+
+      setTitle("")
+      setCategory("")
+      setServiceMode("")
+      setBasePrice("")
+      setEstimatedDuration("")
+      setServiceArea("")
+      setDescription("")
+      handleRemoveImage()
+
       setTimeout(() => {
-        router.push("/dashboard/technician/my-services");
-      }, 1800);
+        router.push("/dashboard/technician/my-services")
+      }, 1000)
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setErrorMessage(err.message);
-      } else {
-        setErrorMessage("An unexpected error occurred while adding the service.");
+        setErrorMessage(err.message)
       }
+
+      toast.add({
+        title: "Failed to publish service",
+        description: "The service could not be published. Try again",
+        type: "error",
+      })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <Card className="max-w-3xl shadow-sm border-border/80">
+    <Card className="max-w-3xl border-border/80 shadow-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
+        <CardTitle className="flex items-center gap-2 text-xl font-bold text-foreground">
           <Wrench className="h-5 w-5 text-amber-500" />
           Service Details & Pricing
         </CardTitle>
         <CardDescription className="text-xs sm:text-sm">
-          Fill in the specifications for your repair service. All fields are required.
+          Fill in the specifications for your repair service. All fields are
+          required.
         </CardDescription>
       </CardHeader>
 
@@ -220,34 +219,38 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
         <CardContent className="space-y-5">
           {/* Feedback messages */}
           {errorMessage && (
-            <div className="flex items-center gap-2 p-3 text-xs sm:text-sm font-medium text-destructive bg-destructive/10 rounded-lg border border-destructive/20">
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-xs font-medium text-destructive sm:text-sm">
               <ShieldAlert className="h-4 w-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
-            <div className="flex items-center gap-2 p-3 text-xs sm:text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+            <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-600 sm:text-sm dark:text-emerald-400">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
               <span>{successMessage}</span>
             </div>
           )}
 
           {/* Technician Info Banner (Read-Only) */}
-          <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="flex flex-col justify-between gap-2 rounded-xl border border-border/60 bg-muted/40 p-3.5 text-xs sm:flex-row sm:items-center">
             <div>
-              <span className="font-semibold text-foreground">Technician: </span>
+              <span className="font-semibold text-foreground">
+                Technician:{" "}
+              </span>
               <span className="text-muted-foreground">{technician.name}</span>
             </div>
             <div>
-              <span className="font-semibold text-foreground">Contact Email: </span>
+              <span className="font-semibold text-foreground">
+                Contact Email:{" "}
+              </span>
               <span className="text-muted-foreground">{technician.email}</span>
             </div>
           </div>
 
           {/* Service Title */}
           <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-xs sm:text-sm font-medium">
+            <Label htmlFor="title" className="text-xs font-medium sm:text-sm">
               Service Title
             </Label>
             <Input
@@ -262,14 +265,17 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
           </div>
 
           {/* Category & Service Mode (2-Column Grid) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Category Dropdown */}
             <div className="space-y-1.5">
-              <Label className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
                 <Tag className="h-3.5 w-3.5 text-muted-foreground" />
                 Category
               </Label>
-              <Select value={category} onValueChange={(val) => setCategory(val || "")}>
+              <Select
+                value={category}
+                onValueChange={(val) => setCategory(val || "")}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a repair category" />
                 </SelectTrigger>
@@ -285,11 +291,14 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
             {/* Service Mode Dropdown */}
             <div className="space-y-1.5">
-              <Label className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
                 <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
                 Service Mode
               </Label>
-              <Select value={serviceMode} onValueChange={(val) => setServiceMode(val || "")}>
+              <Select
+                value={serviceMode}
+                onValueChange={(val) => setServiceMode(val || "")}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select delivery mode" />
                 </SelectTrigger>
@@ -305,10 +314,13 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
           </div>
 
           {/* Base Price & Estimated Duration (2-Column Grid) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Base Price */}
             <div className="space-y-1.5">
-              <Label htmlFor="basePrice" className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+              <Label
+                htmlFor="basePrice"
+                className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
+              >
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
                 Starting Price (USD)
               </Label>
@@ -330,7 +342,10 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
             {/* Estimated Duration */}
             <div className="space-y-1.5">
-              <Label htmlFor="estimatedDuration" className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+              <Label
+                htmlFor="estimatedDuration"
+                className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
+              >
                 <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                 Estimated Duration
               </Label>
@@ -348,7 +363,10 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
           {/* Service Area */}
           <div className="space-y-1.5">
-            <Label htmlFor="serviceArea" className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+            <Label
+              htmlFor="serviceArea"
+              className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
+            >
               <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
               Service Area
             </Label>
@@ -365,14 +383,17 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
           {/* Service Banner Image Upload (ImgBB) */}
           <div className="space-y-2">
-            <Label htmlFor="serviceImage" className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+            <Label
+              htmlFor="serviceImage"
+              className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
+            >
               <UploadCloud className="h-3.5 w-3.5 text-muted-foreground" />
               Service Banner Image (ImgBB)
             </Label>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border border-dashed border-border/80 rounded-xl bg-muted/20">
+            <div className="flex flex-col gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 p-4 sm:flex-row sm:items-center">
               {imagePreview ? (
-                <div className="relative h-28 w-44 rounded-lg border border-border overflow-hidden shrink-0 group">
+                <div className="group relative h-28 w-44 shrink-0 overflow-hidden rounded-lg border border-border">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagePreview}
@@ -382,7 +403,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs gap-1 cursor-pointer"
+                    className="absolute inset-0 flex cursor-pointer items-center justify-center gap-1 bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
                     title="Change Banner"
                   >
                     <X className="h-4 w-4" />
@@ -390,7 +411,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                   </button>
                 </div>
               ) : (
-                <div className="h-28 w-44 rounded-lg border border-border/60 bg-muted/50 flex flex-col items-center justify-center shrink-0 text-muted-foreground gap-1.5">
+                <div className="flex h-28 w-44 shrink-0 flex-col items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-muted/50 text-muted-foreground">
                   <ImageIcon className="h-6 w-6" />
                   <span className="text-[11px]">No image selected</span>
                 </div>
@@ -403,11 +424,13 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="cursor-pointer file:cursor-pointer file:text-xs file:font-semibold file:text-primary file:border-0 file:bg-transparent text-xs"
+                  className="cursor-pointer text-xs file:cursor-pointer file:border-0 file:bg-transparent file:text-xs file:font-semibold file:text-primary"
                   required={!imagePreview}
                 />
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  Upload a high-resolution photo showcasing your repair offering. Supported formats: PNG, JPG, WebP. It will be hosted via ImgBB.
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  Upload a high-resolution photo showcasing your repair
+                  offering. Supported formats: PNG, JPG, WebP. It will be hosted
+                  via ImgBB.
                 </p>
               </div>
             </div>
@@ -415,7 +438,10 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label htmlFor="description" className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+            <Label
+              htmlFor="description"
+              className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
+            >
               <FileText className="h-3.5 w-3.5 text-muted-foreground" />
               What this service includes
             </Label>
@@ -431,12 +457,15 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-border/40 mt-4">
-          <p className="text-xs text-muted-foreground order-2 sm:order-1">
-            Status: <span className="font-semibold text-amber-600 dark:text-amber-400">Pending Admin Approval</span>
+        <CardFooter className="mt-4 flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row">
+          <p className="order-2 text-xs text-muted-foreground sm:order-1">
+            Status:{" "}
+            <span className="font-semibold text-amber-600 dark:text-amber-400">
+              Pending Admin Approval
+            </span>
           </p>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto order-1 sm:order-2">
+          <div className="order-1 flex w-full items-center gap-2.5 sm:order-2 sm:w-auto">
             <Button
               type="button"
               variant="outline"
@@ -449,7 +478,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-1/2 sm:w-auto gap-2 shadow-sm font-semibold"
+              className="w-1/2 gap-2 font-semibold shadow-sm sm:w-auto"
             >
               {isSubmitting ? (
                 <>
@@ -467,5 +496,5 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }
