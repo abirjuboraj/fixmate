@@ -8,6 +8,7 @@ const db = client.db("fixmate");
 export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
+        autoSignIn: false,
     },
     user: {
         additionalFields: {
