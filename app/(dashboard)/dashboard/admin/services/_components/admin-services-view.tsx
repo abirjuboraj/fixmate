@@ -34,8 +34,6 @@ interface AdminServicesViewProps {
 }
 
 
-// Status filter options shown as pill buttons. "pending" is the default
-// filter so the admin immediately sees what needs review.
 const STATUS_FILTERS = [
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
@@ -92,17 +90,14 @@ export function AdminServicesView({
 }: AdminServicesViewProps) {
   const router = useRouter();
 
-  // The service waiting for the admin to confirm rejection (null = closed)
+  
   const [rejectingService, setRejectingService] = useState<ServiceItem | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
-  // Which row is currently being approved (for its button spinner)
+
   const [approvingId, setApprovingId] = useState<string | null>(null);
 
 
-  // ---------- Status filter (server-side, via URL query params) ----------
 
-  // Clicking a pill updates ?status=... in the URL. The page (server component)
-  // reads it and fetches the filtered list from Express — no client filtering.
   const handleStatusFilter = (status: string) => {
     router.push(
       status === "all"
@@ -128,11 +123,10 @@ export function AdminServicesView({
 
       toast.add({
         title: "Service approved",
-        description: `"${service.title}" is now live in public search.`,
+        description: `"${service.title}" is now live in public services search.`,
         type: "success",
       });
 
-      // Re-fetch the fresh list from the server (keeps the filter correct)
       router.refresh();
     } catch (error) {
       toast.add({
@@ -166,7 +160,6 @@ export function AdminServicesView({
 
       setRejectingService(null);
 
-      // Re-fetch the fresh list from the server (keeps the filter correct)
       router.refresh();
     } catch (error) {
       toast.add({
@@ -205,14 +198,12 @@ export function AdminServicesView({
   }
 
 
-  // The action buttons for one row. Approving is instant; rejecting asks for
-  // confirmation first. Buttons adapt to the current status of the service.
   const renderActions = (service: ServiceItem) => {
     const isApproving = approvingId === service._id;
 
     return (
       <div className="flex justify-end gap-2">
-        {/* Approve: hidden when already approved */}
+
         {service.approvalStatus !== "approved" && (
           <Button
             size="sm"
@@ -229,7 +220,7 @@ export function AdminServicesView({
           </Button>
         )}
 
-        {/* Reject: hidden when already rejected */}
+       
         {service.approvalStatus !== "rejected" && (
           <Button
             size="sm"
@@ -305,7 +296,7 @@ export function AdminServicesView({
                   <TableHead className="hidden lg:table-cell">Category</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

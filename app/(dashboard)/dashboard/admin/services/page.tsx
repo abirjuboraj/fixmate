@@ -38,8 +38,6 @@ export default async function AdminServicesPage({
     redirect(userRole === "technician" ? "/dashboard/technician" : "/dashboard/customer");
   }
 
-  // Read ?status= from the URL. Default is "pending" so the admin always
-  // lands on the services that need review first.
   const params = await searchParams;
   const rawStatus = typeof params.status === "string" ? params.status : "";
   const currentStatus = VALID_STATUSES.includes(rawStatus) ? rawStatus : "pending";

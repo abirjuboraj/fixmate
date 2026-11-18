@@ -4,7 +4,6 @@ import { AddServicePayload, UpdateServicePayload, AUTH_URL } from "@/types"
 import { protectedMutation } from "../server";
 
 
-// POST /api/services — add a new service (starts as "pending")
 export const addService = async (servicePayload: AddServicePayload) => {
 
     const api = `${AUTH_URL}/api/services`;
@@ -14,8 +13,6 @@ export const addService = async (servicePayload: AddServicePayload) => {
 }
 
 
-// PATCH /api/services/:id — edit a service
-// The backend sets approvalStatus back to "pending" after every edit.
 export const updateService = async (serviceId: string, servicePayload: UpdateServicePayload) => {
 
     const api = `${AUTH_URL}/api/services/${serviceId}`;
@@ -34,9 +31,6 @@ export const toggleServiceAvailability = async (serviceId: string, isAvailable: 
 
 }
 
-
-// PATCH /api/admin/services/:id/approval — admin approves or rejects a service.
-// approvalStatus can only be "approved" or "rejected" (the backend rejects anything else).
 export const updateServiceApproval = async (
     serviceId: string,
     approvalStatus: "approved" | "rejected"
