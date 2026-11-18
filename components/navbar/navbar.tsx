@@ -49,7 +49,7 @@ export function Navbar() {
               description: "See you soon!",
               type: "success",
             });
-            router.push("/");
+            router.push("/sign-in");
             router.refresh();
           },
         },

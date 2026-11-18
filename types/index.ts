@@ -1,7 +1,8 @@
-
 export const AUTH_URL = process.env.NEXT_PUBLIC_API_URL;
 
-
+// ==========================================
+// User & Authentication Types
+// ==========================================
 
 export type UserRole = "customer" | "technician" | "admin";
 
@@ -19,7 +20,6 @@ export interface CustomUser {
   updatedAt?: Date;
 }
 
-
 export interface AdminUser {
   _id: string;
   name: string;
@@ -33,6 +33,9 @@ export interface AdminUser {
 /** The roles an admin can assign to a user. */
 export const ASSIGNABLE_ROLES: UserRole[] = ["customer", "technician", "admin"];
 
+// ==========================================
+// Navigation & Layout Types
+// ==========================================
 
 export interface MenuItem {
   title: string;
@@ -45,6 +48,10 @@ export interface NavLinkItem {
   label: string;
   href: string;
 }
+
+// ==========================================
+// Service Types (FixMate Services Collection)
+// ==========================================
 
 export const SERVICE_CATEGORIES = [
   "Smartphone",
@@ -105,6 +112,33 @@ export interface UpdateServicePayload {
   image: string;
 }
 
+// ==========================================
+// Public Services Query & Response Types
+// ==========================================
+
+export interface PublicServicesQueryParams {
+  search?: string;
+  category?: string;
+  serviceMode?: string;
+  sort?: string;
+  limit?: number;
+}
+
+export interface PublicServicesResponse {
+  success: boolean;
+  message: string;
+  data: ServiceItem[];
+}
+
+export interface SortOption {
+  label: string;
+  value: string;
+}
+
+// ==========================================
+// Booking Types (FixMate Bookings Collection)
+// ==========================================
+
 export type BookingStatus =
   | "requested"
   | "accepted"
@@ -136,6 +170,9 @@ export interface BookingItem {
   createdAt?: Date;
 }
 
+// ==========================================
+// Payment Types (FixMate Payments Collection)
+// ==========================================
 
 export interface PaymentRecord {
   _id?: string;

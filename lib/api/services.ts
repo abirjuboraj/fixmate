@@ -1,16 +1,89 @@
+import {
+  AUTH_URL,
+  PublicServicesQueryParams,
+  PublicServicesResponse,
+} from "@/types";
+import { authFetch } from "../server";
 
-import { authFetch } from "../server"
-
-
+/**
+ * Technician own services fetcher
+ */
 export const getTechnicianServices = async (api: string) => {
-    const result = await authFetch(api);
+  const result = await authFetch(api);
+  return result;
+};
 
+/**
+ * Admin all services fetcher
+ */
+export const getAllServices = async (api: string) => {
+  const result = await authFetch(api);
+  return result;
+};
 
-    return result;
-}
+/**
+ * Helper to construct the URL with query parameters for the public services endpoint
+ */
+export const buildPublicServicesUrl = (params: PublicServicesQueryParams = {}) => {
+  const baseUrl = AUTH_URL || "http://localhost:5000";
+  const url = new URL(`${baseUrl}/api/services`);
 
+  if (params.search?.trim()) {
+    url.searchParams.set("search", params.search.trim());
+  }
 
-export const getAllServices = async(api: string) => {
-    const result = await authFetch(api);
-    return result;
-}
+  if (params.category && params.category !== "All") {
+    url.searchParams.set("category", params.category);
+  }
+
+  if (params.serviceMode && params.serviceMode !== "All") {
+    url.searchParams.set("serviceMode", params.serviceMode);
+  }
+
+  if (params.sort) {
+    url.searchParams.set("sort", params.sort);
+  }
+
+  if (params.limit && params.limit > 0) {
+    url.searchParams.set("limit", String(params.limit));
+  }
+
+  return url.toString();
+};
+
+/**
+ * Public service fetch handler.
+ * Fetches approved & available services with server-side search, filtering, and sorting.
+ */
+export const getAllPublicServices = async (
+  params: PublicServicesQueryParams = {}
+): Promise<PublicServicesResponse> => {
+  const apiUrl = buildPublicServicesUrl(params);
+
+  try {
+    const res = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => null);
+      throw new Error(
+        errorData?.message || `Failed to fetch services (HTTP ${res.status})`
+      );
+    }
+
+    const data = await res.json();
+    return {
+      success: true,
+      message: data.message || "Services fetched successfully",
+      data: Array.isArray(data.data) ? data.data : [],
+    };
+  } catch (err: unknown) {
+    console.error("Public services fetch error:", err);
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : "Failed to fetch services",
+      data: [],
+    };
+  }
+};
