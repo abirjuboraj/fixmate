@@ -22,10 +22,11 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { toast } from "@/components/ui/toast";
+
 import type { ServiceItem } from "@/types";
 import { updateServiceApproval } from "@/lib/action/services";
 import { ConfirmRejectModal } from "./confirm-reject-modal";
+import { toast } from "sonner";
 
 interface AdminServicesViewProps {
   services: ServiceItem[];
@@ -90,7 +91,7 @@ export function AdminServicesView({
 }: AdminServicesViewProps) {
   const router = useRouter();
 
-  
+
   const [rejectingService, setRejectingService] = useState<ServiceItem | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -121,20 +122,13 @@ export function AdminServicesView({
         throw new Error(result?.message || "Failed to approve service");
       }
 
-      toast.add({
-        title: "Service approved",
-        description: `"${service.title}" is now live in public services search.`,
-        type: "success",
-      });
+      toast.success(`"${service.title}" is now live in public services search.`)
 
       router.refresh();
     } catch (error) {
-      toast.add({
-        title: "Could not approve service",
-        description:
-          error instanceof Error ? error.message : "Please try again.",
-        type: "error",
-      });
+      toast.error(
+        error instanceof Error ? error.message : "Please try again.",
+      )
     } finally {
       setApprovingId(null);
     }
@@ -152,22 +146,13 @@ export function AdminServicesView({
         throw new Error(result?.message || "Failed to reject service");
       }
 
-      toast.add({
-        title: "Service rejected",
-        description: `"${rejectingService.title}" was hidden from public search.`,
-        type: "success",
-      });
-
+      toast.success(`"${rejectingService.title}" is now hidden from public search.`)
       setRejectingService(null);
 
       router.refresh();
     } catch (error) {
-      toast.add({
-        title: "Could not reject service",
-        description:
-          error instanceof Error ? error.message : "Please try again.",
-        type: "error",
-      });
+
+      toast.error(error instanceof Error ? error.message : "Please try again.")
     } finally {
       setIsUpdating(false);
     }
@@ -220,7 +205,7 @@ export function AdminServicesView({
           </Button>
         )}
 
-       
+
         {service.approvalStatus !== "rejected" && (
           <Button
             size="sm"

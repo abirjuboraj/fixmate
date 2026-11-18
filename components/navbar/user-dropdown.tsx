@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   User as UserIcon,
   LogOut,
-  ChevronDown,
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
@@ -75,7 +74,7 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex items-center gap-2.5 px-2 py-1.5 h-auto rounded-full hover:bg-muted/60 border border-transparent hover:border-border/60 transition-all focus-visible:ring-1 cursor-pointer"
+        className="flex items-center rounded-full p-0.5 hover:ring-2 hover:ring-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all cursor-pointer outline-none"
         aria-label="Open user profile menu"
       >
         <Avatar className="h-9 w-9 ring-2 ring-primary/20">
@@ -87,17 +86,6 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
             {initials}
           </AvatarFallback>
         </Avatar>
-
-        <div className="flex flex-col text-left">
-          <span className="text-xs font-semibold leading-tight text-foreground max-w-32.5 truncate">
-            {user.name || "My Account"}
-          </span>
-          <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-            {roleLabel}
-          </span>
-        </div>
-
-        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground ml-0.5 opacity-70" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent

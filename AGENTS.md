@@ -49,6 +49,17 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - **Dedicated Central Types** (`types/index.ts`): All interfaces (`PublicServicesQueryParams`, `PublicServicesResponse`, `SortOption`, etc.) are centralized in `types/index.ts`.
 - **Deep-linking Ready**: Passing `?category=AC` opens the page with the AC category filter pre-selected and queried from the server, ready for the upcoming Homepage "Popular Categories" section.
 
+### E. Service Details Route (`/services/[id]`)
+- **Server Component** (`app/(public)/services/[id]/page.tsx`): Fetches public approved service details and verifies `approvalStatus === 'approved'` and `isAvailable === true`, else calls `notFound()`. Reads session server-side for role awareness.
+- **Client Component** (`app/(public)/services/[id]/_components/service-detail-view.tsx`): Displays large aspect-video banner, title, duration, area pills, description, role-restricted "Request Repair" button (with callbackURL for logged-out users, disabled notice for tech/admin), and sticky side-by-side pricing & verified technician cards with generous bottom padding.
+
+### F. Homepage Extra Section: Popular Categories & Why Choose Us
+- **Popular Categories** (`components/home/popular-categories.tsx`): Clickable category cards featuring the 7 official repair categories (`Smartphone`, `Laptop & PC`, `AC`, `Refrigerator`, `TV`, `Washing Machine`, `Electrical`) with custom icons and descriptions. Each card deep-links to `/services?category=<CategoryName>`, pre-filtering the services browser.
+- **Why Choose Us** (`components/home/why-choose-us.tsx`): Divided into a clean, dedicated trust section showcasing:
+  1. **Core Trust Pillars**: 100% Verified Technicians, Pay After Service, Live Tracking, and Quality Guarantee.
+  2. **Platform Stats & Metrics**: Satisfied customers (2,500+), repairs completed (4,800+), satisfaction rate (99.2%), and average rating (4.9/5).
+  3. **Customer Testimonials**: Authentic customer feedback cards with star ratings and reviewer avatars.
+
 ---
 
 ## 3. Tech Stack & Standards

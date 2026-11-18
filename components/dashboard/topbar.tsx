@@ -157,7 +157,8 @@ export function DashboardTopbar({
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="flex items-center gap-2.5 px-2 py-1 h-auto rounded-full hover:bg-muted/60 border border-transparent hover:border-border/60 transition-all focus-visible:ring-1 cursor-pointer"
+            className="flex items-center rounded-full p-0.5 hover:ring-2 hover:ring-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all cursor-pointer outline-none"
+            aria-label="Open user menu"
           >
             <Avatar className="h-8 w-8 ring-1 ring-border">
               <AvatarImage src={userImage || undefined} alt={userName || "User"} />
@@ -165,14 +166,6 @@ export function DashboardTopbar({
                 {getInitials(userName)}
               </AvatarFallback>
             </Avatar>
-            <div className="hidden md:flex flex-col text-left">
-              <span className="text-xs font-semibold leading-tight text-foreground max-w-32.5 truncate">
-                {userName || "User"}
-              </span>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                {userRole}
-              </span>
-            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"

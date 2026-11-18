@@ -95,55 +95,6 @@ function GitHubIcon({ className = "h-4 w-4" }: { className?: string }) {
 export function Footer() {
   return (
     <footer className="w-full border-t border-border/80 bg-card/60 text-foreground transition-colors">
-      {/* Top Guarantee Strip */}
-      <div className="border-b border-border/60 bg-muted/40 py-6">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">
-                  Verified Technicians
-                </h4>
-                <p className="text-xs text-muted-foreground">
-                  Rigorous profile screening & authentic expertise
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">
-                  Pay After Completion
-                </h4>
-                <p className="text-xs text-muted-foreground">
-                  Zero prepayment risk with secure Stripe checkout
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">
-                  Fast Home & Drop-off
-                </h4>
-                <p className="text-xs text-muted-foreground">
-                  Flexible doorstep visits and trusted workshop hubs
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer Links */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
