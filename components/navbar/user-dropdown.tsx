@@ -89,7 +89,7 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
         </Avatar>
 
         <div className="flex flex-col text-left">
-          <span className="text-xs font-semibold leading-tight text-foreground max-w-[130px] truncate">
+          <span className="text-xs font-semibold leading-tight text-foreground max-w-32.5 truncate">
             {user.name || "My Account"}
           </span>
           <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
@@ -148,9 +148,6 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
         >
           <LayoutDashboard className="h-4 w-4 text-primary" />
           <span>Dashboard</span>
-          <span className="ml-auto text-[10px] text-muted-foreground font-normal">
-            ({roleLabel})
-          </span>
         </DropdownMenuItem>
 
         {/* Update Profile Link */}

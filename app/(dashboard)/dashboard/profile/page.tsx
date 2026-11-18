@@ -1,28 +1,51 @@
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/server";
+import { UpdateProfileForm } from "./_components/update-profile-form";
 import { UserCog } from "lucide-react";
 
-export default function ProfilePage() {
+export const metadata = {
+  title: "Update Profile | FixMate Dashboard",
+  description: "Update your personal details, contact information, service area, and profile photo.",
+};
+
+export default async function ProfilePage() {
+  // Retrieve session on the server
+  const session = await getSession();
+
+  // Protect route
+  if (!session || !session.user) {
+    redirect("/sign-in");
+  }
+
+  const user = session.user as {
+    id?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+    image?: string | null;
+    phone?: string | null;
+    area?: string | null;
+    bio?: string | null;
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
+      {/* Header */}
       <div className="border-b border-border/60 pb-5">
         <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full mb-2">
           <UserCog className="h-3.5 w-3.5" />
-          User Profile
+          Account Settings
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Profile Settings
+          Update Profile
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Shared route accessible to all authenticated roles (/dashboard/profile).
+          Manage your personal profile, contact information, service area, and avatar.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-8 text-center max-w-md mx-auto">
-        <UserCog className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-        <h2 className="text-base font-semibold">Update Profile Interface</h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          Form fields for name, phone, area, bio, and ImgBB photo upload will be implemented in the profile & auth phase.
-        </p>
-      </div>
+      {/* Profile Form (Client Component) */}
+      <UpdateProfileForm initialUser={user} />
     </div>
   );
 }

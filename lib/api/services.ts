@@ -21,9 +21,6 @@ export const getAllServices = async (api: string) => {
   return result;
 };
 
-/**
- * Helper to construct the URL with query parameters for the public services endpoint
- */
 export const buildPublicServicesUrl = (params: PublicServicesQueryParams = {}) => {
   const baseUrl = AUTH_URL || "http://localhost:5000";
   const url = new URL(`${baseUrl}/api/services`);
@@ -85,3 +82,19 @@ export const getAllPublicServices = async (
     };
   }
 };
+
+// service details page (public)
+
+export const getPublicServiceDetails = async (id: string) => {
+  const res = await fetch(`${AUTH_URL}/api/services/${id}`);
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(
+      errorData?.message || `Failed to fetch service (HTTP ${res.status})`
+    );
+  }
+
+  const data = await res.json();
+  return data;
+}

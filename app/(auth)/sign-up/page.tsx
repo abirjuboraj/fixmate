@@ -12,7 +12,6 @@ import {
     Check,
     X,
     ArrowRight,
-    ShieldAlert,
     UploadCloud,
     Image as ImageIcon,
     Loader2,
@@ -31,7 +30,7 @@ import {
 } from "@/components/ui/card";
 import { signUp } from "@/lib/auth-client";
 import { uploadImage } from "@/lib/uploadImage";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
@@ -43,7 +42,6 @@ export default function SignUpPage() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const router = useRouter();
 
@@ -54,17 +52,14 @@ export default function SignUpPage() {
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value);
-        if (error) setError(null);
     };
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        if (error) setError(null);
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        if (error) setError(null);
     };
 
     const handleRoleChange = (selectedRole: "customer" | "technician") => {
@@ -91,22 +86,21 @@ export default function SignUpPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
 
         // Validation checks
         if (!name.trim()) {
-            setError("Please enter your full name.");
+            toast.error("Please enter your full name.");
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.trim() || !emailRegex.test(email.trim())) {
-            setError("Please enter a valid email address.");
+            toast.error("Please enter a valid email address.");
             return;
         }
 
         if (!isPasswordValid) {
-            setError("Please ensure your password meets all requirements below.");
+            toast.error("Please ensure your password meets all requirements below.");
             return;
         }
 
@@ -117,13 +111,8 @@ export default function SignUpPage() {
        
 
         if (!imageFile) {
-            toast.add({
-                title: "No profile Image",
-                description: "Add your profile image please",
-                type: "warning",
-            })
-
-            return
+            toast.warning("Please add your profile photo to continue.");
+            return;
         }
 
          setIsLoading(true);
@@ -156,27 +145,19 @@ export default function SignUpPage() {
             });
 
             if (error) {
-                setError(error.message || "Sign up failed. Please try again.");
+                toast.error(error.message || "Sign up failed. Please try again.");
+                return;
             }
 
-            toast.add({
-                title: "Account Created",
-                description: "Successfully created your account!",
-                type: "success",
-            });
+            toast.success("Account created! Redirecting to sign in...");
 
             router.push("/sign-in");
 
 
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            }
-            toast.add({
-                title: "Account Creation failed",
-                description: "Your account couldn't be created! Try again",
-                type: "error",
-            })
+            console.error("Sign up error:", err);
+            const message = err instanceof Error ? err.message : "Account creation failed. Please try again.";
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -195,12 +176,6 @@ export default function SignUpPage() {
 
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-5">
-                    {error && (
-                        <div className="flex items-center gap-2 p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-lg border border-destructive/20">
-                            <ShieldAlert className="h-4 w-4 shrink-0" />
-                            <span>{error}</span>
-                        </div>
-                    )}
 
                     {/* Role Selection: Customer or Technician */}
                     <div className="space-y-2">
@@ -326,7 +301,7 @@ export default function SignUpPage() {
                                 />
                                 <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
                                     <UploadCloud className="h-3 w-3" />
-                                    PNG, JPG or WebP (will be uploaded via ImgBB)
+                                    PNG, JPG or WebP
                                 </p>
                             </div>
                         </div>

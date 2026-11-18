@@ -166,7 +166,7 @@ export function DashboardTopbar({
               </AvatarFallback>
             </Avatar>
             <div className="hidden md:flex flex-col text-left">
-              <span className="text-xs font-semibold leading-tight text-foreground max-w-[130px] truncate">
+              <span className="text-xs font-semibold leading-tight text-foreground max-w-32.5 truncate">
                 {userName || "User"}
               </span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">

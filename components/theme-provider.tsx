@@ -48,11 +48,13 @@ function ThemeHotkey() {
         return
       }
 
-      if (event.key.toLowerCase() !== "d") {
+      // Check if typing inside input, textarea, or contentEditable
+      if (isTypingTarget(event.target)) {
         return
       }
 
-      if (isTypingTarget(event.target)) {
+      // Check if key is defined and equals "d"
+      if (!event.key || event.key.toLowerCase() !== "d") {
         return
       }
 

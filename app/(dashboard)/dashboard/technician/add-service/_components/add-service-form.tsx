@@ -14,7 +14,6 @@ import {
   X,
   Image as ImageIcon,
   Loader2,
-  ShieldAlert,
 } from "lucide-react"
 
 import { uploadImage } from "@/lib/uploadImage"
@@ -39,7 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { addService } from "@/lib/action/services"
-import { toast } from "@/components/ui/toast"
+import { toast } from "sonner"
 
 interface AddServiceFormProps {
   technician: {
@@ -66,8 +65,6 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
   // Submission feedback states
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +73,6 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
       setImageFile(file)
       const previewUrl = URL.createObjectURL(file)
       setImagePreview(previewUrl)
-      if (errorMessage) setErrorMessage(null)
     }
   }
 
@@ -92,46 +88,39 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
   // Form submit handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setErrorMessage(null)
-    setSuccessMessage(null)
 
+    // Validate all required fields and show Sonner toast on failure
     if (!title.trim()) {
-      setErrorMessage("Please enter a service title.")
+      toast.error("Please enter a service title.")
       return
     }
     if (!category) {
-      setErrorMessage("Please select a service category.")
+      toast.error("Please select a service category.")
       return
     }
     if (!serviceMode) {
-      setErrorMessage(
-        "Please select a service mode (Home Visit or Shop Drop-off)."
-      )
+      toast.error("Please select a service mode (Home Visit or Shop Drop-off).")
       return
     }
     const parsedPrice = parseFloat(basePrice)
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      setErrorMessage("Base price must be a positive number greater than 0.")
+      toast.error("Base price must be a positive number greater than 0.")
       return
     }
     if (!estimatedDuration.trim()) {
-      setErrorMessage(
-        "Please specify estimated duration (e.g. '2-3 hours' or '1 day')."
-      )
+      toast.error("Please specify estimated duration (e.g. '2-3 hours' or '1 day').")
       return
     }
     if (!serviceArea.trim()) {
-      setErrorMessage(
-        "Please enter the service coverage area (e.g. 'Dhanmondi, Dhaka')."
-      )
+      toast.error("Please enter the service coverage area (e.g. 'Dhanmondi, Dhaka').")
       return
     }
     if (!description.trim()) {
-      setErrorMessage("Please enter what the repair service includes.")
+      toast.error("Please enter what the repair service includes.")
       return
     }
     if (!imageFile) {
-      setErrorMessage("Please choose a service banner image.")
+      toast.error("Please choose a service banner image.")
       return
     }
 
@@ -169,12 +158,10 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
         )
       }
 
-      toast.add({
-        title: "Service submitted successfully!",
-        description: "Waiting for admin approval",
-        type: "success",
-      })
+      // Show success toast
+      toast.success("Service submitted! Waiting for admin approval.")
 
+      // Reset form fields
       setTitle("")
       setCategory("")
       setServiceMode("")
@@ -184,19 +171,14 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
       setDescription("")
       handleRemoveImage()
 
+      // Redirect to my services list after a short delay
       setTimeout(() => {
         router.push("/dashboard/technician/my-services")
       }, 1000)
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setErrorMessage(err.message)
-      }
-
-      toast.add({
-        title: "Failed to publish service",
-        description: "The service could not be published. Try again",
-        type: "error",
-      })
+      console.error("Add service error:", err)
+      const message = err instanceof Error ? err.message : "Failed to publish service. Please try again."
+      toast.error(message)
     } finally {
       setIsSubmitting(false)
     }
@@ -217,20 +199,6 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
-          {/* Feedback messages */}
-          {errorMessage && (
-            <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-xs font-medium text-destructive sm:text-sm">
-              <ShieldAlert className="h-4 w-4 shrink-0" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-600 sm:text-sm dark:text-emerald-400">
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
-              <span>{successMessage}</span>
-            </div>
-          )}
 
           {/* Technician Info Banner (Read-Only) */}
           <div className="flex flex-col justify-between gap-2 rounded-xl border border-border/60 bg-muted/40 p-3.5 text-xs sm:flex-row sm:items-center">
@@ -388,7 +356,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
               className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
             >
               <UploadCloud className="h-3.5 w-3.5 text-muted-foreground" />
-              Service Banner Image (ImgBB)
+              Service Banner Image
             </Label>
 
             <div className="flex flex-col gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 p-4 sm:flex-row sm:items-center">
@@ -429,8 +397,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                 />
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
                   Upload a high-resolution photo showcasing your repair
-                  offering. Supported formats: PNG, JPG, WebP. It will be hosted
-                  via ImgBB.
+                  offering. Supported formats: PNG, JPG, WebP.
                 </p>
               </div>
             </div>
@@ -457,13 +424,8 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
           </div>
         </CardContent>
 
-        <CardFooter className="mt-4 flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row">
-          <p className="order-2 text-xs text-muted-foreground sm:order-1">
-            Status:{" "}
-            <span className="font-semibold text-amber-600 dark:text-amber-400">
-              Pending Admin Approval
-            </span>
-          </p>
+        <CardFooter className="mt-4 flex flex-col items-center justify-end  gap-3 border-t border-border/40 pt-6 sm:flex-row">
+          
 
           <div className="order-1 flex w-full items-center gap-2.5 sm:order-2 sm:w-auto">
             <Button

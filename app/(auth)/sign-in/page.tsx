@@ -8,7 +8,6 @@ import {
     Eye,
     EyeOff,
     ArrowRight,
-    ShieldAlert,
     Loader2,
 } from "lucide-react";
 
@@ -24,37 +23,33 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { signIn } from "@/lib/auth-client";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 
 export default function SignInPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        if (error) setError(null);
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        if (error) setError(null);
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.trim() || !emailRegex.test(email.trim())) {
-            setError("Please enter a valid email address.");
+            toast.error("Please enter a valid email address.");
             return;
         }
 
         if (!password) {
-            setError("Please enter your password.");
+            toast.error("Please enter your password.");
             return;
         }
 
@@ -77,26 +72,16 @@ export default function SignInPage() {
             })
 
             if (error) {
-                console.log(error);
+                toast.error(error.message || "Invalid credentials. Please try again.");
+                return;
             }
 
-            toast.add({
-                title: "Welcome Back!",
-                description: "Successfully signed In.",
-                type: "success",
-            })
+            toast.success("Welcome back! Signed in successfully.");
 
 
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            }
-
-            toast.add({
-                title: "Sign In Failed!",
-                description: "Please check your credentials and try again.",
-                type: "error",
-            })
+            console.error("Sign in error:", err);
+            toast.error("Sign in failed. Please check your credentials and try again.");
         } finally {
             setIsLoading(false);
         }
@@ -115,12 +100,6 @@ export default function SignInPage() {
 
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-4">
-                    {error && (
-                        <div className="flex items-center gap-2 p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-lg border border-destructive/20">
-                            <ShieldAlert className="h-4 w-4 shrink-0" />
-                            <span>{error}</span>
-                        </div>
-                    )}
 
                     {/* Email Address */}
                     <div className="space-y-1.5">
