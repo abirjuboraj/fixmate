@@ -18,12 +18,8 @@ export const metadata = {
   description: "Overview of your services and repair requests.",
 };
 
-// SERVER COMPONENT
-// Protects the route, fetches the technician's services from the Express API,
-// and computes the required stats: Total Services, Approved Services,
-// Pending Requests.
 export default async function TechnicianDashboardPage() {
-  // 1. Session check (same pattern as the other dashboard pages)
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -34,12 +30,12 @@ export default async function TechnicianDashboardPage() {
 
   const userRole = (session.user as { role?: string }).role || "customer";
 
-  // 2. Role check: technicians only
+
   if (userRole !== "technician") {
     redirect(userRole === "admin" ? "/dashboard/admin" : "/dashboard/customer");
   }
 
-  // 3. Fetch this technician's services to compute the stats
+
   let totalServices = 0;
   let approvedServices = 0;
   let fetchError: string | null = null;

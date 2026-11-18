@@ -19,6 +19,23 @@ export interface CustomUser {
   updatedAt?: Date;
 }
 
+/**
+ * A user row shown in the Admin "Manage Users" table.
+ * Comes from GET /api/admin/users (MongoDB user document, projected).
+ */
+export interface AdminUser {
+  _id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  role?: UserRole;
+  phone?: string | null;
+  createdAt?: string;
+}
+
+/** The roles an admin can assign to a user. */
+export const ASSIGNABLE_ROLES: UserRole[] = ["customer", "technician", "admin"];
+
 
 export interface MenuItem {
   title: string;
