@@ -153,6 +153,24 @@ export interface BookingItem {
 }
 
 
+// Extended service type for the detail page — includes all fields returned by the backend
+export interface ServiceDetailItem {
+  _id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  basePrice: number;
+  estimatedDuration: string;
+  serviceMode: string;
+  serviceArea: string;
+  technicianName: string;
+  technicianEmail: string;
+  approvalStatus: string;
+  isAvailable: boolean;
+  createdAt?: string;
+}
+
 export interface PaymentRecord {
   _id?: string;
   bookingId: string;
