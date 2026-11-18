@@ -114,7 +114,7 @@ export default function SignUpPage() {
         const finalRole: "customer" | "technician" =
             role === "technician" ? "technician" : "customer";
 
-        setIsLoading(true);
+       
 
         if (!imageFile) {
             toast.add({
@@ -125,6 +125,8 @@ export default function SignUpPage() {
 
             return
         }
+
+         setIsLoading(true);
 
         try {
 

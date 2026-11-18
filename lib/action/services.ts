@@ -35,6 +35,20 @@ export const toggleServiceAvailability = async (serviceId: string, isAvailable: 
 }
 
 
+// PATCH /api/admin/services/:id/approval — admin approves or rejects a service.
+// approvalStatus can only be "approved" or "rejected" (the backend rejects anything else).
+export const updateServiceApproval = async (
+    serviceId: string,
+    approvalStatus: "approved" | "rejected"
+) => {
+
+    const api = `${AUTH_URL}/api/admin/services/${serviceId}/approval`;
+
+    return protectedMutation(api, "PATCH", { approvalStatus });
+
+}
+
+
 // DELETE /api/services/:id — delete a service
 export const deleteService = async (serviceId: string) => {
 

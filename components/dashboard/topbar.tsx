@@ -53,7 +53,7 @@ export function DashboardTopbar({
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push("/");
+            router.push("/sign-in");
             router.refresh();
           },
         },
