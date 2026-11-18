@@ -16,7 +16,7 @@ import { toast } from "sonner";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
+  { label: "How It Works", href: "/#about" },
 ];
 
 export function Navbar() {

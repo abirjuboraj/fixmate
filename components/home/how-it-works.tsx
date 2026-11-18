@@ -39,7 +39,7 @@ const STEPS = [
   },
 ];
 
-// SERVER COMPONENT — static 4-step visual flow for the landing page.
+
 export function HowItWorks() {
   return (
     <section className="border-b border-border/60 bg-background">
