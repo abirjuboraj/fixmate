@@ -7,9 +7,7 @@ import {
   ArrowRight,
   Home,
   Store,
-  DollarSign,
   Tag,
-  ShieldCheck,
 } from "lucide-react";
 import { ServiceItem } from "@/types";
 import { Badge } from "@/components/ui/badge";

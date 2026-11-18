@@ -8,7 +8,7 @@ export const metadata = {
     "Find and book verified repair specialists for smartphones, laptops, ACs, refrigerators, TVs, and home appliances across Dhaka.",
 };
 
-// Next.js 15+ searchParams are provided as a Promise
+
 interface ServicesPageProps {
   searchParams: Promise<{
     search?: string;
@@ -26,8 +26,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const serviceMode = resolvedParams.serviceMode || "All";
   const sort = resolvedParams.sort || "newest";
 
-  // Server-side fetch querying MongoDB directly via fixmate-server
-  // (Challenge 1: searching, filtering, and sorting happen strictly on the server)
+
   const response = await getAllPublicServices({
     search: search || undefined,
     category: category !== "All" ? category : undefined,

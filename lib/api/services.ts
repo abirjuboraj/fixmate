@@ -48,13 +48,11 @@ export const buildPublicServicesUrl = (params: PublicServicesQueryParams = {}) =
     url.searchParams.set("limit", String(params.limit));
   }
 
+
   return url.toString();
 };
 
-/**
- * Public service fetch handler.
- * Fetches approved & available services with server-side search, filtering, and sorting.
- */
+
 export const getAllPublicServices = async (
   params: PublicServicesQueryParams = {}
 ): Promise<PublicServicesResponse> => {

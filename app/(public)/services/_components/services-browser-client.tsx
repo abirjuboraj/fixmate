@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useTransition, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Search,
   Filter,
   ArrowUpDown,
   X,
-  RotateCcw,
-  Loader2,
 } from "lucide-react";
 
 import {
@@ -18,7 +16,6 @@ import {
   SortOption,
 } from "@/types";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -28,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { ServiceCard } from "./service-card";
 import { ServicesEmptyState } from "./services-empty-state";
-import { ServicesSkeletonGrid } from "./services-skeleton-grid";
 
 interface ServicesBrowserClientProps {
   initialServices: ServiceItem[];
@@ -38,6 +34,7 @@ interface ServicesBrowserClientProps {
   initialSort?: string;
 }
 
+// Sort options for the dropdown
 const SORT_OPTIONS: SortOption[] = [
   { label: "Newest First", value: "newest" },
   { label: "Price: Low to High", value: "low-to-high" },
@@ -54,97 +51,75 @@ export function ServicesBrowserClient({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
 
-  // Instant typing state
-  const [searchInput, setSearchInput] = useState(initialSearch);
+ 
+  const [searchText, setSearchText] = useState(initialSearch);
 
-  // Synchronize state with URL parameters
-  const activeCategory = searchParams.get("category") || "All";
-  const activeServiceMode = searchParams.get("serviceMode") || "All";
-  const activeSort = searchParams.get("sort") || "newest";
 
-  // Helper to push URL query updates to Next.js server component
-  const updateQueryParams = useCallback(
-    (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString());
+  const activeCategory = searchParams.get("category") || initialCategory;
+  const activeMode = searchParams.get("serviceMode") || initialServiceMode;
+  const activeSort = searchParams.get("sort") || initialSort;
 
-      Object.entries(updates).forEach(([key, value]) => {
-        if (!value || value === "All" || (key === "sort" && value === "newest")) {
-          params.delete(key);
-        } else {
-          params.set(key, value);
-        }
-      });
 
-      startTransition(() => {
-        router.push(`${pathname}?${params.toString()}`);
-      });
-    },
-    [pathname, router, searchParams]
-  );
+  const changeFilter = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-  // Live real-time search with 300ms debounce as user types
+
+    if (!value || value === "All" || (key === "sort" && value === "newest")) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+
+    const queryString = params.toString();
+    const targetUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.push(targetUrl, { scroll: false });
+  };
+
+  // Debounced live search: updates URL 300ms after user stops typing
   useEffect(() => {
-    const currentParam = searchParams.get("search") || "";
-    if (searchInput === currentParam) return;
+    const currentSearchInUrl = searchParams.get("search") || "";
+    if (searchText === currentSearchInUrl) return;
 
     const timer = setTimeout(() => {
-      updateQueryParams({ search: searchInput.trim() || undefined });
+      changeFilter("search", searchText.trim());
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchInput, searchParams, updateQueryParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
+  // Clear search text
   const handleClearSearch = () => {
-    setSearchInput("");
-    updateQueryParams({ search: undefined });
+    setSearchText("");
+    changeFilter("search", "");
   };
 
-  const handleCategorySelect = (category: string) => {
-    updateQueryParams({ category });
+  // Reset all filters to default
+  const handleResetFilters = () => {
+    setSearchText("");
+    router.push(pathname, { scroll: false });
   };
-
-  const handleServiceModeSelect = (mode: string) => {
-    updateQueryParams({ serviceMode: mode });
-  };
-
-  const handleSortChange = (sort: string) => {
-    updateQueryParams({ sort });
-  };
-
-  const handleResetAll = () => {
-    setSearchInput("");
-    startTransition(() => {
-      router.push(pathname);
-    });
-  };
-
-  const hasActiveFilters =
-    Boolean(searchInput) ||
-    activeCategory !== "All" ||
-    activeServiceMode !== "All" ||
-    activeSort !== "newest";
 
   return (
     <div className="space-y-8">
-      {/* 1. Header & Filters Container */}
+      {/* Search Bar, Mode, Sort & Category Filters Box */}
       <div className="rounded-2xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs space-y-5">
-        {/* Top Row: Search on far left, Sorts & Filters together on far right */}
+
+        {/* Top Row: Search on far-left, Mode & Sort side-by-side on far-right */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Far Left: Real-time Live Search Bar (no search button) */}
+
+          {/* Far-Left: Search input with real-time live typing */}
           <div className="relative w-full lg:max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search repair services as you type..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search repair services by title and category..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
               className="pl-10 pr-9 h-11 text-sm bg-background w-full"
             />
-            {isPending ? (
-              <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
-            ) : searchInput ? (
+            {searchText && (
               <button
                 type="button"
                 onClick={handleClearSearch}
@@ -153,10 +128,10 @@ export function ServicesBrowserClient({
               >
                 <X className="h-4 w-4" />
               </button>
-            ) : null}
+            )}
           </div>
 
-          {/* Far Right: Mode filter, Sort dropdown, and Reset button grouped side by side */}
+          {/* Far-Right: Service Mode & Sort Dropdowns grouped together */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Service Mode Filter */}
             <div className="flex items-center gap-2">
@@ -164,10 +139,10 @@ export function ServicesBrowserClient({
                 Mode:
               </span>
               <Select
-                value={activeServiceMode}
-                onValueChange={(val) => handleServiceModeSelect(val || "All")}
+                value={activeMode}
+                onValueChange={(value) => changeFilter("serviceMode", value || "All")}
               >
-                <SelectTrigger className="w-[150px] sm:w-[160px] h-10 text-xs">
+                <SelectTrigger className="w-37.5 sm:w-40 h-10 text-xs">
                   <SelectValue placeholder="All Modes" />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,9 +163,9 @@ export function ServicesBrowserClient({
               </span>
               <Select
                 value={activeSort}
-                onValueChange={(val) => handleSortChange(val || "newest")}
+                onValueChange={(value) => changeFilter("sort", value || "newest")}
               >
-                <SelectTrigger className="w-[160px] sm:w-[180px] h-10 text-xs">
+                <SelectTrigger className="w-40 sm:w-45 h-10 text-xs">
                   <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
                   <SelectValue placeholder="Sort Services" />
                 </SelectTrigger>
@@ -204,23 +179,11 @@ export function ServicesBrowserClient({
               </Select>
             </div>
 
-            {/* Reset Filters Icon/Button */}
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleResetAll}
-                className="text-xs text-muted-foreground hover:text-foreground gap-1.5 h-10 px-2.5"
-                title="Reset all filters"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Reset</span>
-              </Button>
-            )}
+            
           </div>
         </div>
 
-        {/* Bottom Row: Category Pills below search & sort */}
+        {/* Bottom Row: Category Pills */}
         <div className="space-y-2 pt-4 border-t border-border/60">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -230,9 +193,10 @@ export function ServicesBrowserClient({
           </div>
 
           <div className="flex flex-wrap gap-2 pt-1">
+            {/* "All Categories" Button */}
             <button
               type="button"
-              onClick={() => handleCategorySelect("All")}
+              onClick={() => changeFilter("category", "All")}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${activeCategory === "All"
                   ? "bg-primary text-primary-foreground border-primary shadow-xs"
                   : "bg-background text-foreground border-border/80 hover:bg-muted/60"
@@ -240,13 +204,15 @@ export function ServicesBrowserClient({
             >
               All Categories
             </button>
+
+            {/* Individual Category Buttons */}
             {SERVICE_CATEGORIES.map((cat) => {
               const isSelected = activeCategory === cat;
               return (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => handleCategorySelect(cat)}
+                  onClick={() => changeFilter("category", cat)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${isSelected
                       ? "bg-primary text-primary-foreground border-primary shadow-xs"
                       : "bg-background text-foreground border-border/80 hover:bg-muted/60"
@@ -260,11 +226,9 @@ export function ServicesBrowserClient({
         </div>
       </div>
 
-      {/* 2. Results Grid or Loading or Clean Dynamic Empty State */}
-      {isPending ? (
-        <ServicesSkeletonGrid />
-      ) : initialServices.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* Services Grid or Clean Empty State */}
+      {initialServices.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {initialServices.map((service) => (
             <ServiceCard
               key={service._id ? String(service._id) : service.title}
@@ -273,7 +237,7 @@ export function ServicesBrowserClient({
           ))}
         </div>
       ) : (
-        <ServicesEmptyState onResetFilters={handleResetAll} />
+        <ServicesEmptyState onResetFilters={handleResetFilters} />
       )}
     </div>
   );
