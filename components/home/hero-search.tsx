@@ -29,16 +29,16 @@ export function HeroSearch() {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex w-full max-w-md items-center gap-2 rounded-xl border border-border/80 bg-card p-1.5 shadow-sm"
+      className="flex w-full max-w-md items-center gap-2 rounded-xl border border-neutral-200/20 bg-white/95 text-neutral-900 p-1.5 shadow-md backdrop-blur-md"
     >
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
         <Input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search a repair: iPhone screen, AC servicing..."
-          className="border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0 text-sm"
+          placeholder="Search a repair: iPhone screen, AC..."
+          className="border-0 bg-transparent pl-9 text-neutral-900 placeholder:text-neutral-500 shadow-none focus-visible:ring-0 text-sm font-medium"
           aria-label="Search repair services"
         />
       </div>

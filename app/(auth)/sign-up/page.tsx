@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import {
     Card,
     CardContent,
@@ -66,7 +67,7 @@ export default function SignUpPage() {
         setRole(selectedRole);
     };
 
-    // Image input change handler ready for your ImgBB integration
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -108,14 +109,14 @@ export default function SignUpPage() {
         const finalRole: "customer" | "technician" =
             role === "technician" ? "technician" : "customer";
 
-       
+
 
         if (!imageFile) {
             toast.warning("Please add your profile photo to continue.");
             return;
         }
 
-         setIsLoading(true);
+        setIsLoading(true);
 
         try {
 
@@ -141,7 +142,7 @@ export default function SignUpPage() {
                 password: signUpPayload.password,
                 role: signUpPayload.role,
                 image: signUpPayload.image,
-                callbackURL: "/sign-in"
+                callbackURL: finalRole === "customer" ? "/dashboard/customer" : "/dashboard/technician"
             });
 
             if (error) {
@@ -149,9 +150,9 @@ export default function SignUpPage() {
                 return;
             }
 
-            toast.success("Account created! Redirecting to sign in...");
+            toast.success("Account created! Redirecting to dashboard...");
 
-            router.push("/sign-in");
+            router.push(finalRole === "customer" ? "/dashboard/customer" : "/dashboard/technician");
 
 
         } catch (err: unknown) {
@@ -378,7 +379,6 @@ export default function SignUpPage() {
                     </div>
                 </CardContent>
 
-                {/* Card Footer with increased top margin/padding to separate button from password field */}
                 <CardFooter className="flex flex-col space-y-4 pt-6 border-t border-border/40 mt-3">
                     <Button
                         type="submit"
@@ -398,7 +398,10 @@ export default function SignUpPage() {
                         )}
                     </Button>
 
-                    <p className="text-center text-xs text-muted-foreground">
+                    {/* Google Social Login */}
+                    <SocialAuthButtons mode="sign-up" callbackURL="/dashboard" />
+
+                    <p className="text-center text-xs text-muted-foreground pt-1">
                         Already have an account?{" "}
                         <Link
                             href="/sign-in"

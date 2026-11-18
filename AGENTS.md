@@ -13,6 +13,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 1. Project Overview
 FixMate is a full-stack, role-based repair service platform connecting device & home appliance owners with verified technicians and admin moderation. Built with Next.js App Router (Client), Express.js (Server), MongoDB, Better Auth, and Stripe.
 
+### G. Unauthorized Access Page (`/unauthorized`)
+- **Server Component** (`app/unauthorized/page.tsx`): Role & session aware 403 access restricted view.
+  - **Guests / Logged-out**: Contextual notice explaining that the page is for verified members, providing a primary "Sign In to Continue" button (linking to `/sign-in`) and "Browse Services".
+  - **Authenticated Users**: Shows their user name and role, explaining that their account role does not have authorization for that section, providing a primary "Go to [Role] Dashboard" button routing directly to their specific dashboard (`/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`) and "Home".
+
 ---
 
 ## 2. Completed Milestones & Current Progress
@@ -59,6 +64,11 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
   1. **Core Trust Pillars**: 100% Verified Technicians, Pay After Service, Live Tracking, and Quality Guarantee.
   2. **Platform Stats & Metrics**: Satisfied customers (2,500+), repairs completed (4,800+), satisfaction rate (99.2%), and average rating (4.9/5).
   3. **Customer Testimonials**: Authentic customer feedback cards with star ratings and reviewer avatars.
+
+### G. Unauthorized Access Page (`/unauthorized`)
+- **Server Component** (`app/unauthorized/page.tsx`): Role & session aware 403 access restricted view.
+  - **Guests / Logged-out**: Contextual notice explaining that the page is for verified members, providing a primary "Sign In to Continue" button (linking to `/sign-in`) and "Browse Services".
+  - **Authenticated Users**: Shows their user name and role, explaining that their account role does not have authorization for that section, providing a primary "Go to [Role] Dashboard" button routing directly to their specific dashboard (`/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`) and "Home".
 
 ---
 

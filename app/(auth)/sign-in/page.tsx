@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import {
     Card,
     CardContent,
@@ -68,7 +69,7 @@ export default function SignInPage() {
                 email: signInPayload.email,
                 password: signInPayload.password,
                 rememberMe: true,
-                callbackURL: "/"
+                callbackURL: "/dashboard"
             })
 
             if (error) {
@@ -173,7 +174,10 @@ export default function SignInPage() {
                         )}
                     </Button>
 
-                    <p className="text-center text-xs text-muted-foreground">
+                    {/* Google Social Login */}
+                    <SocialAuthButtons mode="sign-in" callbackURL="/dashboard" />
+
+                    <p className="text-center text-xs text-muted-foreground pt-1">
                         Don&apos;t have an account?{" "}
                         <Link
                             href="/sign-up"
