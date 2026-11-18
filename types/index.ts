@@ -19,10 +19,7 @@ export interface CustomUser {
   updatedAt?: Date;
 }
 
-/**
- * A user row shown in the Admin "Manage Users" table.
- * Comes from GET /api/admin/users (MongoDB user document, projected).
- */
+
 export interface AdminUser {
   _id: string;
   name: string;

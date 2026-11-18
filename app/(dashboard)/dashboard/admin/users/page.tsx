@@ -77,7 +77,7 @@ export default async function AdminUsersPage({
           Manage Users
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          All FixMate users, newest first. Search, filter, and change user
+          All FixMate users. Search, filter, and change user
           roles — admins cannot change their own role.
         </p>
       </div>

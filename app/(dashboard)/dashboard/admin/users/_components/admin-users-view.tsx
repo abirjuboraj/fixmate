@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -81,12 +81,21 @@ export function AdminUsersView({
   } | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Search input state: lets the table search live while the user types
+  const [searchInput, setSearchInput] = useState(currentSearch);
 
-  // ---------- Search + filters (server-side, via URL query params) ----------
+  // Debounce timer: we wait a moment after the LAST keystroke before
+  // triggering the search, so we don't re-fetch on every single letter.
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Builds /dashboard/admin/users?search=...&role=...&category=... and pushes it.
-  // The page (server component) reads these params and fetches from Express,
-  // so searching and filtering always happen on the backend.
+  // Stop the pending timer if the user leaves the page
+  useEffect(() => {
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+  }, []);
+
+
   const updateParams = (updates: {
     search?: string;
     role?: string;
@@ -109,13 +118,24 @@ export function AdminUsersView({
     router.push(qs ? `/dashboard/admin/users?${qs}` : "/dashboard/admin/users");
   };
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const search = String(new FormData(e.currentTarget).get("search") || "").trim();
-    updateParams({ search });
+  // Live search: runs 400ms after the user stops typing (no button needed)
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+
+    // Restart the wait timer on every keystroke
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      // Only search when the text actually changed
+      if (value !== currentSearch) updateParams({ search: value });
+    }, 400);
   };
 
-  const resetFilters = () => router.push("/dashboard/admin/users");
+  const resetFilters = () => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    setSearchInput("");
+    router.push("/dashboard/admin/users");
+  };
 
 
   // ---------- Role change ----------
@@ -187,21 +207,24 @@ export function AdminUsersView({
   const hasFilters = Boolean(currentSearch || currentRole || currentCategory);
 
   // The row control shown for changing a role (used in both table and cards).
-  // Rule: the admin cannot change their own role, so it is disabled there.
+
   const renderRoleSelect = (user: AdminUser) => {
     const isSelf = user.email === adminEmail;
 
     return (
       <Select
         value={user.role || "customer"}
-        onValueChange={(value) =>
-          setRoleTarget({ user, newRole: value as UserRole })
-        }
+        onValueChange={(value) => {
+          // Picking the same role again = nothing changed, so don't
+          // open the confirmation modal at all.
+          if (!value || value === (user.role || "customer")) return;
+          setRoleTarget({ user, newRole: value as UserRole });
+        }}
         disabled={isSelf}
       >
         <SelectTrigger
           size="sm"
-          className="w-[130px]"
+          className="w-32.5"
           title={isSelf ? "You cannot change your own role" : undefined}
         >
           <SelectValue />
@@ -222,35 +245,26 @@ export function AdminUsersView({
     <div className="space-y-4">
       {/* ---------- Search + filters bar ---------- */}
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 md:flex-row md:items-center">
-        {/* Search by name or email */}
-        <form
-          onSubmit={handleSearchSubmit}
-          className="flex flex-1 gap-2"
-        >
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              name="search"
-              defaultValue={currentSearch}
-              placeholder="Search by name or email..."
-              className="pl-9"
-            />
-          </div>
-          <Button type="submit" className="gap-2 font-semibold shrink-0">
-            <Search className="h-4 w-4" />
-            Search
-          </Button>
-        </form>
+        {/* Search by name or email — searches live as you type */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={searchInput}
+            onChange={handleSearchChange}
+            placeholder="Search by name or email..."
+            className="pl-9"
+          />
+        </div>
 
         {/* Filter by role */}
         <div className="flex gap-2 items-center">
           <Select
             value={currentRole || "all"}
             onValueChange={(value) =>
-              updateParams({ role: value === "all" ? "" : value })
+              updateParams({ role: value === "all" ? "" : value ?? "" })
             }
           >
-            <SelectTrigger className="w-full md:w-[150px]">
+            <SelectTrigger className="w-full md:w-37.5">
               <SelectValue placeholder="All roles" />
             </SelectTrigger>
             <SelectContent>
@@ -267,10 +281,10 @@ export function AdminUsersView({
           <Select
             value={currentCategory || "all"}
             onValueChange={(value) =>
-              updateParams({ category: value === "all" ? "" : value })
+              updateParams({ category: value === "all" ? "" : value ?? "" })
             }
           >
-            <SelectTrigger className="w-full md:w-[190px]">
+            <SelectTrigger className="w-full md:w-47.5">
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>
@@ -296,7 +310,6 @@ export function AdminUsersView({
               (technicians offering &quot;{currentCategory}&quot;)
             </span>
           )}
-          {" · newest first"}
         </p>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={resetFilters} className="gap-1.5">
@@ -345,7 +358,10 @@ export function AdminUsersView({
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
                             {user.image && (
-                              <AvatarImage src={user.image} alt={user.name} />
+                              <AvatarImage
+                                src={user.image || undefined}
+                                alt={user.name}
+                              />
                             )}
                             <AvatarFallback className="text-xs font-semibold bg-primary/10 text-primary">
                               {getUserInitials(user.name)}
@@ -379,7 +395,11 @@ export function AdminUsersView({
                         {formatDate(user.createdAt)}
                       </TableCell>
                       <TableCell className="text-right">
-                        {renderRoleSelect(user)}
+                        {/* justify-end keeps the select aligned with the
+                            right-aligned "Change Role" column header */}
+                        <div className="flex justify-end">
+                          {renderRoleSelect(user)}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -401,7 +421,10 @@ export function AdminUsersView({
                   <div className="flex items-start gap-3">
                     <Avatar className="h-10 w-10 shrink-0">
                       {user.image && (
-                        <AvatarImage src={user.image} alt={user.name} />
+                        <AvatarImage
+                          src={user.image || undefined}
+                          alt={user.name}
+                        />
                       )}
                       <AvatarFallback className="text-xs font-semibold bg-primary/10 text-primary">
                         {getUserInitials(user.name)}
