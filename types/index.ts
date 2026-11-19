@@ -153,6 +153,17 @@ export interface BookingItem {
 }
 
 
+// Payload sent by the request-repair modal (POST /api/bookings).
+// customerName / customerEmail / service info are taken server-side from the
+// session and the database — never sent from the client.
+export interface CreateBookingPayload {
+  serviceId: string;
+  customerPhone: string;
+  address: string;
+  preferredDate: string; // "YYYY-MM-DD" from <input type="date">
+  problemDescription: string;
+}
+
 // Extended service type for the detail page — includes all fields returned by the backend
 export interface ServiceDetailItem {
   _id: string;

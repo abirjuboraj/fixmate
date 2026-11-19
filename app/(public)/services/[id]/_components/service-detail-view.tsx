@@ -4,6 +4,7 @@
 // It receives service data and the user's role (passed from the server component).
 // It handles the "Request Repair" button behavior based on the user's role.
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -24,28 +25,34 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ServiceDetailItem } from "@/types";
 import { getUserInitials } from "@/components/shared/user-badge";
+import { RequestRepairModal } from "./request-repair-modal";
 
 interface ServiceDetailViewProps {
   service: ServiceDetailItem;
   // null = logged out, "customer" | "technician" | "admin" = logged in
   userRole: string | null;
+  // session identity of the logged-in user ("" when logged out),
+  // pre-filled read-only inside the request modal
+  userName: string;
+  userEmail: string;
   serviceId: string;
 }
 
 export function ServiceDetailView({
   service,
   userRole,
+  userName,
+  userEmail,
   serviceId,
 }: ServiceDetailViewProps) {
 
   const pathname = usePathname();
 
+  // Request modal — only ever opened in Case 3 (logged-in customer)
+  const [showRequestModal, setShowRequestModal] = useState(false);
+
   const isHomeVisit = service.serviceMode === "Home Visit";
 
-  // ---- Repair Request Button Logic ----
-  // Case 1: User is not logged in → redirect to sign-in with callbackURL
-  // Case 2: Technician or Admin → show disabled notice
-  // Case 3: Customer → show active button (modal will be added later)
 
   const renderRepairButton = () => {
     if (userRole === null) {
@@ -79,8 +86,12 @@ export function ServiceDetailView({
     }
 
 
+    // Case 3: Customer → open the request form modal
     return (
-      <Button className="w-full sm:w-auto gap-2 font-semibold shadow-sm">
+      <Button
+        className="w-full sm:w-auto gap-2 font-semibold shadow-sm"
+        onClick={() => setShowRequestModal(true)}
+      >
         <Wrench className="h-4 w-4" />
         Request Repair
       </Button>
@@ -134,8 +145,8 @@ export function ServiceDetailView({
                 <Badge
                   variant="outline"
                   className={`text-xs font-semibold backdrop-blur-md shadow-sm ${isHomeVisit
-                      ? "bg-blue-500/90 text-white border-transparent"
-                      : "bg-emerald-500/90 text-white border-transparent"
+                    ? "bg-blue-500/90 text-white border-transparent"
+                    : "bg-emerald-500/90 text-white border-transparent"
                     }`}
                 >
                   {isHomeVisit ? (
@@ -284,6 +295,16 @@ export function ServiceDetailView({
 
           </div>
         </div>
+
+        {/* Request Repair modal — only rendered for a logged-in customer */}
+        {showRequestModal && (
+          <RequestRepairModal
+            service={service}
+            userName={userName}
+            userEmail={userEmail}
+            onClose={() => setShowRequestModal(false)}
+          />
+        )}
       </div>
     </div>
   );

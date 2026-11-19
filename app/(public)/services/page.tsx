@@ -18,6 +18,20 @@ interface ServicesPageProps {
   }>;
 }
 
+// ──────────────────────────────────────────────────────────────────────
+// FUTURE: Home page "Popular Categories" section
+//
+// This page ALREADY pre-selects a category straight from the URL, so the
+// future home section needs zero changes here — it only has to link to:
+//
+//     <Link href={`/services?category=${encodeURIComponent(cat)}`}>
+//
+// where `cat` comes from SERVICE_CATEGORIES in "@/types"
+// (e.g. "AC", "Smartphone", "Refrigerator" ...). On arrival, the filter
+// pills, the results, and the URL all reflect that category immediately —
+// and the choice survives a page reload because it lives in the URL.
+// ──────────────────────────────────────────────────────────────────────
+
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
   const resolvedParams = await searchParams;
 

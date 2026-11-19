@@ -34,13 +34,17 @@ export default async function ServiceDetailsPage({
 
     const session = await getSession();
 
-
     const userRole = (session?.user?.role as string) ?? null;
+    // Session identity for the request modal's read-only Name/Email fields
+    const userName = (session?.user?.name as string) ?? "";
+    const userEmail = (session?.user?.email as string) ?? "";
 
     return (
         <ServiceDetailView
             service={service}
             userRole={userRole}
+            userName={userName}
+            userEmail={userEmail}
             serviceId={id}
         />
     );

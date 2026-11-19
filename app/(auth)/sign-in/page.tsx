@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
     Mail,
     Lock,
@@ -26,7 +27,28 @@ import {
 import { signIn } from "@/lib/auth-client";
 import { toast } from "sonner";
 
+// useSearchParams requires a Suspense boundary (Next.js rule for pages)
 export default function SignInPage() {
+    return (
+        <Suspense fallback={null}>
+            <SignInForm />
+        </Suspense>
+    );
+}
+
+function SignInForm() {
+    // Where to go after a successful login.
+    // The service details page sends logged-out users here as
+    // /sign-in?callbackURL=/services/<id> so they come BACK to the page
+    // they came from. Defaults to the dashboard for normal sign-ins.
+    const searchParams = useSearchParams();
+    const rawCallback = searchParams.get("callbackURL") || "/dashboard";
+    // Safety: only allow same-site paths (starts with "/" but not "//")
+    const callbackURL =
+        rawCallback.startsWith("/") && !rawCallback.startsWith("//")
+            ? rawCallback
+            : "/dashboard";
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -69,7 +91,7 @@ export default function SignInPage() {
                 email: signInPayload.email,
                 password: signInPayload.password,
                 rememberMe: true,
-                callbackURL: "/dashboard"
+                callbackURL,
             })
 
             if (error) {
@@ -78,6 +100,10 @@ export default function SignInPage() {
             }
 
             toast.success("Welcome back! Signed in successfully.");
+
+            // Come back to where the user came from (e.g. the service details
+            // page) instead of always sending everyone to the dashboard.
+            window.location.href = callbackURL;
 
 
         } catch (err: unknown) {

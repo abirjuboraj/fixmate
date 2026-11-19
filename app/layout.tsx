@@ -4,6 +4,9 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+// Base-UI Toaster — renders the toast.add() toasts used across the
+// dashboard views (edit service, approve/reject, role change, ...).
+import { Toaster as UiToaster } from "@/components/ui/toast";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -26,6 +29,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>{children}</ThemeProvider>
         <Toaster richColors position="top-right" />
+        <UiToaster />
       </body>
     </html>
   )
