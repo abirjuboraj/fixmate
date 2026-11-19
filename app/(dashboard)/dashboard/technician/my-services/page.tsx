@@ -37,7 +37,7 @@ export default async function TechnicianMyServicesPage() {
 
   try {
     const result = await getTechnicianServices(`${AUTH_URL}/api/services/own`);
-    console.log(result);
+
     services = (result?.data as ServiceItem[]) ?? [];
   } catch (error) {
     fetchError =

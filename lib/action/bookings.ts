@@ -3,39 +3,38 @@
 import { AUTH_URL, CreateBookingPayload } from "@/types";
 import { protectedMutation } from "../server";
 
-// customer replair request
+/**
+ * Customer repair request
+ */
 export const createBooking = async (payload: CreateBookingPayload) => {
   const api = `${AUTH_URL}/api/bookings`;
   return protectedMutation(api, "POST", payload);
 };
 
-//customer repair request cancel
+/**
+ * Customer repair request cancel
+ */
 export const cancelBooking = async (bookingId: string) => {
-
-  console.log(bookingId);
-
   const api = `${AUTH_URL}/api/bookings/${bookingId}/cancel`;
-
   return protectedMutation(api, "PATCH");
 };
 
-// update booking status by technician
+/**
+ * Update booking status by technician
+ */
 export const updateBookingStatus = async (
   bookingId: string,
   status: "accepted" | "rejected" | "in-progress" | "completed",
   finalAmount?: number
 ) => {
-
   const api = `${AUTH_URL}/api/bookings/${bookingId}/status`;
   return protectedMutation(api, "PATCH", { status, finalAmount });
 };
 
 /**
- * Starts Stripe Checkout session for an unpaid completed booking
- * TODO (you): Wire this with your Stripe checkout endpoint (e.g. POST /api/billing/checkout or /api/bookings/:id/pay)
+ * Initiates Stripe Checkout session for a completed repair booking
  */
 export const initiateBookingPayment = async (bookingId: string) => {
-  // TODO: Update the endpoint path below based on your backend payment implementation
-  const api = `${AUTH_URL}/api/billing/create-checkout-session`;
+  const api = `${AUTH_URL}/api/payment/create-checkout-session`;
   return protectedMutation(api, "POST", { bookingId });
 };

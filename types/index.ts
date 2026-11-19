@@ -193,4 +193,5 @@ export interface PaymentRecord {
   stripeSessionId: string;
   paymentStatus: "paid";
   paidAt: Date | string;
+  createdAt?: Date | string;
 }

@@ -128,6 +128,26 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
   - `lib/api/bookings.ts`: `getTechnicianBookings()`
   - `lib/action/bookings.ts`: `updateBookingStatus(bookingId, status, finalAmount)`
 
+### J. Stripe Payment Flow (No Webhook)
+- **Frontend Action** (`lib/action/bookings.ts`): `initiateBookingPayment(bookingId)` calls `POST /api/payment/create-checkout-session` with `{ bookingId }`, receives a Stripe Checkout URL and redirects with `window.location.href`.
+- **Backend** (`controllers/payment.controller.js`):
+  - `createCheckoutSession`: Looks up booking by `bookingId`, builds a Stripe `mode: 'payment'` session using `basePrice`/`finalAmount` as the line item, saves a pending payment record, and returns `{ url }`.
+  - `verifyCheckoutSession`: Called from the success page via `GET /api/payment/verify?session_id=…`. Retrieves the Stripe session, checks `payment_status === 'paid'`, marks booking `paymentStatus: 'paid'`, updates payment record, and returns the payment details.
+  - `getMyPayments`: Returns all payments for the authenticated customer via `GET /api/payment/my`.
+- **Payment Model** (`models/payment.model.js`): `insertPayment`, `findPaymentBySessionId`, `findPaymentsByCustomer`, `findAllPayments`. Schema fields: `bookingId`, `serviceTitle`, `customerName`, `customerEmail`, `technicianName`, `technicianEmail`, `amount`, `currency`, `transactionId`, `stripeSessionId`, `paymentStatus`, `paidAt`.
+- **Validator** (`validators/payment.validator.js`): Validates only `{ bookingId: string }` — all other data is fetched from DB inside the controller.
+- **Routes** (`routes/payment.routes.js`): `POST /api/payment/create-checkout-session`, `GET /api/payment/verify`, `GET /api/payment/my`.
+
+### K. Payment Success & Cancel Pages
+- **Success Page** (`app/(public)/payment/success/page.tsx`): Server Component that reads `?session_id` from search params and calls `verifyStripeSession(sessionId)`. On success shows a receipt (service title, amount, transaction ID, date). On failure shows an error state.
+- **Cancel Page** (`app/(public)/payment/cancel/page.tsx`): Clean UI informing the user their payment was cancelled. Contains a "Return to My Bookings" CTA linking back to `/dashboard/customer/bookings`.
+- Both pages use the public layout (Navbar + Footer) under the `(public)` route group.
+
+### L. Customer Payment History Route (`/dashboard/customer/payments`)
+- **Page** (`app/(dashboard)/dashboard/customer/payments/page.tsx`): Server Component; fetches payment history via `getMyPayments()`.
+- Responsive desktop table + mobile card list showing: service title, technician, amount, date paid, transaction ID, and "Paid" status badge.
+- Uses `PaymentRecord` interface from `types/index.ts`.
+
 ---
 
 ## 3. Tech Stack & Standards
@@ -135,5 +155,17 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - **Styling**: Tailwind CSS v4 with OKLCH theme variables
 - **Component Library**: shadcn/ui exclusively
 - **Icons**: Lucide React
-- **Backend**: Express.js at `C:\html\Projects_new_course\My Assignments\fixmate-server` (Port 5000)
+- **Payments**: Stripe (`mode: 'payment'` only — no subscription, no webhook yet)
+- **Toast Notifications**: Sonner (`import { toast } from "sonner"`) — never `@/components/ui/toast`
+- **Backend**: Express.js at `C:\html\Projects_new_course\My Assignments\fixmate-server` (Port 5000) — deployed to Vercel via `api/index.js` + `vercel.json`
 - **Database**: MongoDB Atlas (`fixmate` database)
+
+## 4. Remaining Pages (Not Yet Built)
+- `/dashboard/admin` — Admin overview dashboard
+- `/dashboard/admin/bookings` — All bookings (admin view)
+- `/dashboard/admin/services` — Service approval queue
+- `/dashboard/admin/users` — Manage users & roles
+- `/dashboard/admin/transactions` — All payment transactions (uses `findAllPayments`)
+- `/dashboard/technician` — Technician overview / stats
+- `/dashboard/technician/my-services` — Technician's listed services
+- `/dashboard/profile` — Shared profile update page (all roles)

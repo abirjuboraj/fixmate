@@ -322,19 +322,17 @@ export function TechnicianRequestsClient({
               key={tab.value}
               type="button"
               onClick={() => setActiveTab(tab.value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                isActive
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${isActive
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isActive
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
                     ? "bg-primary-foreground/20 text-primary-foreground"
                     : "bg-background text-muted-foreground border border-border/60"
-                }`}
+                  }`}
               >
                 {count}
               </span>
@@ -533,10 +531,10 @@ export function TechnicianRequestsClient({
                         {/* 5. Rejected / Cancelled */}
                         {(booking.status === "rejected" ||
                           booking.status === "cancelled") && (
-                          <span className="text-xs text-muted-foreground/80 font-medium">
-                            No action
-                          </span>
-                        )}
+                            <span className="text-xs text-muted-foreground/80 font-medium">
+                              No action
+                            </span>
+                          )}
                       </TableCell>
                     </TableRow>
                   );
@@ -714,10 +712,10 @@ export function TechnicianRequestsClient({
                     {/* Cancelled / Rejected */}
                     {(booking.status === "rejected" ||
                       booking.status === "cancelled") && (
-                      <p className="text-center text-xs text-muted-foreground italic">
-                        No further action available.
-                      </p>
-                    )}
+                        <p className="text-center text-xs text-muted-foreground italic">
+                          No further action available.
+                        </p>
+                      )}
                   </div>
                 </div>
               );
@@ -801,8 +799,8 @@ export function TechnicianRequestsClient({
                     className="pl-9 font-semibold text-sm"
                   />
                 </div>
-                <p className="text-[11px] text-muted-foreground">
-                  Pre-filled with the service base price. Adjust if parts or diagnostics were added.
+                <p className="text-[11px] font-semibold text-muted-foreground">
+                  Adjust if parts or diagnostics were added.
                 </p>
               </div>
 

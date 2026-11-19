@@ -220,17 +220,18 @@ export function CustomerBookingsClient({
     try {
       toast.info("Preparing secure Stripe checkout session...");
 
-      // TODO (you): Call initiateBookingPayment or trigger Stripe session
       const res = await initiateBookingPayment(booking._id);
 
-      if (res?.url) {
-        // Redirect user to Stripe Checkout hosted page
-        window.location.href = res.url;
+      // Backend returns { success: true, data: { url, sessionId } }
+      const checkoutUrl = res?.data?.url || res?.url;
+
+      if (checkoutUrl) {
+        // Redirect user to Stripe Checkout hosted payment page
+        window.location.href = checkoutUrl;
         return;
       }
 
-      toast.success("Payment checkout initiated!");
-      // router.refresh();
+      throw new Error(res?.message || "Failed to retrieve checkout URL.");
     } catch (err: unknown) {
       console.error("Payment initiation error:", err);
       const message =
