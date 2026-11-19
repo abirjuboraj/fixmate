@@ -3,21 +3,19 @@
 import { AUTH_URL, CreateBookingPayload } from "@/types";
 import { protectedMutation } from "../server";
 
-/**
- * Creates a new repair request (booking)
- */
+// customer replair request
 export const createBooking = async (payload: CreateBookingPayload) => {
   const api = `${AUTH_URL}/api/bookings`;
   return protectedMutation(api, "POST", payload);
 };
 
-/**
- * Cancels a booking when status is 'requested'
- * TODO (you): Check backend cancellation endpoint URL and adjust method/payload if needed.
- */
+//customer repair request cancel
 export const cancelBooking = async (bookingId: string) => {
-  // TODO: Update the endpoint path below if your backend route differs (e.g. PATCH /api/bookings/:id/cancel)
+
+  console.log(bookingId);
+
   const api = `${AUTH_URL}/api/bookings/${bookingId}/cancel`;
+
   return protectedMutation(api, "PATCH");
 };
 

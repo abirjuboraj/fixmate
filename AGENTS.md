@@ -18,6 +18,20 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
   - **Guests / Logged-out**: Contextual notice explaining that the page is for verified members, providing a primary "Sign In to Continue" button (linking to `/sign-in`) and "Browse Services".
   - **Authenticated Users**: Shows their user name and role, explaining that their account role does not have authorization for that section, providing a primary "Go to [Role] Dashboard" button routing directly to their specific dashboard (`/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`) and "Home".
 
+### H. Customer My Bookings Route (`/dashboard/customer/bookings`)
+- **Server Component** (`app/(dashboard)/dashboard/customer/bookings/page.tsx`): Verifies customer session server-side and fetches own bookings using `getMyBookings()`.
+- **Client Component** (`app/(dashboard)/dashboard/customer/bookings/_components/customer-bookings-client.tsx`):
+  - Responsive presentation: desktop data table (`Table`) and mobile card list.
+  - Visual status badges: Requested (amber), Accepted (blue), In Progress (purple), Completed (emerald), Rejected (destructive), Cancelled (muted).
+  - Payment badges: Paid (emerald), Unpaid (amber).
+  - Conditional cancellation: Cancel button visible only when `status === 'requested'`. Prompts an alert confirmation modal before setting status to `'cancelled'`.
+  - Conditional payment: "Pay Now" button visible only when `status === 'completed'` and `paymentStatus === 'unpaid'`. Connects to Stripe payment handler.
+  - Replaces button with a "Paid" badge once completed and paid.
+  - Empty state with CTA linking to `/services`.
+- **Actions & API**:
+  - `lib/api/bookings.ts`: `getMyBookings()`
+  - `lib/action/bookings.ts`: `cancelBooking(id)` and `initiateBookingPayment(id)` with TODO hooks for your backend routes.
+
 ---
 
 ## 2. Completed Milestones & Current Progress
@@ -69,6 +83,20 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - **Server Component** (`app/unauthorized/page.tsx`): Role & session aware 403 access restricted view.
   - **Guests / Logged-out**: Contextual notice explaining that the page is for verified members, providing a primary "Sign In to Continue" button (linking to `/sign-in`) and "Browse Services".
   - **Authenticated Users**: Shows their user name and role, explaining that their account role does not have authorization for that section, providing a primary "Go to [Role] Dashboard" button routing directly to their specific dashboard (`/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`) and "Home".
+
+### H. Customer My Bookings Route (`/dashboard/customer/bookings`)
+- **Server Component** (`app/(dashboard)/dashboard/customer/bookings/page.tsx`): Verifies customer session server-side and fetches own bookings using `getMyBookings()`.
+- **Client Component** (`app/(dashboard)/dashboard/customer/bookings/_components/customer-bookings-client.tsx`):
+  - Responsive presentation: desktop data table (`Table`) and mobile card list.
+  - Visual status badges: Requested (amber), Accepted (blue), In Progress (purple), Completed (emerald), Rejected (destructive), Cancelled (muted).
+  - Payment badges: Paid (emerald), Unpaid (amber).
+  - Conditional cancellation: Cancel button visible only when `status === 'requested'`. Prompts an alert confirmation modal before setting status to `'cancelled'`.
+  - Conditional payment: "Pay Now" button visible only when `status === 'completed'` and `paymentStatus === 'unpaid'`. Connects to Stripe payment handler.
+  - Replaces button with a "Paid" badge once completed and paid.
+  - Empty state with CTA linking to `/services`.
+- **Actions & API**:
+  - `lib/api/bookings.ts`: `getMyBookings()`
+  - `lib/action/bookings.ts`: `cancelBooking(id)` and `initiateBookingPayment(id)` with TODO hooks for your backend routes.
 
 ---
 

@@ -392,7 +392,19 @@ export function CustomerBookingsClient({
                           </span>
                         )}
 
-                        {!canCancel && !canPay && !isPaid && (
+                        {booking.status === "cancelled" && (
+                          <span className="text-xs text-muted-foreground/80 font-medium">
+                            No action required
+                          </span>
+                        )}
+
+                        {booking.status === "rejected" && (
+                          <span className="text-xs text-muted-foreground/80 font-medium">
+                            Request rejected
+                          </span>
+                        )}
+
+                        {!canCancel && !canPay && !isPaid && booking.status !== "cancelled" && booking.status !== "rejected" && (
                           <span className="text-xs text-muted-foreground italic">
                             In progress
                           </span>

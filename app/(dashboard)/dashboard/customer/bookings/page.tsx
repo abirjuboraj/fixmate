@@ -11,12 +11,6 @@ export const metadata = {
   description: "Track all your submitted repair service requests, statuses, and payments.",
 };
 
-/**
- * Server Component: Customer My Bookings Page
- * - Authenticates customer identity on server
- * - Fetches customer bookings using getMyBookings()
- * - Passes data to interactive CustomerBookingsClient component
- */
 export default async function CustomerBookingsPage() {
   // 1. Verify user session on server
   const session = await auth.api.getSession({
@@ -36,6 +30,7 @@ export default async function CustomerBookingsPage() {
   // 2. Fetch customer bookings from backend API
   const response = await getMyBookings();
   const bookings: BookingItem[] = response?.data || [];
+
 
   return (
     <div className="space-y-6">
