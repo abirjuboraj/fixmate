@@ -20,6 +20,21 @@ export const cancelBooking = async (bookingId: string) => {
 };
 
 /**
+ * Technician updates a booking status (e.g. accepted, rejected, in-progress, completed)
+ * If completed, can also pass finalAmount.
+ * TODO (you): Check backend endpoint (e.g. PATCH /api/bookings/:id/status) and payload schema.
+ */
+export const updateBookingStatus = async (
+  bookingId: string,
+  status: "accepted" | "rejected" | "in-progress" | "completed",
+  finalAmount?: number
+) => {
+  // TODO: Update the endpoint path below if your backend route differs (e.g. PATCH /api/bookings/:id/status)
+  const api = `${AUTH_URL}/api/bookings/${bookingId}/status`;
+  return protectedMutation(api, "PATCH", { status, finalAmount });
+};
+
+/**
  * Starts Stripe Checkout session for an unpaid completed booking
  * TODO (you): Wire this with your Stripe checkout endpoint (e.g. POST /api/billing/checkout or /api/bookings/:id/pay)
  */

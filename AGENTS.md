@@ -32,6 +32,21 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
   - `lib/api/bookings.ts`: `getMyBookings()`
   - `lib/action/bookings.ts`: `cancelBooking(id)` and `initiateBookingPayment(id)` with TODO hooks for your backend routes.
 
+### I. Technician Manage Requests Route (`/dashboard/technician/requests`)
+- **Server Component** (`app/(dashboard)/dashboard/technician/requests/page.tsx`): Verifies technician session server-side and fetches assigned requests via `getTechnicianBookings()`.
+- **Client Component** (`app/(dashboard)/dashboard/technician/requests/_components/technician-requests-client.tsx`):
+  - **Status Filter Tabs**: Filter requests by *All Requests*, *Requested*, *Accepted*, *In Progress*, and *Completed* with real-time count badges.
+  - **Status Pipeline Action Buttons**:
+    - `requested`: **Accept** (green) / **Reject** (red) buttons.
+    - `accepted`: **Start Work** (blue) button transitions job to `in-progress`.
+    - `in-progress`: **Mark Completed** (purple) button opens a modal.
+    - `completed`, `rejected`, `cancelled`: No actions. Displays payment badge for completed jobs.
+  - **Mark Completed Modal**: Pre-fills the base price into a final amount input, allows technician adjustment for parts/diagnostics, and submits with validation.
+  - **Responsive Dual Layout**: Full detailed data table on desktop and touch-friendly card list on mobile.
+- **Actions & API**:
+  - `lib/api/bookings.ts`: `getTechnicianBookings()`
+  - `lib/action/bookings.ts`: `updateBookingStatus(bookingId, status, finalAmount)`
+
 ---
 
 ## 2. Completed Milestones & Current Progress
@@ -97,6 +112,21 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - **Actions & API**:
   - `lib/api/bookings.ts`: `getMyBookings()`
   - `lib/action/bookings.ts`: `cancelBooking(id)` and `initiateBookingPayment(id)` with TODO hooks for your backend routes.
+
+### I. Technician Manage Requests Route (`/dashboard/technician/requests`)
+- **Server Component** (`app/(dashboard)/dashboard/technician/requests/page.tsx`): Verifies technician session server-side and fetches assigned requests via `getTechnicianBookings()`.
+- **Client Component** (`app/(dashboard)/dashboard/technician/requests/_components/technician-requests-client.tsx`):
+  - **Status Filter Tabs**: Filter requests by *All Requests*, *Requested*, *Accepted*, *In Progress*, and *Completed* with real-time count badges.
+  - **Status Pipeline Action Buttons**:
+    - `requested`: **Accept** (green) / **Reject** (red) buttons.
+    - `accepted`: **Start Work** (blue) button transitions job to `in-progress`.
+    - `in-progress`: **Mark Completed** (purple) button opens a modal.
+    - `completed`, `rejected`, `cancelled`: No actions. Displays payment badge for completed jobs.
+  - **Mark Completed Modal**: Pre-fills the base price into a final amount input, allows technician adjustment for parts/diagnostics, and submits with validation.
+  - **Responsive Dual Layout**: Full detailed data table on desktop and touch-friendly card list on mobile.
+- **Actions & API**:
+  - `lib/api/bookings.ts`: `getTechnicianBookings()`
+  - `lib/action/bookings.ts`: `updateBookingStatus(bookingId, status, finalAmount)`
 
 ---
 

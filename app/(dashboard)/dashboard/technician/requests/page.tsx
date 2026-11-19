@@ -1,32 +1,54 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowLeft, Clock } from "lucide-react";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { ClipboardList } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { getTechnicianBookings } from "@/lib/api/bookings";
+import { BookingItem } from "@/types";
+import { TechnicianRequestsClient } from "./_components/technician-requests-client";
 
-export default function TechnicianRequestsPage() {
+export const metadata = {
+  title: "Manage Requests | FixMate Technician Hub",
+  description: "Manage incoming repair service requests, update job statuses, and complete orders.",
+};
+
+export default async function TechnicianRequestsPage() {
+  // 1. Verify session on server
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user) {
+    redirect("/sign-in");
+  }
+
+  // 2. Role verification (must be technician or admin)
+  const userRole = (session.user as { role?: string }).role || "customer";
+  if (userRole !== "technician" && userRole !== "admin") {
+    redirect("/unauthorized");
+  }
+
+  // 3. Fetch technician bookings from backend API
+  const response = await getTechnicianBookings();
+  const bookings: BookingItem[] = response?.data || [];
+
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div className="border-b border-border/60 pb-5">
         <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-500/10 px-2.5 py-0.5 rounded-full mb-2">
-          <Clock className="h-3.5 w-3.5" />
-          Dashboard Route Placeholder
+          <ClipboardList className="h-3.5 w-3.5" />
+          Technician Hub
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Manage Requests
+          Manage Repair Requests
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Assigned repair requests and job status pipeline will display here.
+          Review customer bookings, accept or reject incoming jobs, track active work, and mark repairs completed.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-8 text-center max-w-lg mx-auto">
-        <h2 className="text-base font-semibold">Route Active & Navigable</h2>
-        <Button variant="outline" size="sm" asChild className="mt-4">
-          <Link href="/dashboard/technician" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-        </Button>
-      </div>
+      {/* Interactive Technician Client View */}
+      <TechnicianRequestsClient initialBookings={bookings} />
     </div>
   );
 }
