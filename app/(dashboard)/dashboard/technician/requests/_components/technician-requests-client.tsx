@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   CalendarDays,
@@ -20,6 +21,8 @@ import {
   Loader2,
   X,
   Filter,
+  RotateCcw,
+  AlertTriangle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -193,6 +196,12 @@ export function TechnicianRequestsClient({
   const [finalAmountInput, setFinalAmountInput] = useState<string>("");
   const [isSubmittingCompletion, setIsSubmittingCompletion] = useState(false);
 
+  // Modal state for Reject confirmation (requirement: always confirm
+  // before rejecting a customer's repair request)
+  const [rejectingBooking, setRejectingBooking] = useState<BookingItem | null>(
+    null
+  );
+
   // Filter bookings based on active tab
   const filteredBookings = useMemo(() => {
     if (activeTab === "all") return bookings;
@@ -237,6 +246,18 @@ export function TechnicianRequestsClient({
     } finally {
       setLoadingAction(null);
     }
+  };
+
+  /**
+   * Action: Confirm Reject — closes the modal after the status update.
+   * handleStatusChange never throws (it shows its own error toast),
+   * so it is safe to close the modal right after awaiting it.
+   */
+  const handleConfirmReject = async () => {
+    if (!rejectingBooking?._id) return;
+
+    await handleStatusChange(rejectingBooking._id, "rejected");
+    setRejectingBooking(null);
   };
 
   /**
@@ -355,6 +376,26 @@ export function TechnicianRequestsClient({
               ? "You haven't received any customer repair requests yet."
               : `No requests with status "${activeTab}".`}
           </p>
+
+          {/* CTA: jump to services when empty, or clear the status filter */}
+          {activeTab === "all" ? (
+            <Button asChild size="sm" className="gap-2 font-semibold shadow-xs">
+              <Link href="/dashboard/technician/my-services">
+                <Wrench className="h-4 w-4" />
+                Manage My Services
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setActiveTab("all")}
+              className="gap-1.5 font-medium"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              Show All Requests
+            </Button>
+          )}
         </div>
       ) : (
         <>
@@ -474,7 +515,7 @@ export function TechnicianRequestsClient({
                             <Button
                               size="sm"
                               variant="destructive"
-                              onClick={() => handleStatusChange(bookingId, "rejected")}
+                              onClick={() => setRejectingBooking(booking)}
                               disabled={isBookingBusy}
                               className="h-8 gap-1 text-xs font-semibold shadow-2xs"
                             >
@@ -655,7 +696,7 @@ export function TechnicianRequestsClient({
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleStatusChange(bookingId, "rejected")}
+                          onClick={() => setRejectingBooking(booking)}
                           disabled={isBookingBusy}
                           className="w-full gap-1.5 font-semibold text-xs"
                         >
@@ -836,6 +877,72 @@ export function TechnicianRequestsClient({
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── REJECT CONFIRMATION MODAL ── */}
+      {rejectingBooking && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+        >
+          <div className="relative w-full max-w-md rounded-2xl border border-border/80 bg-card p-6 shadow-xl space-y-5 animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-foreground">
+                  Reject This Repair Request?
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Are you sure you want to reject the request from{" "}
+                  <strong className="text-foreground">
+                    {rejectingBooking.customerName}
+                  </strong>{" "}
+                  for{" "}
+                  <strong className="text-foreground">
+                    &ldquo;{rejectingBooking.serviceTitle}&rdquo;
+                  </strong>
+                  ? The customer will see the request as rejected.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-border/60">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRejectingBooking(null)}
+                disabled={loadingAction === `${rejectingBooking._id}:rejected`}
+                className="font-medium text-xs"
+              >
+                Keep Request
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleConfirmReject}
+                disabled={loadingAction === `${rejectingBooking._id}:rejected`}
+                className="gap-1.5 font-semibold text-xs shadow-xs"
+              >
+                {loadingAction === `${rejectingBooking._id}:rejected` ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Rejecting...
+                  </>
+                ) : (
+                  <>
+                    <X className="h-3.5 w-3.5" />
+                    Confirm Reject
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       )}

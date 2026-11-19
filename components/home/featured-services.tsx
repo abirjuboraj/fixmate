@@ -54,6 +54,11 @@ export async function FeaturedServices() {
               Approved repair services will show up here as soon as
               technicians add them and our admin team approves them.
             </p>
+
+            {/* CTA */}
+            <div className="mt-5">
+              <BrowseAllButton />
+            </div>
           </div>
         )}
       </div>

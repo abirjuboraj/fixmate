@@ -79,15 +79,7 @@ export function DashboardSidebar({
           ) : (
             <div className="flex items-center justify-between w-full">
               <Logo showTagline={false} />
-              <Badge
-                variant="outline"
-                className={`text-[10px] font-semibold capitalize inline-flex items-center ${getRoleBadgeVariant(
-                  userRole
-                )}`}
-              >
-                {getRoleIcon(userRole)}
-                {userRole}
-              </Badge>
+
             </div>
           )}
         </div>
@@ -114,18 +106,15 @@ export function DashboardSidebar({
                 href={item.href}
                 onClick={onItemClick}
                 title={isCollapsed ? item.title : undefined}
-                className={`group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
-                  isCollapsed ? "justify-center" : "gap-3"
-                } ${
-                  isActive
+                className={`group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${isCollapsed ? "justify-center" : "gap-3"
+                  } ${isActive
                     ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                     : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                }`}
+                  }`}
               >
                 <IconComponent
-                  className={`h-4 w-4 shrink-0 transition-transform group-hover:scale-105 ${
-                    isActive ? "text-primary-foreground" : "text-primary"
-                  }`}
+                  className={`h-4 w-4 shrink-0 transition-transform group-hover:scale-105 ${isActive ? "text-primary-foreground" : "text-primary"
+                    }`}
                 />
                 {!isCollapsed && (
                   <span className="truncate">{item.title}</span>
@@ -142,9 +131,8 @@ export function DashboardSidebar({
           href="/"
           onClick={onItemClick}
           title={isCollapsed ? "Back to Home" : undefined}
-          className={`flex items-center rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors ${
-            isCollapsed ? "justify-center" : "gap-2.5"
-          }`}
+          className={`flex items-center rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors ${isCollapsed ? "justify-center" : "gap-2.5"
+            }`}
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
           {!isCollapsed && <span>Back to Home</span>}
@@ -155,9 +143,8 @@ export function DashboardSidebar({
           size="sm"
           onClick={handleSignOut}
           title={isCollapsed ? "Sign Out" : undefined}
-          className={`w-full text-destructive hover:bg-destructive/10 hover:text-destructive justify-start text-xs font-medium px-3 py-2 h-auto ${
-            isCollapsed ? "justify-center px-0" : "gap-2.5"
-          }`}
+          className={`w-full text-destructive hover:bg-destructive/10 hover:text-destructive justify-start text-xs font-medium px-3 py-2 h-auto ${isCollapsed ? "justify-center px-0" : "gap-2.5"
+            }`}
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {!isCollapsed && <span>Sign Out</span>}

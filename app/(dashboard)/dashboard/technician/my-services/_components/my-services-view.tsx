@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import type { ServiceItem } from "@/types";
 import { deleteService, toggleServiceAvailability } from "@/lib/action/services";
 import { EditServiceModal } from "./edit-service-modal";
@@ -92,16 +92,13 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
             s._id === serviceId ? { ...s, isAvailable: !nextValue } : s
           )
         );
-        toast.add({
-          title: "Could not update availability",
+        toast.error("Could not update availability", {
           description: result?.message,
-          type: "error",
         });
       } else {
-        toast.add({
-          title: nextValue ? "Service is now available" : "Service is now hidden",
-          type: "success",
-        });
+        toast.success(
+          nextValue ? "Service is now available" : "Service is now hidden"
+        );
       }
   };
 
@@ -132,19 +129,15 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
         prev.filter((s) => s._id !== deletingService._id)
       );
 
-      toast.add({
-        title: "Service deleted",
+      toast.success("Service deleted", {
         description: `"${deletingService.title}" was removed.`,
-        type: "success",
       });
 
       setDeletingService(null);
     } catch (error) {
-      toast.add({
-        title: "Failed to delete service",
+      toast.error("Failed to delete service", {
         description:
           error instanceof Error ? error.message : "Please try again.",
-        type: "error",
       });
     } finally {
       setIsDeleting(false);

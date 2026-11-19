@@ -32,7 +32,7 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import {
   getRoleBadgeStyle,
   formatRoleLabel,
@@ -156,10 +156,8 @@ export function AdminUsersView({
         throw new Error(result?.message || "Failed to update role");
       }
 
-      toast.add({
-        title: "Role updated",
+      toast.success("Role updated", {
         description: `${roleTarget.user.name} is now ${formatRoleLabel(roleTarget.newRole)}.`,
-        type: "success",
       });
 
       setRoleTarget(null);
@@ -167,13 +165,11 @@ export function AdminUsersView({
       // Re-fetch fresh data from the server
       router.refresh();
     } catch (error) {
-      toast.add({
-        title: "Could not update role",
+      toast.error("Could not update role", {
         description:
           error instanceof Error
             ? error.message
             : "Make sure the admin role API is implemented, then try again.",
-        type: "error",
       });
     } finally {
       setIsUpdating(false);

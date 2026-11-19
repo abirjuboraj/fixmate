@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import {
   SERVICE_CATEGORIES,
   SERVICE_MODES,
@@ -107,10 +107,8 @@ export function EditServiceModal({
         throw new Error(result?.message || "Failed to update service");
       }
 
-      toast.add({
-        title: "Service updated!",
+      toast.success("Service updated!", {
         description: "It is now waiting for admin re-approval.",
-        type: "success",
       });
 
       // Give the parent the fresh service doc so the table row updates
@@ -119,10 +117,8 @@ export function EditServiceModal({
       setErrorMessage(
         error instanceof Error ? error.message : "Something went wrong."
       );
-      toast.add({
-        title: "Failed to update service",
+      toast.error("Failed to update service", {
         description: "Please try again.",
-        type: "error",
       });
     } finally {
       setIsSaving(false);

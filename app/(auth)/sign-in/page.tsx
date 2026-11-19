@@ -103,7 +103,11 @@ function SignInForm() {
 
             // Come back to where the user came from (e.g. the service details
             // page) instead of always sending everyone to the dashboard.
-            window.location.href = callbackURL;
+            // Brief delay so the success toast is actually visible before
+            // the full page navigation clears it.
+            setTimeout(() => {
+                window.location.href = callbackURL;
+            }, 1200);
 
 
         } catch (err: unknown) {

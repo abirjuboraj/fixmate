@@ -174,6 +174,9 @@ export interface ServiceDetailItem {
   serviceArea: string;
   technicianName: string;
   technicianEmail: string;
+  // Profile photo of the technician (from their user record);
+  // null/absent → the details page shows an initials avatar instead
+  technicianImage?: string | null;
   approvalStatus: string;
   isAvailable: boolean;
   createdAt?: string;

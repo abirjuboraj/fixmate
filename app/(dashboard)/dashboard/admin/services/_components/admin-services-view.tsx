@@ -268,6 +268,20 @@ export function AdminServicesView({
               ? "Great news — there are no services waiting for review."
               : "No services match this filter right now."}
           </p>
+
+          {/* CTA: clear the filter, or return to the dashboard */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4 gap-2 font-medium"
+            onClick={() =>
+              currentStatus !== "all"
+                ? handleStatusFilter("all")
+                : router.push("/dashboard/admin")
+            }
+          >
+            {currentStatus !== "all" ? "Show All Services" : "Back to Dashboard"}
+          </Button>
         </div>
       ) : (
         <>

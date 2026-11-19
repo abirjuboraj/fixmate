@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/server";
+import { PageToast } from "@/components/shared/page-toast";
 
 export const metadata = {
   title: "Payment Cancelled | FixMate",
@@ -36,6 +37,11 @@ export default async function PaymentCancelPage({
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-background">
+      {/* One-time toast: payment not completed */}
+      <PageToast
+        type="warning"
+        message="Payment cancelled — you were not charged. You can pay anytime from My Bookings."
+      />
       <div className="w-full max-w-md mx-auto space-y-8 text-center animate-in fade-in duration-300">
         
         {/* Cancel Icon */}

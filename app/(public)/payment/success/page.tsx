@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/server";
 import { verifyStripeSession } from "@/lib/api/payment";
+import { PageToast } from "@/components/shared/page-toast";
 import { PaymentRecord } from "@/types";
 
 export const metadata = {
@@ -47,6 +48,11 @@ export default async function PaymentSuccessPage({
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-background">
+      {/* One-time toast: payment confirmed */}
+      <PageToast
+        type="success"
+        message={`Payment completed! $${payment?.amount?.toFixed(2) ?? ""} received — thank you.`}
+      />
       <div className="w-full max-w-lg mx-auto space-y-8 text-center animate-in fade-in duration-300">
 
         {/* Success Icon */}

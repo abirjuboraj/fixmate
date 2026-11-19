@@ -128,7 +128,7 @@ export function DashboardTopbar({
         </Button>
 
         {/* Brand/Role Context Tag */}
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Badge
             variant="outline"
             className={`hidden sm:inline-flex text-[11px] font-semibold capitalize items-center ${getRoleBadgeVariant(
@@ -138,7 +138,7 @@ export function DashboardTopbar({
             {getRoleIcon(userRole)}
             {userRole} Portal
           </Badge>
-        </div>
+        </div> */}
       </div>
 
       {/* Right side: Actions & User Dropdown */}

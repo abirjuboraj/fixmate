@@ -260,11 +260,16 @@ export function ServiceDetailView({
                 Your Technician
               </h3>
 
-              {/* Technician avatar + name */}
+              {/* Technician avatar + photo */}
               <div className="flex items-center gap-4">
                 <Avatar className="h-14 w-14 ring-2 ring-primary/20">
-                  {/* Technicians don't have a public photo in this endpoint, so we show initials */}
-                  <AvatarImage src="" alt={service.technicianName} />
+                  {/* Show the technician's photo when they have one */}
+                  <AvatarImage
+                    src={service.technicianImage ?? ""}
+                    alt={service.technicianName}
+                    className="object-cover"
+                  />
+                  {/* Otherwise fall back to their initials */}
                   <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
                     {getUserInitials(service.technicianName)}
                   </AvatarFallback>
