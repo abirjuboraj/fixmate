@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { AUTH_URL, type ServiceItem } from "@/types";
+import { AUTH_URL, BookingItem, type ServiceItem } from "@/types";
 import { Wrench } from "lucide-react";
 import {
   StatsCard,
@@ -12,6 +12,7 @@ import {
   ClockIcon,
 } from "@/components/dashboard/stats-card";
 import { getTechnicianServices } from "@/lib/api/services";
+import { getTechnicianBookings } from "@/lib/api/bookings";
 
 export const metadata = {
   title: "Technician Dashboard | FixMate",
@@ -55,20 +56,10 @@ export default async function TechnicianDashboardPage() {
         : "Could not load your service stats";
   }
 
-  // TODO (you): Pending Requests stat
-  //
-  // "Pending Requests" = bookings with status "requested" for this technician.
-  // The bookings API does not exist yet, so it currently shows 0.
-  //
-  // When you build the technician bookings API, do this:
-  //   1. Backend: add GET /api/bookings/technician (verifyToken + verifyTechnician)
-  //      that returns bookings where technicianEmail = the logged-in technician.
-  //   2. Frontend: fetch it here the same way as services/own above, e.g.:
-  //      const bookingsResult = await authFetch(`${AUTH_URL}/api/bookings/technician`);
-  //      const bookings = bookingsResult?.data ?? [];
-  //      const pendingRequests = bookings.filter(b => b.status === "requested").length;
-  //   3. Replace the hardcoded `pendingRequests = 0` below with that value.
-  const pendingRequests = 0;
+  const bookingsResult = await getTechnicianBookings();
+  const bookings: BookingItem[] = bookingsResult?.data ?? [];
+  const pendingRequests = bookings.filter(b => b.status === "requested").length;
+
 
   return (
     <div className="space-y-6">

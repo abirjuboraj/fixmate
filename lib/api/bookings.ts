@@ -13,3 +13,19 @@ export const getMyBookings = async () => {
     return { success: false, data: [] };
   }
 };
+
+
+
+/**
+ * technician bookings
+ */
+
+export const getTechnicianBookings = async () => {
+  try {
+    const res = await authFetch(`${AUTH_URL}/api/bookings/technician`);
+    return res;
+  } catch (error) {
+    console.error("Error fetching technician bookings:", error);
+    return { success: false, data: [] };
+  }
+};
