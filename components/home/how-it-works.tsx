@@ -42,7 +42,12 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="border-b border-border/60 bg-background">
+    // id="how-it-works" is the anchor target for the navbar link;
+    // scroll-mt-16 keeps the heading clear of the sticky navbar (h-16)
+    <section
+      id="how-it-works"
+      className="scroll-mt-16 border-b border-border/60 bg-background"
+    >
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
         {/* Section heading */}
         <div className="mx-auto max-w-2xl text-center">

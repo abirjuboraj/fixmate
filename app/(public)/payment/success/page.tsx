@@ -24,13 +24,7 @@ interface PaymentSuccessPageProps {
   searchParams: Promise<{ session_id?: string }>;
 }
 
-/**
- * Server Component: Payment Success Page
- * Handles non-webhook flow:
- * 1. Reads session_id from query params.
- * 2. Calls backend verifyStripeSession to confirm payment from Stripe and save to DB.
- * 3. Shows transaction receipt details and direct CTA to My Bookings.
- */
+
 export default async function PaymentSuccessPage({
   searchParams,
 }: PaymentSuccessPageProps) {
@@ -54,7 +48,7 @@ export default async function PaymentSuccessPage({
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-background">
       <div className="w-full max-w-lg mx-auto space-y-8 text-center animate-in fade-in duration-300">
-        
+
         {/* Success Icon */}
         <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-md">
           <CheckCircle2 className="h-10 w-10 stroke-[2]" />
