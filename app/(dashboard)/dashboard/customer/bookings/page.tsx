@@ -1,39 +1,59 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowLeft, Clock } from "lucide-react";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { CalendarClock } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { getMyBookings } from "@/lib/api/bookings";
+import { BookingItem } from "@/types";
+import { CustomerBookingsClient } from "./_components/customer-bookings-client";
 
-export default function SubRoutePlaceholder({
-  params,
-}: {
-  params?: Promise<{ role?: string; sub?: string }>;
-}) {
+export const metadata = {
+  title: "My Bookings | FixMate Customer Portal",
+  description: "Track all your submitted repair service requests, statuses, and payments.",
+};
+
+/**
+ * Server Component: Customer My Bookings Page
+ * - Authenticates customer identity on server
+ * - Fetches customer bookings using getMyBookings()
+ * - Passes data to interactive CustomerBookingsClient component
+ */
+export default async function CustomerBookingsPage() {
+  // 1. Verify user session on server
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user) {
+    redirect("/sign-in");
+  }
+
+  // Role verification (must be customer or admin accessing)
+  const userRole = (session.user as { role?: string }).role || "customer";
+  if (userRole !== "customer" && userRole !== "admin") {
+    redirect("/unauthorized");
+  }
+
+  // 2. Fetch customer bookings from backend API
+  const response = await getMyBookings();
+  const bookings: BookingItem[] = response?.data || [];
+
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div className="border-b border-border/60 pb-5">
         <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full mb-2">
-          <Clock className="h-3.5 w-3.5" />
-          Dashboard Route Placeholder
+          <CalendarClock className="h-3.5 w-3.5" />
+          Customer Hub
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Dashboard Sub-Page
+          My Repair Bookings
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          This route placeholder validates sidebar active state and sub-route navigation.
+          Review, track status updates, manage active requests, and pay for completed repairs.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-8 text-center max-w-lg mx-auto">
-        <h2 className="text-base font-semibold">Route Active & Navigable</h2>
-        <p className="text-xs text-muted-foreground mt-1 mb-4">
-          The dashboard layout and role-based sidebar are functioning properly. Actual data, tables, and CRUD operations will be connected in future phases.
-        </p>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/dashboard/customer" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-        </Button>
-      </div>
+      <CustomerBookingsClient initialBookings={bookings} />
     </div>
   );
 }

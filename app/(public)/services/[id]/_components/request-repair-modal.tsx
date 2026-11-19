@@ -18,9 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/toast";
 import { type CreateBookingPayload, type ServiceDetailItem } from "@/types";
 import { createBooking } from "@/lib/action/bookings";
+import { toast } from "sonner";
 
 interface RequestRepairModalProps {
   service: ServiceDetailItem;
@@ -29,8 +29,7 @@ interface RequestRepairModalProps {
   onClose: () => void;
 }
 
-// "YYYY-MM-DD" for today, used as the <input type="date"> minimum
-// so the customer can never pick a past date.
+
 const getTodayString = () => {
   const today = new Date();
   const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -107,27 +106,20 @@ export function RequestRepairModal({
         throw new Error(result?.message || "Failed to send your request.");
       }
 
-      toast.add({
-        title: "Request sent!",
-        description: "Your repair request was sent to the technician.",
-        type: "success",
-      });
+      toast.success("Successful! Your repair request was sent to the technician. Wait for acceptance")
 
-      // Show the success screen with the "My Bookings" link
       setIsSubmitted(true);
     } catch (error) {
-      // Server messages (e.g. the duplicate-active-request refusal) show here
+
       const message =
         error instanceof Error
           ? error.message
           : "Something went wrong. Please try again.";
 
       setErrorMessage(message);
-      toast.add({
-        title: "Could not send request",
-        description: message,
-        type: "error",
-      });
+      toast.error("Could not send request", {
+        description: message
+      })
     } finally {
       setIsSubmitting(false);
     }
@@ -304,8 +296,8 @@ export function RequestRepairModal({
                 </div>
                 <p
                   className={`text-xs ${descriptionLength < MIN_DESCRIPTION_LENGTH
-                      ? "text-destructive"
-                      : "text-emerald-600"
+                    ? "text-destructive"
+                    : "text-emerald-600"
                     }`}
                 >
                   {descriptionLength} / {MIN_DESCRIPTION_LENGTH} minimum
