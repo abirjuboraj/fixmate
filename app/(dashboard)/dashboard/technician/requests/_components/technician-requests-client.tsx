@@ -183,8 +183,8 @@ export function TechnicianRequestsClient({
   // Filter tab state
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
 
-  // Loading state when an action is running on a booking
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  // Loading state tracking both booking ID and specific action (e.g. "booking123:accepted")
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
   // Modal state for Mark Completed
   const [completingBooking, setCompletingBooking] = useState<BookingItem | null>(
@@ -206,7 +206,8 @@ export function TechnicianRequestsClient({
     bookingId: string,
     newStatus: "accepted" | "rejected" | "in-progress"
   ) => {
-    setLoadingId(bookingId);
+    const actionKey = `${bookingId}:${newStatus}`;
+    setLoadingAction(actionKey);
 
     try {
       const res = await updateBookingStatus(bookingId, newStatus);
@@ -234,7 +235,7 @@ export function TechnicianRequestsClient({
         err instanceof Error ? err.message : "Failed to update booking status.";
       toast.error(message);
     } finally {
-      setLoadingId(null);
+      setLoadingAction(null);
     }
   };
 
@@ -375,7 +376,10 @@ export function TechnicianRequestsClient({
               <TableBody>
                 {filteredBookings.map((booking) => {
                   const bookingId = booking._id || "";
-                  const isLoading = loadingId === bookingId;
+                  const isBookingBusy = !!loadingAction && loadingAction.startsWith(`${bookingId}:`);
+                  const isAccepting = loadingAction === `${bookingId}:accepted`;
+                  const isRejecting = loadingAction === `${bookingId}:rejected`;
+                  const isStarting = loadingAction === `${bookingId}:in-progress`;
 
                   const isRequested = booking.status === "requested";
                   const isAccepted = booking.status === "accepted";
@@ -459,10 +463,10 @@ export function TechnicianRequestsClient({
                             <Button
                               size="sm"
                               onClick={() => handleStatusChange(bookingId, "accepted")}
-                              disabled={isLoading}
+                              disabled={isBookingBusy}
                               className="h-8 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs"
                             >
-                              {isLoading ? (
+                              {isAccepting ? (
                                 <Loader2 className="h-3 w-3 animate-spin" />
                               ) : (
                                 <Check className="h-3.5 w-3.5" />
@@ -473,10 +477,10 @@ export function TechnicianRequestsClient({
                               size="sm"
                               variant="destructive"
                               onClick={() => handleStatusChange(bookingId, "rejected")}
-                              disabled={isLoading}
+                              disabled={isBookingBusy}
                               className="h-8 gap-1 text-xs font-semibold shadow-2xs"
                             >
-                              {isLoading ? (
+                              {isRejecting ? (
                                 <Loader2 className="h-3 w-3 animate-spin" />
                               ) : (
                                 <X className="h-3.5 w-3.5" />
@@ -491,10 +495,10 @@ export function TechnicianRequestsClient({
                           <Button
                             size="sm"
                             onClick={() => handleStatusChange(bookingId, "in-progress")}
-                            disabled={isLoading}
+                            disabled={isBookingBusy}
                             className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-2xs"
                           >
-                            {isLoading ? (
+                            {isStarting ? (
                               <Loader2 className="h-3 w-3 animate-spin" />
                             ) : (
                               <Play className="h-3.5 w-3.5" />
@@ -508,7 +512,7 @@ export function TechnicianRequestsClient({
                           <Button
                             size="sm"
                             onClick={() => handleOpenCompleteModal(booking)}
-                            disabled={isLoading}
+                            disabled={isBookingBusy}
                             className="h-8 gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-2xs"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -545,7 +549,10 @@ export function TechnicianRequestsClient({
           <div className="lg:hidden space-y-4">
             {filteredBookings.map((booking) => {
               const bookingId = booking._id || "";
-              const isLoading = loadingId === bookingId;
+              const isBookingBusy = !!loadingAction && loadingAction.startsWith(`${bookingId}:`);
+              const isAccepting = loadingAction === `${bookingId}:accepted`;
+              const isRejecting = loadingAction === `${bookingId}:rejected`;
+              const isStarting = loadingAction === `${bookingId}:in-progress`;
 
               const isRequested = booking.status === "requested";
               const isAccepted = booking.status === "accepted";
@@ -637,10 +644,10 @@ export function TechnicianRequestsClient({
                         <Button
                           size="sm"
                           onClick={() => handleStatusChange(bookingId, "accepted")}
-                          disabled={isLoading}
+                          disabled={isBookingBusy}
                           className="w-full gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs"
                         >
-                          {isLoading ? (
+                          {isAccepting ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
                           ) : (
                             <Check className="h-3.5 w-3.5" />
@@ -651,10 +658,10 @@ export function TechnicianRequestsClient({
                           size="sm"
                           variant="destructive"
                           onClick={() => handleStatusChange(bookingId, "rejected")}
-                          disabled={isLoading}
+                          disabled={isBookingBusy}
                           className="w-full gap-1.5 font-semibold text-xs"
                         >
-                          {isLoading ? (
+                          {isRejecting ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
                           ) : (
                             <X className="h-3.5 w-3.5" />
@@ -669,10 +676,10 @@ export function TechnicianRequestsClient({
                       <Button
                         size="sm"
                         onClick={() => handleStatusChange(bookingId, "in-progress")}
-                        disabled={isLoading}
+                        disabled={isBookingBusy}
                         className="w-full gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs"
                       >
-                        {isLoading ? (
+                        {isStarting ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
                         ) : (
                           <Play className="h-3.5 w-3.5" />
@@ -686,7 +693,7 @@ export function TechnicianRequestsClient({
                       <Button
                         size="sm"
                         onClick={() => handleOpenCompleteModal(booking)}
-                        disabled={isLoading}
+                        disabled={isBookingBusy}
                         className="w-full gap-1.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" />

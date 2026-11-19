@@ -278,7 +278,7 @@ export function CustomerBookingsClient({
                   <TableHead>Amount</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Payment</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -356,7 +356,7 @@ export function CustomerBookingsClient({
                       <TableCell>{getPaymentBadge(booking.paymentStatus)}</TableCell>
 
                       {/* Action Button: Cancel (if requested) or Pay Now (if completed & unpaid) */}
-                      <TableCell className="text-right">
+                      <TableCell className="text-center">
                         {canCancel && (
                           <Button
                             variant="destructive"
@@ -392,6 +392,23 @@ export function CustomerBookingsClient({
                           </span>
                         )}
 
+                        {booking.status === "accepted" && (
+                          <span className="text-xs text-blue-600 dark:text-blue-400 font-medium inline-flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            Request Accepted
+                          </span>
+                        )}
+
+                        {booking.status === "in-progress" && (
+                          <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold inline-flex items-center gap-1.5">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500" />
+                            </span>
+                            In progress
+                          </span>
+                        )}
+
                         {booking.status === "cancelled" && (
                           <span className="text-xs text-muted-foreground/80 font-medium">
                             No action required
@@ -404,11 +421,17 @@ export function CustomerBookingsClient({
                           </span>
                         )}
 
-                        {!canCancel && !canPay && !isPaid && booking.status !== "cancelled" && booking.status !== "rejected" && (
-                          <span className="text-xs text-muted-foreground italic">
-                            In progress
-                          </span>
-                        )}
+                        {!canCancel &&
+                          !canPay &&
+                          !isPaid &&
+                          booking.status !== "accepted" &&
+                          booking.status !== "in-progress" &&
+                          booking.status !== "cancelled" &&
+                          booking.status !== "rejected" && (
+                            <span className="text-xs text-muted-foreground italic">
+                              Pending update
+                            </span>
+                          )}
                       </TableCell>
                     </TableRow>
                   );
