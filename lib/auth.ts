@@ -1,8 +1,8 @@
 import { betterAuth } from "better-auth"
-import { MongoClient } from "mongodb"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
+import clientPromise from "./db"
 
-const client = new MongoClient(process.env.MONGODB_URI as string)
+const client = await clientPromise
 const db = client.db("fixmate")
 
 export const auth = betterAuth({
