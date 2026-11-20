@@ -1,32 +1,69 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowLeft, Clock } from "lucide-react";
+import { CalendarClock } from "lucide-react";
+import { getAllBookings } from "@/lib/api/bookings";
+import type { BookingItem } from "@/types";
+import { AdminBookingsView } from "./_components/admin-bookings-view";
 
-export default function AdminBookingsPage() {
+export const metadata = {
+  title: "All Bookings | FixMate Admin",
+  description: "Read-only list of every repair booking on the platform.",
+};
+
+// Valid status filters (must match the backend query param values).
+// The admin layout already verifies the "admin" role, so no role check is needed here.
+const VALID_STATUSES = [
+  "all",
+  "requested",
+  "accepted",
+  "in-progress",
+  "completed",
+  "rejected",
+  "cancelled",
+];
+
+export default async function AdminBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  // Read ?status=... from the URL (deep-link friendly & survives refresh)
+  const params = await searchParams;
+  const rawStatus = typeof params.status === "string" ? params.status : "all";
+  const currentStatus = VALID_STATUSES.includes(rawStatus) ? rawStatus : "all";
+
+  let bookings: BookingItem[] = [];
+  let fetchError: string | null = null;
+
+  try {
+    const result = await getAllBookings(currentStatus);
+    bookings = (result?.data as BookingItem[]) ?? [];
+  } catch (error) {
+    fetchError =
+      error instanceof Error ? error.message : "Failed to load bookings";
+  }
+
   return (
     <div className="space-y-6">
+      {/* Page header */}
       <div className="border-b border-border/60 pb-5">
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 bg-rose-500/10 px-2.5 py-0.5 rounded-full mb-2">
-          <Clock className="h-3.5 w-3.5" />
-          Dashboard Route Placeholder
+        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full mb-2">
+          <CalendarClock className="h-3.5 w-3.5" />
+          Admin Panel
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           All Bookings
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Platform-wide repair bookings list.
+          Every repair request on the platform — filter by status to track
+          requested, in-progress, completed, or cancelled jobs.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-8 text-center max-w-lg mx-auto">
-        <h2 className="text-base font-semibold">Route Active & Navigable</h2>
-        <Button variant="outline" size="sm" asChild className="mt-4">
-          <Link href="/dashboard/admin" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-        </Button>
-      </div>
+      {/* Filter pills + table (client component) */}
+      <AdminBookingsView
+        bookings={bookings}
+        fetchError={fetchError}
+        currentStatus={currentStatus}
+      />
     </div>
   );
 }

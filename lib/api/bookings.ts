@@ -29,3 +29,17 @@ export const getTechnicianBookings = async () => {
     return { success: false, data: [] };
   }
 };
+
+
+/**
+ * get all bookings for admin
+ * NOTE: errors are intentionally NOT swallowed here — the admin bookings page
+ * catches them and shows a friendly "Could not load bookings" state.
+ */
+
+export const getAllBookings = async (status: string = '') => {
+  const res = await authFetch(
+    `${AUTH_URL}/api/admin/bookings?status=${encodeURIComponent(status)}`
+  );
+  return res;
+}
