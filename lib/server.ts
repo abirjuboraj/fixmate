@@ -64,7 +64,11 @@ export const protectedMutation = async (api: string, method: string, data?: unkn
 
     if (!res.ok) {
         const errorData = await res.json().catch(() => null);
-        throw new Error(errorData?.message ?? `Request failed with status ${res.status}`);
+        return {
+            success: false,
+            statusCode: res.status,
+            message: errorData?.message ?? `Request failed with status ${res.status}`,
+        };
     }
 
     return res.json();
