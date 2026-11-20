@@ -98,6 +98,15 @@ export function ServiceDetailView({
     );
   };
 
+  // Convert comma-separated service areas string into a clean array
+  // Example: "Mirpur, Gulshan, Dhanmondi" -> ["Mirpur", "Gulshan", "Dhanmondi"]
+  const serviceAreas = service.serviceArea
+    ? service.serviceArea
+        .split(",")
+        .map((area) => area.trim())
+        .filter(Boolean)
+    : [];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8 pb-16 sm:px-6 lg:px-8 space-y-8">
@@ -167,13 +176,7 @@ export function ServiceDetailView({
             </div>
 
             {/* Quick Info Pills Row */}
-            <div className="flex flex-wrap gap-3 text-sm">
-              {/* Area */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/60 border border-border/60 text-muted-foreground">
-                <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>{service.serviceArea}</span>
-              </div>
-
+            <div className="flex flex-wrap items-center gap-2.5 text-sm">
               {/* Duration */}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/60 border border-border/60 text-muted-foreground">
                 <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -184,6 +187,31 @@ export function ServiceDetailView({
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400">
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                 <span className="text-xs font-medium">Available Now</span>
+              </div>
+            </div>
+
+            {/* Service Areas Badges */}
+            <div className="space-y-2 pt-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-primary" />
+                Service Coverage Areas
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {serviceAreas.length > 0 ? (
+                  serviceAreas.map((area, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="border-primary/20 bg-primary/5 text-primary font-medium text-xs px-2.5 py-1 rounded-lg hover:bg-primary/10 transition-colors"
+                    >
+                      {area}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    {service.serviceArea || "Area not specified"}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -240,11 +268,25 @@ export function ServiceDetailView({
                     {service.category}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Service Area</span>
-                  <span className="font-semibold text-foreground text-right max-w-[160px]">
-                    {service.serviceArea}
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                  <span className="text-muted-foreground">Service Areas</span>
+                  <div className="flex flex-wrap sm:justify-end gap-1 max-w-[200px]">
+                    {serviceAreas.length > 0 ? (
+                      serviceAreas.map((area, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-[11px] px-2 py-0.5 border-border/70 bg-muted/40 font-medium"
+                        >
+                          {area}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="font-semibold text-foreground text-right text-xs">
+                        {service.serviceArea || "—"}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

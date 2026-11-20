@@ -272,7 +272,7 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
             <div className="space-y-1.5">
               <Label htmlFor="area" className="text-sm font-medium flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                City / Service Area
+                City / Area
               </Label>
               <Input
                 id="area"

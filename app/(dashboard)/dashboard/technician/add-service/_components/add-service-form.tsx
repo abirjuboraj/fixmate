@@ -397,7 +397,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                 />
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
                   Upload a high-resolution photo showcasing your repair
-                  offering. Supported formats: PNG, JPG, WebP.
+                  offering. Supported formats: PNG, JPG, JPEG, WebP.
                 </p>
               </div>
             </div>
@@ -425,7 +425,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
         </CardContent>
 
         <CardFooter className="mt-4 flex flex-col items-center justify-end  gap-3 border-t border-border/40 pt-6 sm:flex-row">
-          
+
 
           <div className="order-1 flex w-full items-center gap-2.5 sm:order-2 sm:w-auto">
             <Button
