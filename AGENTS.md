@@ -148,6 +148,15 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - Responsive desktop table + mobile card list showing: service title, technician, amount, date paid, transaction ID, and "Paid" status badge.
 - Uses `PaymentRecord` interface from `types/index.ts`.
 
+### M. Admin Platform Transactions Route (`/dashboard/admin/transactions`)
+- **Server Component** (`app/(dashboard)/dashboard/admin/transactions/page.tsx`): Fetches all confirmed payments and total revenue using `getAllPaymentsAndRevenue()`.
+- **Client Component** (`app/(dashboard)/dashboard/admin/transactions/_components/admin-transactions-client.tsx`):
+  - **Revenue & Metrics Overview Cards**: Shows prominent Total Platform Revenue and Total Completed Transactions counter.
+  - **Interactive Search**: Real-time filter searching by customer name/email, technician name/email, service title, and transaction ID.
+  - **Transaction ID Copy Action**: Copy icon button beside each transaction ID with tooltip ("Copy Transaction ID" / "Copied!") and Sonner toast notification.
+  - **Responsive Dual Layout**: Full detailed data table on desktop (Customer, Technician, Service, Amount, Transaction ID, Date, Paid badge) and clean cards on mobile/tablet.
+  - **Empty State**: Friendly illustration and guidance when no transactions exist or match search.
+
 ---
 
 ## 3. Tech Stack & Standards
@@ -165,7 +174,6 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - `/dashboard/admin/bookings` — All bookings (admin view)
 - `/dashboard/admin/services` — Service approval queue
 - `/dashboard/admin/users` — Manage users & roles
-- `/dashboard/admin/transactions` — All payment transactions (uses `findAllPayments`)
 - `/dashboard/technician` — Technician overview / stats
 - `/dashboard/technician/my-services` — Technician's listed services
 - `/dashboard/profile` — Shared profile update page (all roles)

@@ -35,3 +35,27 @@ export const getMyPayments = async (): Promise<{
     return { success: false, data: [] };
   }
 };
+
+
+/**
+ * all payment for admin panel
+ */
+export const getAllPaymentsAndRevenue = async () => {
+  try {
+    const res = await authFetch(
+      `${AUTH_URL}/api/admin/transactions`
+    );
+
+    return res;
+  } catch (error) {
+    console.error("Fetch payment history error:", error);
+
+    return {
+      success: false,
+      data: {
+        transactions: [],
+        totalRevenue: 0,
+      },
+    };
+  }
+};
