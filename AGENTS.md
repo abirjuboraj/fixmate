@@ -157,6 +157,16 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
   - **Responsive Dual Layout**: Full detailed data table on desktop (Customer, Technician, Service, Amount, Transaction ID, Date, Paid badge) and clean cards on mobile/tablet.
   - **Empty State**: Friendly illustration and guidance when no transactions exist or match search.
 
+### N. Admin Overview Route (`/dashboard/admin`)
+- **Server Component** (`app/(dashboard)/dashboard/admin/page.tsx`): Concurrently fetches all users (`/api/admin/users`), services (`/api/admin/services`), bookings (`/api/admin/bookings`), and platform revenue (`/api/admin/transactions`).
+- **Client Component** (`app/(dashboard)/dashboard/admin/_components/admin-overview-client.tsx`):
+  - **Required Core Stats Cards**: Total Users (with customer count badge), Total Technicians (with active pros badge), Pending Services (with action needed badge), and Total Platform Revenue.
+  - **Interactive Visual Breakdown**:
+    - Animated progress bar chart showing service catalog distribution by category.
+    - Full booking status breakdown cards (Requested, Accepted, In Progress, Completed, Cancelled).
+  - **Live Action Tabs**: Tabbed interface switching between *Pending Services* (with direct Review button), *Recent Bookings*, and *New Users* (with direct Edit Role button).
+  - **Control Center Grid**: Quick-navigation cards directly linking to Users, Services, Bookings, and Transactions.
+
 ---
 
 ## 3. Tech Stack & Standards
@@ -170,10 +180,6 @@ FixMate is a full-stack, role-based repair service platform connecting device & 
 - **Database**: MongoDB Atlas (`fixmate` database)
 
 ## 4. Remaining Pages (Not Yet Built)
-- `/dashboard/admin` — Admin overview dashboard
-- `/dashboard/admin/bookings` — All bookings (admin view)
-- `/dashboard/admin/services` — Service approval queue
-- `/dashboard/admin/users` — Manage users & roles
 - `/dashboard/technician` — Technician overview / stats
 - `/dashboard/technician/my-services` — Technician's listed services
 - `/dashboard/profile` — Shared profile update page (all roles)

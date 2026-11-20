@@ -25,10 +25,11 @@ export default async function AdminBookingsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Read ?status=... from the URL (deep-link friendly & survives refresh)
+  // Read ?status=... and optional ?highlight=... from the URL
   const params = await searchParams;
   const rawStatus = typeof params.status === "string" ? params.status : "all";
   const currentStatus = VALID_STATUSES.includes(rawStatus) ? rawStatus : "all";
+  const highlightId = typeof params.highlight === "string" ? params.highlight : "";
 
   let bookings: BookingItem[] = [];
   let fetchError: string | null = null;
@@ -63,6 +64,7 @@ export default async function AdminBookingsPage({
         bookings={bookings}
         fetchError={fetchError}
         currentStatus={currentStatus}
+        highlightId={highlightId}
       />
     </div>
   );

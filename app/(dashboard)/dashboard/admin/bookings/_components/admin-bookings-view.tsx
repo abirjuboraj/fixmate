@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Ban,
@@ -30,6 +31,7 @@ interface AdminBookingsViewProps {
   bookings: BookingItem[];
   fetchError: string | null;
   currentStatus: string;
+  highlightId?: string;
 }
 
 /**
@@ -191,8 +193,19 @@ export function AdminBookingsView({
   bookings,
   fetchError,
   currentStatus,
+  highlightId,
 }: AdminBookingsViewProps) {
   const router = useRouter();
+
+  // Scroll highlighted item into view if provided
+  useEffect(() => {
+    if (highlightId) {
+      const el = document.getElementById(`booking-row-${highlightId}`) || document.getElementById(`booking-card-${highlightId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [highlightId]);
 
   // Navigate with ?status=... so the server refetches matching bookings
   const handleStatusFilter = (status: string) => {
@@ -299,8 +312,18 @@ export function AdminBookingsView({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking._id}>
+                {bookings.map((booking) => {
+                  const isHighlighted = highlightId && booking._id === highlightId;
+                  return (
+                    <TableRow
+                      key={booking._id}
+                      id={`booking-row-${booking._id}`}
+                      className={
+                        isHighlighted
+                          ? "bg-primary/10 ring-2 ring-primary/40 transition-all duration-700 animate-pulse"
+                          : ""
+                      }
+                    >
                     {/* Service: thumbnail + title + category */}
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -358,18 +381,26 @@ export function AdminBookingsView({
                       ${getAmount(booking).toFixed(2)}
                     </TableCell>
                   </TableRow>
-                ))}
+                );
+              })}
               </TableBody>
             </Table>
           </div>
 
           {/* ---------- Mobile: cards ---------- */}
           <div className="md:hidden space-y-3">
-            {bookings.map((booking) => (
-              <div
-                key={booking._id}
-                className="rounded-xl border border-border/70 bg-card p-4 shadow-xs space-y-3"
-              >
+            {bookings.map((booking) => {
+              const isHighlighted = highlightId && booking._id === highlightId;
+              return (
+                <div
+                  key={booking._id}
+                  id={`booking-card-${booking._id}`}
+                  className={`rounded-xl border bg-card p-4 shadow-xs space-y-3 transition-all duration-700 ${
+                    isHighlighted
+                      ? "border-primary ring-2 ring-primary/40 bg-primary/5 animate-pulse"
+                      : "border-border/70"
+                  }`}
+                >
                 {/* Top: service info + amount */}
                 <div className="flex items-start gap-3">
                   <BookingImage
@@ -412,7 +443,8 @@ export function AdminBookingsView({
                   </div>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </>
       )}
