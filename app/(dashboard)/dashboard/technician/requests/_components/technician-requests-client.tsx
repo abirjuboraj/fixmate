@@ -23,6 +23,7 @@ import {
   Filter,
   RotateCcw,
   AlertTriangle,
+  Eye,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -202,6 +203,11 @@ export function TechnicianRequestsClient({
     null
   );
 
+  // Modal state to view full problem description
+  const [viewingProblemBooking, setViewingProblemBooking] = useState<BookingItem | null>(
+    null
+  );
+
   // Filter bookings based on active tab
   const filteredBookings = useMemo(() => {
     if (activeTab === "all") return bookings;
@@ -344,15 +350,15 @@ export function TechnicianRequestsClient({
               type="button"
               onClick={() => setActiveTab(tab.value)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${isActive
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
                 }`}
             >
               <span>{tab.label}</span>
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
-                    ? "bg-primary-foreground/20 text-primary-foreground"
-                    : "bg-background text-muted-foreground border border-border/60"
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-background text-muted-foreground border border-border/60"
                   }`}
               >
                 {count}
@@ -477,13 +483,25 @@ export function TechnicianRequestsClient({
 
                       {/* Problem Description & Address */}
                       <TableCell>
-                        <div className="space-y-1 max-w-[240px]">
-                          <p
-                            className="text-xs text-foreground line-clamp-2 leading-relaxed"
-                            title={booking.problemDescription}
-                          >
-                            &ldquo;{booking.problemDescription}&rdquo;
-                          </p>
+                        <div className="space-y-1 max-w-[260px]">
+                          <div>
+                            <p
+                              className="text-xs  max-w-xs truncate text-foreground leading-relaxed"
+                              title={booking.problemDescription}
+                            >
+                              &ldquo;{booking.problemDescription}&rdquo;
+                            </p>
+                            {booking.problemDescription && booking.problemDescription.length > 40 && (
+                              <button
+                                type="button"
+                                onClick={() => setViewingProblemBooking(booking)}
+                                className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-primary/80 hover:underline cursor-pointer mt-0.5"
+                              >
+                                <Eye className="h-3 w-3" />
+                                Read full details
+                              </button>
+                            )}
+                          </div>
                           <p className="text-[11px] text-muted-foreground flex items-center gap-1 truncate">
                             <MapPin className="h-3 w-3 shrink-0 text-muted-foreground" />
                             <span className="truncate">{booking.address}</span>
@@ -562,9 +580,7 @@ export function TechnicianRequestsClient({
                         {/* 4. Completed: Show payment badge */}
                         {isCompleted && (
                           <div className="flex items-center justify-end gap-1.5">
-                            <span className="text-xs text-muted-foreground mr-1">
-                              Payment:
-                            </span>
+
                             {getPaymentBadge(booking.paymentStatus)}
                           </div>
                         )}
@@ -941,6 +957,84 @@ export function TechnicianRequestsClient({
                     Confirm Reject
                   </>
                 )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: View Full Problem Description ── */}
+      {viewingProblemBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in-0">
+          <div className="relative w-full max-w-lg rounded-2xl border border-border/80 bg-card p-6 shadow-xl space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-border/60">
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-foreground">
+                    Problem Description
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Reported by {viewingProblemBooking.customerName}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingProblemBooking(null)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer rounded-lg p-1 hover:bg-muted"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Service & Customer details */}
+            <div className="rounded-xl bg-muted/40 p-3 space-y-1.5 text-xs">
+              <p>
+                <strong className="text-foreground">Service:</strong>{" "}
+                <span className="text-muted-foreground">
+                  {viewingProblemBooking.serviceTitle}
+                </span>
+              </p>
+              <p>
+                <strong className="text-foreground">Customer Phone:</strong>{" "}
+                <span className="text-muted-foreground">
+                  {viewingProblemBooking.customerPhone}
+                </span>
+              </p>
+              <p>
+                <strong className="text-foreground">Service Address:</strong>{" "}
+                <span className="text-muted-foreground">
+                  {viewingProblemBooking.address}
+                </span>
+              </p>
+            </div>
+
+            {/* Full text content */}
+            <div className="space-y-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Customer&apos;s Statement
+              </span>
+              <div className="rounded-xl border border-border/70 bg-background p-4 max-h-60 overflow-y-auto">
+                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                  {viewingProblemBooking.problemDescription}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end pt-2 border-t border-border/60">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewingProblemBooking(null)}
+                className="font-medium text-xs"
+              >
+                Close
               </Button>
             </div>
           </div>

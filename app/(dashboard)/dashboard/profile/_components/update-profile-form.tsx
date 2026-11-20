@@ -86,11 +86,40 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
     }
+    const fileInput = document.getElementById("avatarUpload") as HTMLInputElement | null;
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
+
+  // Reset all fields back to initial values when Cancel is clicked
+  const handleCancel = () => {
+    setName(initialUser.name || "");
+    setPhone(initialUser.phone || "");
+    setArea(initialUser.area || "");
+    setBio(initialUser.bio || "");
+    setCurrentImage(initialUser.image || "");
+    handleRemoveSelectedFile();
+    toast.info("Changes reverted to original values.");
+  };
+
+  // Check if any fields or photo changed compared to initialUser
+  const isDirty =
+    name !== (initialUser.name || "") ||
+    phone !== (initialUser.phone || "") ||
+    area !== (initialUser.area || "") ||
+    bio !== (initialUser.bio || "") ||
+    selectedFile !== null;
 
   // Submit profile updates
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // If no changes were made, notify the user and do not submit
+    if (!isDirty) {
+      toast.info("No changes were done.");
+      return;
+    }
 
     if (!name.trim()) {
       toast.error("Please enter your name.");
@@ -304,8 +333,8 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
+            onClick={handleCancel}
+            disabled={isSubmitting || !isDirty}
           >
             Cancel
           </Button>

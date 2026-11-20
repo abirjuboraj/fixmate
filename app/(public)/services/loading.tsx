@@ -16,11 +16,11 @@ export default function ServicesLoading() {
 
       {/* Search / Filters Box Skeleton */}
       <div className="rounded-2xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs space-y-5 animate-pulse">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="h-11 w-full lg:max-w-md rounded-lg bg-muted" />
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-40 rounded-lg bg-muted" />
-            <div className="h-10 w-44 rounded-lg bg-muted" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="h-11 w-full md:flex-1 md:max-w-md lg:max-w-lg rounded-lg bg-muted" />
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <div className="h-10 w-36 sm:w-38 md:w-40 rounded-lg bg-muted" />
+            <div className="h-10 w-38 sm:w-42 md:w-44 rounded-lg bg-muted" />
           </div>
         </div>
         <div className="pt-4 border-t border-border/60 space-y-3">

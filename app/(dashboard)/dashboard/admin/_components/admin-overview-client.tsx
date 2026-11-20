@@ -153,9 +153,7 @@ export function AdminOverviewClient({
 
   return (
     <div className="space-y-8">
-      {/* =========================================================================
-          SECTION 1: HERO STATS CARDS (Total Users, Technicians, Pending Services + Revenue)
-          ========================================================================= */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Users */}
         <div className="group relative rounded-2xl border border-border/80 bg-card p-5 shadow-xs hover:border-primary/40 hover:shadow-md transition-all">
@@ -304,9 +302,7 @@ export function AdminOverviewClient({
         </div>
       </div>
 
-      {/* =========================================================================
-          SECTION 2: INTERACTIVE VISUAL BREAKDOWNS (Charts & Status Progress)
-          ========================================================================= */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Visual Bar Chart: Services by Category */}
         <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-5">
@@ -434,9 +430,6 @@ export function AdminOverviewClient({
         </div>
       </div>
 
-      {/* =========================================================================
-          SECTION 3: INTERACTIVE ACTIVITY FEED WITH TABS
-          ========================================================================= */}
       <div className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
         {/* Tab Header Controls */}
         <div className="border-b border-border/60 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-muted/20">
@@ -454,33 +447,30 @@ export function AdminOverviewClient({
             <button
               type="button"
               onClick={() => setActiveTab("pending-services")}
-              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                activeTab === "pending-services"
+              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${activeTab === "pending-services"
                   ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               Pending Services ({pendingServices})
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("recent-bookings")}
-              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                activeTab === "recent-bookings"
+              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${activeTab === "recent-bookings"
                   ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               Recent Bookings
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("recent-users")}
-              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                activeTab === "recent-users"
+              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${activeTab === "recent-users"
                   ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               New Users
             </button>
@@ -601,8 +591,8 @@ export function AdminOverviewClient({
                             user.role === "admin"
                               ? "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-semibold text-xs gap-1"
                               : user.role === "technician"
-                              ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold text-xs gap-1"
-                              : "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-xs gap-1"
+                                ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold text-xs gap-1"
+                                : "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-xs gap-1"
                           }
                         >
                           {user.role === "admin" ? (

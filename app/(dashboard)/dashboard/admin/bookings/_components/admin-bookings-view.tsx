@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Ban,
@@ -34,10 +34,7 @@ interface AdminBookingsViewProps {
   highlightId?: string;
 }
 
-/**
- * Status filter pills — each one updates ?status= in the URL,
- * which makes the page refresh with fresh data from the server.
- */
+
 const STATUS_FILTERS = [
   { value: "all", label: "All" },
   { value: "requested", label: "Requested" },
@@ -207,7 +204,16 @@ export function AdminBookingsView({
     }
   }, [highlightId]);
 
-  // Navigate with ?status=... so the server refetches matching bookings
+  const [isHighlighting, setIsHighlighting] = useState(Boolean(highlightId));
+
+  useEffect(() => {
+    if (!highlightId) return;
+
+    const timer = setTimeout(() => setIsHighlighting(false), 3000);
+
+    return () => clearTimeout(timer);
+  }, [highlightId]);
+
   const handleStatusFilter = (status: string) => {
     router.push(`/dashboard/admin/bookings?status=${status}`);
   };
@@ -313,76 +319,76 @@ export function AdminBookingsView({
               </TableHeader>
               <TableBody>
                 {bookings.map((booking) => {
-                  const isHighlighted = highlightId && booking._id === highlightId;
+                  const isHighlighted = isHighlighting && booking._id === highlightId;
                   return (
                     <TableRow
                       key={booking._id}
                       id={`booking-row-${booking._id}`}
                       className={
                         isHighlighted
-                          ? "bg-primary/10 ring-2 ring-primary/40 transition-all duration-700 animate-pulse"
+                          ? "bg-primary/10 ring-2 ring-primary/40 transition-all duration-500 animate-pulse"
                           : ""
                       }
                     >
-                    {/* Service: thumbnail + title + category */}
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <BookingImage
-                          src={booking.serviceImage}
-                          alt={booking.serviceTitle}
-                        />
-                        <div className="min-w-0">
-                          <p className="font-medium text-foreground line-clamp-1 max-w-[200px]">
-                            {booking.serviceTitle}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {booking.category}
-                          </p>
+                      {/* Service: thumbnail + title + category */}
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <BookingImage
+                            src={booking.serviceImage}
+                            alt={booking.serviceTitle}
+                          />
+                          <div className="min-w-0">
+                            <p className="font-medium text-foreground line-clamp-1 max-w-[200px]">
+                              {booking.serviceTitle}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {booking.category}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
+                      </TableCell>
 
-                    {/* Customer */}
-                    <TableCell>
-                      <p className="text-sm text-foreground font-medium truncate max-w-[160px]">
-                        {booking.customerName}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate max-w-[160px]">
-                        {booking.customerEmail}
-                      </p>
-                    </TableCell>
+                      {/* Customer */}
+                      <TableCell>
+                        <p className="text-sm text-foreground font-medium truncate max-w-[160px]">
+                          {booking.customerName}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[160px]">
+                          {booking.customerEmail}
+                        </p>
+                      </TableCell>
 
-                    {/* Technician */}
-                    <TableCell className="hidden lg:table-cell">
-                      <div className="flex items-center gap-1.5 text-sm text-foreground">
-                        <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        <span className="truncate max-w-[140px]">
-                          {booking.technicianName}
-                        </span>
-                      </div>
-                    </TableCell>
+                      {/* Technician */}
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="flex items-center gap-1.5 text-sm text-foreground">
+                          <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                          <span className="truncate max-w-[140px]">
+                            {booking.technicianName}
+                          </span>
+                        </div>
+                      </TableCell>
 
-                    {/* Preferred date */}
-                    <TableCell className="hidden lg:table-cell">
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span>{formatDisplayDate(booking.preferredDate)}</span>
-                      </div>
-                    </TableCell>
+                      {/* Preferred date */}
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span>{formatDisplayDate(booking.preferredDate)}</span>
+                        </div>
+                      </TableCell>
 
-                    {/* Status badge */}
-                    <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                      {/* Status badge */}
+                      <TableCell>{getStatusBadge(booking.status)}</TableCell>
 
-                    {/* Payment badge */}
-                    <TableCell>{getPaymentBadge(booking.paymentStatus)}</TableCell>
+                      {/* Payment badge */}
+                      <TableCell>{getPaymentBadge(booking.paymentStatus)}</TableCell>
 
-                    {/* Amount (final price if set, else base price) */}
-                    <TableCell className="text-right font-bold text-foreground">
-                      ${getAmount(booking).toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      {/* Amount (final price if set, else base price) */}
+                      <TableCell className="text-right font-bold text-foreground">
+                        ${getAmount(booking).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
@@ -390,61 +396,60 @@ export function AdminBookingsView({
           {/* ---------- Mobile: cards ---------- */}
           <div className="md:hidden space-y-3">
             {bookings.map((booking) => {
-              const isHighlighted = highlightId && booking._id === highlightId;
+              const isHighlighted = isHighlighting && booking._id === highlightId;
               return (
                 <div
                   key={booking._id}
                   id={`booking-card-${booking._id}`}
-                  className={`rounded-xl border bg-card p-4 shadow-xs space-y-3 transition-all duration-700 ${
-                    isHighlighted
-                      ? "border-primary ring-2 ring-primary/40 bg-primary/5 animate-pulse"
-                      : "border-border/70"
-                  }`}
+                  className={`rounded-xl border bg-card p-4 shadow-xs space-y-3 transition-all duration-700 ${isHighlighted
+                    ? "border-primary ring-2 ring-primary/40 bg-primary/5 animate-pulse"
+                    : "border-border/70"
+                    }`}
                 >
-                {/* Top: service info + amount */}
-                <div className="flex items-start gap-3">
-                  <BookingImage
-                    src={booking.serviceImage}
-                    alt={booking.serviceTitle}
-                  />
+                  {/* Top: service info + amount */}
+                  <div className="flex items-start gap-3">
+                    <BookingImage
+                      src={booking.serviceImage}
+                      alt={booking.serviceTitle}
+                    />
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <span className="text-[11px] font-bold text-primary uppercase tracking-wide">
-                          {booking.category}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <span className="text-[11px] font-bold text-primary uppercase tracking-wide">
+                            {booking.category}
+                          </span>
+                          <h4 className="font-semibold text-foreground text-sm line-clamp-1">
+                            {booking.serviceTitle}
+                          </h4>
+                        </div>
+                        <span className="text-base font-extrabold text-foreground shrink-0">
+                          ${getAmount(booking).toFixed(2)}
                         </span>
-                        <h4 className="font-semibold text-foreground text-sm line-clamp-1">
-                          {booking.serviceTitle}
-                        </h4>
                       </div>
-                      <span className="text-base font-extrabold text-foreground shrink-0">
-                        ${getAmount(booking).toFixed(2)}
-                      </span>
+
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 truncate">
+                        <User className="h-3 w-3 shrink-0" />
+                        {booking.customerName} • {booking.technicianName}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom: date + badges */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                      <span>{formatDisplayDate(booking.preferredDate)}</span>
                     </div>
 
-                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 truncate">
-                      <User className="h-3 w-3 shrink-0" />
-                      {booking.customerName} • {booking.technicianName}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      {getStatusBadge(booking.status)}
+                      {getPaymentBadge(booking.paymentStatus)}
+                    </div>
                   </div>
                 </div>
-
-                {/* Bottom: date + badges */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                    <span>{formatDisplayDate(booking.preferredDate)}</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    {getStatusBadge(booking.status)}
-                    {getPaymentBadge(booking.paymentStatus)}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
         </>
       )}

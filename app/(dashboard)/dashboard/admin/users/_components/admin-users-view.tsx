@@ -138,12 +138,6 @@ export function AdminUsersView({
   };
 
 
-  // ---------- Role change ----------
-
-  // TODO (works after you finish the backend TODO): the Select below opens this
-  // confirm modal, and handleRoleChange calls the protected admin API
-  // PATCH /api/admin/users/:id/role. Until that endpoint exists the UI shows
-  // an error toast — nothing else needs to change on the frontend.
   const handleRoleChange = async () => {
     if (!roleTarget) return;
 
@@ -255,7 +249,7 @@ export function AdminUsersView({
         {/* Filter by role */}
         <div className="flex gap-2 items-center">
           <Select
-            value={currentRole || "all"}
+            value={currentRole || "All"}
             onValueChange={(value) =>
               updateParams({ role: value === "all" ? "" : value ?? "" })
             }
@@ -264,7 +258,7 @@ export function AdminUsersView({
               <SelectValue placeholder="All roles" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All roles</SelectItem>
+              <SelectItem value="All">All roles</SelectItem>
               {ASSIGNABLE_ROLES.map((role) => (
                 <SelectItem key={role} value={role}>
                   {formatRoleLabel(role)}
@@ -275,9 +269,9 @@ export function AdminUsersView({
 
           {/* Filter by service category (finds technicians offering it) */}
           <Select
-            value={currentCategory || "all"}
+            value={currentCategory || "All"}
             onValueChange={(value) =>
-              updateParams({ category: value === "all" ? "" : value ?? "" })
+              updateParams({ category: value === "All" ? "" : value ?? "" })
             }
           >
             <SelectTrigger className="w-full md:w-47.5">

@@ -37,9 +37,7 @@ export default async function AdminUsersPage({
 
   const adminEmail = (session.user as { email?: string }).email || "";
 
-  // Read the search + filter params from the URL.
-  // The client view updates these params, Next re-renders this page,
-  // and the fresh filtered data comes straight from Express.
+
   const params = await searchParams;
   const currentSearch = typeof params.search === "string" ? params.search : "";
   const currentRole = typeof params.role === "string" ? params.role : "";
