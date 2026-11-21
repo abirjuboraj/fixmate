@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ShieldCheck } from "lucide-react";
 import { AUTH_URL } from "@/types";
 import type { AdminUser, ServiceItem, BookingItem, PaymentRecord } from "@/types";
@@ -6,13 +7,14 @@ import { getAllServices } from "@/lib/api/services";
 import { getAllBookings } from "@/lib/api/bookings";
 import { getAllPaymentsAndRevenue } from "@/lib/api/payment";
 import { AdminOverviewClient } from "./_components/admin-overview-client";
+import { AdminOverviewSkeleton } from "./_components/admin-overview-skeleton";
 
 export const metadata = {
   title: "Admin Overview | FixMate",
   description: "Platform summary metrics, user stats, pending service moderation, and activity pipeline.",
 };
 
-export default async function AdminDashboardPage() {
+async function AdminOverviewContent() {
   const baseUrl = AUTH_URL || "http://localhost:5000";
 
   // Fetch all necessary admin metrics concurrently in parallel
@@ -48,6 +50,18 @@ export default async function AdminDashboardPage() {
   const totalRevenue: number = Number(paymentData?.totalRevenue || 0);
 
   return (
+    <AdminOverviewClient
+      users={users}
+      services={services}
+      bookings={bookings}
+      transactions={transactions}
+      totalRevenue={totalRevenue}
+    />
+  );
+}
+
+export default function AdminDashboardPage() {
+  return (
     <div className="space-y-6">
       {/* Top Page Header */}
       <div className="border-b border-border/60 pb-5">
@@ -63,14 +77,10 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      {/* Interactive Overview Client */}
-      <AdminOverviewClient
-        users={users}
-        services={services}
-        bookings={bookings}
-        transactions={transactions}
-        totalRevenue={totalRevenue}
-      />
+      {/* Scoped Suspense loader: only activates for this overview page */}
+      <Suspense fallback={<AdminOverviewSkeleton />}>
+        <AdminOverviewContent />
+      </Suspense>
     </div>
   );
 }

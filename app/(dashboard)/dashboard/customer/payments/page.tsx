@@ -23,6 +23,7 @@ import {
 import { getSession } from "@/lib/server";
 import { getMyPayments } from "@/lib/api/payment";
 import { PaymentRecord } from "@/types";
+import { CopyButton } from "@/components/shared/copy-button";
 
 export const metadata = {
   title: "Payment History | FixMate Customer Portal",
@@ -110,12 +111,17 @@ export default async function CustomerPaymentsPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span
-                        className="font-mono text-xs text-muted-foreground truncate block max-w-[180px]"
-                        title={p.transactionId}
-                      >
-                        {p.transactionId}
-                      </span>
+                      <div className="flex items-center gap-1.5 max-w-[200px]">
+                        <span
+                          className="font-mono text-xs text-muted-foreground truncate"
+                          title={p.transactionId}
+                        >
+                          {p.transactionId}
+                        </span>
+                        {p.transactionId && (
+                          <CopyButton value={p.transactionId} label="Copy Transaction ID" />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -187,9 +193,14 @@ export default async function CustomerPaymentsPage() {
                 </div>
 
                 <div className="text-[11px] text-muted-foreground border-t border-border/50 pt-2 space-y-1">
-                  <p className="truncate">
-                    <strong>Transaction:</strong> {p.transactionId}
-                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate font-mono">
+                      <strong className="font-sans font-semibold text-foreground">TxID:</strong> {p.transactionId}
+                    </p>
+                    {p.transactionId && (
+                      <CopyButton value={p.transactionId} label="Copy Transaction ID" />
+                    )}
+                  </div>
                   <p>
                     <strong>Date:</strong>{" "}
                     {new Date(p.paidAt || Date.now()).toLocaleDateString("en-US", {

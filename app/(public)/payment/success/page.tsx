@@ -84,7 +84,7 @@ export default async function PaymentSuccessPage({
           <>
             {/* Success Icon */}
             <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-md">
-              <CheckCircle2 className="h-10 w-10 stroke-[2]" />
+              <CheckCircle2 className="h-10 w-10 stroke-2" />
               <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white font-bold text-xs shadow-xs">
                 ✓
               </span>
@@ -122,7 +122,7 @@ export default async function PaymentSuccessPage({
                     <Wrench className="h-3.5 w-3.5 text-primary" />
                     Service
                   </span>
-                  <span className="font-semibold text-foreground truncate max-w-[220px]">
+                  <span className="font-semibold text-foreground truncate max-w-55">
                     {serviceTitle}
                   </span>
                 </div>
@@ -154,7 +154,7 @@ export default async function PaymentSuccessPage({
                   </span>
                   <span className="flex items-center gap-1 min-w-0">
                     <span
-                      className="font-mono text-[11px] text-muted-foreground truncate max-w-[200px]"
+                      className="font-mono text-[11px] text-muted-foreground truncate max-w-50"
                       title={transactionId}
                     >
                       {transactionId || "—"}

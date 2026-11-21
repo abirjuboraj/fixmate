@@ -448,8 +448,8 @@ export function AdminOverviewClient({
               type="button"
               onClick={() => setActiveTab("pending-services")}
               className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${activeTab === "pending-services"
-                  ? "bg-card text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               Pending Services ({pendingServices})
@@ -458,8 +458,8 @@ export function AdminOverviewClient({
               type="button"
               onClick={() => setActiveTab("recent-bookings")}
               className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${activeTab === "recent-bookings"
-                  ? "bg-card text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               Recent Bookings
@@ -468,8 +468,8 @@ export function AdminOverviewClient({
               type="button"
               onClick={() => setActiveTab("recent-users")}
               className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${activeTab === "recent-users"
-                  ? "bg-card text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               New Users
@@ -620,9 +620,6 @@ export function AdminOverviewClient({
         )}
       </div>
 
-      {/* =========================================================================
-          SECTION 4: QUICK NAVIGATION GRID
-          ========================================================================= */}
       <div>
         <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
           Admin Control Center
