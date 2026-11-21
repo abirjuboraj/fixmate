@@ -1,8 +1,7 @@
 import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
-import clientPromise from "./db"
+import client from "./db"
 
-const client = await clientPromise
 const db = client.db("fixmate")
 
 export const auth = betterAuth({

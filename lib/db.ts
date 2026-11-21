@@ -11,21 +11,17 @@ let clientPromise: Promise<MongoClient>;
 
 declare global {
   // eslint-disable-next-line no-var
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
+  var _mongoClient: MongoClient | undefined;
 }
 
-// In serverless environments (like Vercel) and development with HMR,
-// caching the MongoClient promise in global scope prevents multiple connection pools
-// and premature socket closures that trigger MongoTopologyClosedError.
-if (!global._mongoClientPromise) {
-  client = new MongoClient(uri, {
+if (!global._mongoClient) {
+  global._mongoClient = new MongoClient(uri, {
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 8000,
+    serverSelectionTimeoutMS: 15000,
     socketTimeoutMS: 45000,
   });
-  global._mongoClientPromise = client.connect();
 }
 
-clientPromise = global._mongoClientPromise;
+client = global._mongoClient;
 
-export default clientPromise;
+export default client;
