@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   User,
-  Mail,
   Phone,
   MapPin,
   FileText,
-  Shield,
-  UploadCloud,
+  Camera,
   CheckCircle2,
   X,
   Loader2,
@@ -23,16 +21,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserInitials, getRoleBadgeStyle, formatRoleLabel, renderRoleIcon } from "@/components/shared/user-badge";
+import {
+  getUserInitials,
+  getRoleBadgeStyle,
+  formatRoleLabel,
+  renderRoleIcon,
+} from "@/components/shared/user-badge";
 import { UserRole } from "@/types";
 import { toast } from "sonner";
 
@@ -51,6 +47,7 @@ interface UpdateProfileFormProps {
 
 export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Editable fields state
   const [name, setName] = useState(initialUser.name || "");
@@ -86,13 +83,11 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
     }
-    const fileInput = document.getElementById("avatarUpload") as HTMLInputElement | null;
-    if (fileInput) {
-      fileInput.value = "";
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  // Reset all fields back to initial values when Cancel is clicked
   const handleCancel = () => {
     setName(initialUser.name || "");
     setPhone(initialUser.phone || "");
@@ -100,10 +95,9 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
     setBio(initialUser.bio || "");
     setCurrentImage(initialUser.image || "");
     handleRemoveSelectedFile();
-    toast.info("Changes reverted to original values.");
+    toast.info("Changes reverted to original info");
   };
 
-  // Check if any fields or photo changed compared to initialUser
   const isDirty =
     name !== (initialUser.name || "") ||
     phone !== (initialUser.phone || "") ||
@@ -115,7 +109,6 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // If no changes were made, notify the user and do not submit
     if (!isDirty) {
       toast.info("No changes were done.");
       return;
@@ -131,11 +124,12 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
     try {
       let finalImageUrl = currentImage;
 
-      // 1. If a new photo is selected, upload it to ImgBB
       if (selectedFile) {
         const uploadResult = await uploadImage(selectedFile);
         if (!uploadResult.success || !uploadResult.url) {
-          throw new Error(uploadResult.message || "Failed to upload photo to ImgBB.");
+          throw new Error(
+            uploadResult.message || "Failed to upload photo to ImgBB.",
+          );
         }
         finalImageUrl = uploadResult.url;
       }
@@ -149,7 +143,6 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
         image: finalImageUrl || undefined,
       });
 
-      // 3. Update Better Auth client state so navbar and topbar immediately display the new name & photo without logout!
       await authClient.updateUser({
         name: name.trim(),
         image: finalImageUrl || undefined,
@@ -164,7 +157,10 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
       router.refresh();
     } catch (err: unknown) {
       console.error("Profile update error:", err);
-      const message = err instanceof Error ? err.message : "Failed to update profile. Please try again.";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to update profile. Please try again.";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -172,100 +168,92 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
   };
 
   return (
-    <Card className="shadow-xs border-border/80">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold flex items-center gap-2">
-          <User className="h-5 w-5 text-primary" />
-          Personal Information
-        </CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
-          Update your public profile details. Changes will reflect instantly across FixMate.
-        </CardDescription>
-      </CardHeader>
-
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-6">
-
-          {/* Profile Photo Upload Section */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 p-4 rounded-xl border border-border/70 bg-muted/20">
-            <div className="relative group shrink-0">
-              <Avatar className="h-20 w-20 ring-2 ring-primary/20">
-                <AvatarImage
-                  src={previewUrl || currentImage || undefined}
-                  alt={name || "Profile Photo"}
-                />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
-                  {getUserInitials(name)}
-                </AvatarFallback>
-              </Avatar>
-
-              {previewUrl && (
-                <button
-                  type="button"
-                  onClick={handleRemoveSelectedFile}
-                  className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm hover:opacity-90 cursor-pointer"
-                  title="Remove chosen photo"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-
-            <div className="flex-1 space-y-2 text-center sm:text-left">
-              <Label htmlFor="avatarUpload" className="text-sm font-semibold flex items-center justify-center sm:justify-start gap-1.5">
-                <UploadCloud className="h-4 w-4 text-primary" />
-                Profile Photo
-              </Label>
-              <Input
-                id="avatarUpload"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="cursor-pointer file:cursor-pointer file:text-xs file:font-semibold file:text-primary file:border-0 file:bg-transparent text-xs max-w-sm"
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+   
+      <Card className="h-fit rounded-2xl border-border/70 p-6 shadow-xs">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="relative">
+            <Avatar className="h-20 w-20 ring-2 ring-primary/20">
+              <AvatarImage
+                src={previewUrl || currentImage || undefined}
+                alt={name || "Profile Photo"}
               />
-              <p className="text-[11px] text-muted-foreground">
-                Upload a JPEG, PNG, or WebP photo
-              </p>
-            </div>
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
+                {getUserInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Change profile photo"
+              title="Change profile photo"
+              className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            >
+              <Camera className="h-4 w-4" />
+            </button>
+
+            {/* Shown only after choosing a new photo */}
+            {previewUrl && (
+              <button
+                type="button"
+                onClick={handleRemoveSelectedFile}
+                aria-label="Remove chosen photo"
+                title="Remove chosen photo"
+                className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm hover:opacity-90"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
 
-          {/* Read-Only Fields Grid: Email & Role */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Email (Read-Only) */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5" />
-                Email Address
-              </Label>
-              <Input
-                type="email"
-                value={initialUser.email || ""}
-                disabled
-                className="bg-muted/60 text-muted-foreground cursor-not-allowed text-xs sm:text-sm font-medium"
-              />
-            </div>
+          <p className="text-lg font-bold text-foreground">
+            {name || initialUser.name || "Your Name"}
+          </p>
+          <p className="text-xs text-muted-foreground break-all">
+            {initialUser.email}
+          </p>
+          <Badge
+            variant="outline"
+            className={`text-xs font-semibold capitalize flex items-center ${getRoleBadgeStyle(
+              userRole,
+            )}`}
+          >
+            {renderRoleIcon(userRole)}
+            {roleLabel}
+          </Badge>
 
-            {/* Role (Read-Only) */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5" />
-                Account Role
-              </Label>
-              <div className="h-10 px-3 flex items-center rounded-lg border border-border/80 bg-muted/60">
-                <Badge
-                  variant="outline"
-                  className={`text-xs font-semibold capitalize flex items-center ${getRoleBadgeStyle(
-                    userRole
-                  )}`}
-                >
-                  {renderRoleIcon(userRole)}
-                  {roleLabel}
-                </Badge>
-              </div>
-            </div>
-          </div>
+          <input
+            ref={fileInputRef}
+            id="avatarUpload"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Tap the camera icon to upload a JPEG, PNG, or WebP photo
+          </p>
+        </div>
+      </Card>
 
-          {/* Name Field */}
+      {/* ── Edit form card (right, matches the loader) ── */}
+      <Card className="lg:col-span-2 rounded-2xl border-border/70 p-6 shadow-xs">
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            Personal Information
+          </h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Update your public profile details. Changes will reflect instantly
+            across FixMate.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-5 space-y-5">
+          {/* 2-column grid */}
+
+            {/* Full-width name field */}
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-sm font-medium">
               Full Name
@@ -280,11 +268,12 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
             />
           </div>
 
-          {/* Phone & Area (2-Column Grid) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Phone Number */}
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-1.5">
+              <Label
+                htmlFor="phone"
+                className="text-sm font-medium flex items-center gap-1.5"
+              >
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                 Phone Number
               </Label>
@@ -297,9 +286,11 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
               />
             </div>
 
-            {/* Service Area / City */}
             <div className="space-y-1.5">
-              <Label htmlFor="area" className="text-sm font-medium flex items-center gap-1.5">
+              <Label
+                htmlFor="area"
+                className="text-sm font-medium flex items-center gap-1.5"
+              >
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                 City / Area
               </Label>
@@ -313,11 +304,16 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
             </div>
           </div>
 
-          {/* Short Bio */}
+        
+
+          {/* Full-width bio textarea */}
           <div className="space-y-1.5">
-            <Label htmlFor="bio" className="text-sm font-medium flex items-center gap-1.5">
+            <Label
+              htmlFor="bio"
+              className="text-sm font-medium flex items-center gap-1.5"
+            >
               <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-              Short Bio (Skills, experience & overview)
+              Short Bio (Skills, experience &amp; overview)
             </Label>
             <Textarea
               id="bio"
@@ -327,36 +323,37 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
               onChange={(e) => setBio(e.target.value)}
             />
           </div>
-        </CardContent>
 
-        <CardFooter className="flex items-center justify-end gap-3 pt-6 border-t border-border/40">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSubmitting || !isDirty}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="gap-2 font-semibold shadow-xs"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+          {/* Footer actions */}
+          <div className="flex justify-end gap-2 border-t border-border/50 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isSubmitting || !isDirty}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="gap-2 font-semibold shadow-xs"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </div>
   );
 }
