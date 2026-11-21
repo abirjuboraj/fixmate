@@ -17,7 +17,7 @@ const POPULAR_QUICK_TAGS = [
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-[560px] items-center justify-center overflow-hidden border-b border-border/80 bg-neutral-950 text-white sm:min-h-[600px] lg:min-h-[640px]">
+    <section className="relative flex min-h-140 items-center justify-center overflow-hidden border-b border-border/80 bg-neutral-950 text-white sm:min-h-150 lg:min-h-160">
       {/* Background image: shift the focal point per breakpoint so the
           technician stays visible instead of being covered by the text. */}
       <Image
@@ -31,7 +31,7 @@ export function HeroSection() {
 
       {/* Mobile: softer top-to-bottom overlay so the photo is still visible.
           Tablet/desktop: classic left-to-right dark-to-clear overlay. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/80 via-neutral-950/55 to-neutral-950/85 sm:bg-gradient-to-r sm:from-neutral-950 sm:via-neutral-950/75 sm:to-neutral-950/20" />
+      <div className="absolute inset-0 bg-linear-to-b from-neutral-950/80 via-neutral-950/55 to-neutral-950/85 sm:bg-linear-to-r sm:from-neutral-950 sm:via-neutral-950/75 sm:to-neutral-950/20" />
 
       {/* ── FOREGROUND CONTENT ── */}
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">

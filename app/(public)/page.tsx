@@ -10,7 +10,6 @@ export default function HomePage() {
 
       <HeroSection />
 
-      {/* 6 latest approved services (fetched on the server) */}
       <FeaturedServices />
 
       <HowItWorks />

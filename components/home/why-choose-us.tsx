@@ -1,15 +1,7 @@
-import {
-  ShieldCheck,
-  Award,
-  Wallet,
-  Clock,
-  Star,
-  Quote,
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ShieldCheck, Award, Wallet, Clock, Star } from "lucide-react";
 import { StatsCounter } from "./stats-counter";
+import { Testimonials } from "./testimonials";
 
-// Core Trust Points & Platform Highlights
 const TRUST_POINTS = [
   {
     icon: ShieldCheck,
@@ -38,37 +30,6 @@ const TRUST_POINTS = [
     description:
       "Clear pricing upfront with estimated duration and covered items. No hidden charges or surprise diagnostics fees.",
     color: "text-violet-600 bg-violet-500/10 border-violet-500/20",
-  },
-];
-
-// Verified customer testimonials
-const TESTIMONIALS = [
-  {
-    name: "Tanvir Ahmed",
-    role: "MacBook Pro Owner",
-    area: "Dhanmondi, Dhaka",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-    quote:
-      "My laptop motherboard had water damage and Apple service said it couldn't be saved. A FixMate technician fixed it at my house within 3 hours. Paying after repair gave me immense peace of mind!",
-    rating: 5,
-  },
-  {
-    name: "Farhana Yasmin",
-    role: "Homeowner",
-    area: "Gulshan, Dhaka",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop",
-    quote:
-      "Master AC servicing before summer was done flawlessly. The technician was polite, wore clean gear, tested cooling with digital gauges, and charged exactly what was listed on FixMate.",
-    rating: 5,
-  },
-  {
-    name: "Rafiqul Islam",
-    role: "Software Engineer",
-    area: "Mirpur, Dhaka",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
-    quote:
-      "Ordered an iPhone display replacement during office hours. Tracking the status from 'Accepted' to 'Completed' in real-time was super smooth. Highest recommendation!",
-    rating: 5,
   },
 ];
 
@@ -123,7 +84,7 @@ export function WhyChooseUs() {
         </div>
 
         {/* ── PART 2: PLATFORM NUMBERS & STATS (count up on scroll) ── */}
-        <div className="rounded-3xl border border-border/70 bg-gradient-to-br from-primary/5 via-card to-card p-4 shadow-xs sm:p-8 lg:p-12">
+        <div className="rounded-3xl border border-border/70 bg-linear-to-br from-primary/5 via-card to-card p-4 shadow-xs sm:p-8 lg:p-12">
           <StatsCounter />
         </div>
 
@@ -142,54 +103,8 @@ export function WhyChooseUs() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((item) => (
-              <div
-                key={item.name}
-                className="relative flex flex-col justify-between rounded-2xl border border-border/70 bg-card p-6 shadow-xs transition-all duration-300 hover:shadow-md hover:border-primary/40 space-y-6"
-              >
-                <div className="space-y-4">
-                  {/* Rating Stars */}
-                  <div className="flex items-center gap-1">
-                    {[...Array(item.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-
-                  <Quote className="h-7 w-7 text-primary/20" />
-
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic">
-                    &ldquo;{item.quote}&rdquo;
-                  </p>
-                </div>
-
-                {/* Author Info */}
-                <div className="flex items-center gap-3 border-t border-border/60 pt-4">
-                  <Avatar className="h-10 w-10 ring-1 ring-border">
-                    <AvatarImage src={item.image} alt={item.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
-                      {item.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div>
-                    <h4 className="text-sm font-bold text-foreground">
-                      {item.name}
-                    </h4>
-                    <p className="text-[11px] text-muted-foreground">
-                      {item.role} • {item.area}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Mobile: reviewer tabs + single quote. Tablet/desktop: card grid */}
+          <Testimonials />
         </div>
 
       </div>
