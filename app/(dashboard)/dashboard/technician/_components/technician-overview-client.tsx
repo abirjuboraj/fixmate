@@ -20,6 +20,12 @@ import {
   ChevronRight,
   ShieldCheck,
   Zap,
+  CheckSquare,
+  PackageCheck,
+  Compass,
+  ArrowRight,
+  Flame,
+  BadgeDollarSign,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -103,6 +109,34 @@ function getStatusBadge(status: BookingStatus) {
   }
 }
 
+// Smart Field Technician Diagnostic & Service Checklist items
+const FIELD_PROTOCOL_ITEMS = [
+  {
+    title: "Pre-Visit Verification",
+    desc: "Call the client to confirm device model, symptoms, and arrival address before departure.",
+    badge: "Prep",
+    color: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
+  },
+  {
+    title: "On-Site Safety & Diagnostics",
+    desc: "Check power surge safety and test fault conditions before opening enclosures or replacing parts.",
+    badge: "Inspection",
+    color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+  },
+  {
+    title: "Clear Pricing Alignment",
+    desc: "Disclose necessary spare parts or diagnostic adjustments before proceeding with repairs.",
+    badge: "Transparency",
+    color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
+  },
+  {
+    title: "Operational Demo & Closure",
+    desc: "Demonstrate the restored appliance to the customer, finalize the job amount, and enable Stripe checkout.",
+    badge: "Delivery",
+    color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  },
+];
+
 export function TechnicianOverviewClient({
   technicianName,
   services,
@@ -133,29 +167,10 @@ export function TechnicianOverviewClient({
       ? Math.round((completedCount / totalBookings) * 100)
       : 100;
 
-  // 2. Breakdown for Visual Work Pipeline (Requirement 4)
-  const pipelineSegments = [
-    { label: "New Requests", count: requestedCount, color: "bg-amber-500", textColor: "text-amber-500" },
-    { label: "Accepted", count: acceptedCount, color: "bg-blue-500", textColor: "text-blue-500" },
-    { label: "In Progress", count: inProgressCount, color: "bg-purple-500", textColor: "text-purple-500" },
-    { label: "Completed", count: completedCount, color: "bg-emerald-500", textColor: "text-emerald-500" },
-  ];
-
-  // 3. Category Demand Visualization (which service categories get the most repair bookings)
-  const categoryDemandMap: Record<string, number> = {};
-  bookings.forEach((b) => {
-    const cat = b.category || "General";
-    categoryDemandMap[cat] = (categoryDemandMap[cat] || 0) + 1;
-  });
-  const categoryDemandEntries = Object.entries(categoryDemandMap)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-  const maxDemand = Math.max(...categoryDemandEntries.map(([, count]) => count), 1);
-
-  // 4. Urgent / High-priority items needing immediate technician action
+  // Urgent / High-priority items needing immediate technician action
   const urgentRequests = bookings
-    .filter((b) => b.status === "requested" || b.status === "in-progress")
-    .slice(0, 5);
+    .filter((b) => b.status === "requested" || b.status === "in-progress" || b.status === "accepted")
+    .slice(0, 6);
 
   return (
     <div className="space-y-8 w-full">
@@ -171,7 +186,7 @@ export function TechnicianOverviewClient({
               Welcome back, {technicianName || "Technician"}!
             </h1>
             <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
-              Here is your daily performance report, active repair pipeline, and upcoming job queue.
+              Review incoming service orders, manage your active doorstep queue, and follow the standard diagnostic protocols.
             </p>
           </div>
 
@@ -196,7 +211,7 @@ export function TechnicianOverviewClient({
         <div className="pointer-events-none absolute -right-12 -bottom-12 h-48 w-48 rounded-full bg-primary/5 blur-2xl" />
       </div>
 
-      {/* -------------------- 1. Core Performance Stats Cards (Requirement 1 & 2) -------------------- */}
+      {/* -------------------- 1. Core Performance Stats Cards -------------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Jobs */}
         <div className="group relative rounded-2xl border border-border/80 bg-card p-5 shadow-xs hover:border-primary/40 hover:shadow-md transition-all">
@@ -258,7 +273,7 @@ export function TechnicianOverviewClient({
             Verified customer deliveries
           </p>
           <Link
-            href="/dashboard/technician/requests?tab=completed"
+            href="/dashboard/technician/requests"
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-emerald-600 dark:text-emerald-400 group-hover:underline"
           >
             <span>Completed History</span>
@@ -325,7 +340,7 @@ export function TechnicianOverviewClient({
             Across {completedCount} fulfilled jobs
           </p>
           <Link
-            href="/dashboard/technician/requests?tab=completed"
+            href="/dashboard/technician/requests"
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-purple-600 dark:text-purple-400 group-hover:underline"
           >
             <span>Revenue Breakdown</span>
@@ -334,281 +349,84 @@ export function TechnicianOverviewClient({
         </div>
       </div>
 
-      {/* -------------------- 2. Visual Charts & Performance Pipelines (Requirement 4) -------------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pipeline Distribution Chart (Unique to Technician) */}
-        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-6 flex flex-col justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Clock className="h-4 w-4 text-primary" />
-                Work Pipeline & Fulfillment
-              </h2>
-              <span className="text-xs font-semibold text-muted-foreground font-mono">
-                {totalBookings} Total Requests
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Current lifecycle distribution of all repair requests assigned to you.
-            </p>
-          </div>
-
-          {/* Combined Visual Segmented Progress Bar */}
-          <div className="space-y-3">
-            <div className="h-4 w-full bg-muted/60 rounded-full overflow-hidden flex shadow-inner">
-              {totalBookings === 0 ? (
-                <div className="h-full w-full bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-medium">
-                  No requests yet
-                </div>
-              ) : (
-                pipelineSegments.map((segment) => {
-                  const pct = totalBookings > 0 ? (segment.count / totalBookings) * 100 : 0;
-                  if (pct === 0) return null;
-                  return (
-                    <div
-                      key={segment.label}
-                      title={`${segment.label}: ${segment.count} (${Math.round(pct)}%)`}
-                      className={`h-full ${segment.color} transition-all duration-500 first:rounded-l-full last:rounded-r-full hover:brightness-110`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  );
-                })
-              )}
-            </div>
-
-            {/* Legend & Count Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-              {pipelineSegments.map((segment) => (
-                <div
-                  key={segment.label}
-                  className="rounded-xl border border-border/50 bg-background/50 p-3 flex flex-col items-center justify-center text-center space-y-1"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span className={`h-2.5 w-2.5 rounded-full ${segment.color}`} />
-                    <span className="text-[11px] font-medium text-muted-foreground">
-                      {segment.label}
-                    </span>
-                  </div>
-                  <span className="text-lg font-bold text-foreground font-mono">
-                    {segment.count}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-            <span>Action turnaround rate</span>
-            <span className="font-semibold text-foreground">
-              {activeJobsCount > 0 ? `${activeJobsCount} active in queue` : "Queue is fully cleared"}
-            </span>
-          </div>
-        </div>
-
-        {/* Category Request Demand (Unique chart showing where customer repairs concentrate) */}
-        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-5 flex flex-col justify-between">
+      {/* -------------------- 2. The Kept & Expanded Immediate Action Queue -------------------- */}
+      <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                Service Demand by Category
-              </h2>
-              <Badge variant="outline" className="text-xs font-semibold">
-                Most Requested
-              </Badge>
-            </div>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-amber-500" />
+              Immediate Action Queue
+            </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Volume of customer requests across your listed repair categories.
+              New incoming repair requests and in-progress jobs requiring your review, action, or status completion.
             </p>
           </div>
-
-          {categoryDemandEntries.length === 0 ? (
-            <div className="py-10 text-center text-xs text-muted-foreground">
-              No service requests logged yet. As customers book your services, category demand graphs will show here.
-            </div>
-          ) : (
-            <div className="space-y-3.5 pt-1">
-              {categoryDemandEntries.map(([category, count]) => {
-                const percentage = Math.round((count / maxDemand) * 100);
-                return (
-                  <div key={category} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-foreground">{category}</span>
-                      <span className="text-muted-foreground font-mono">
-                        {count} {count === 1 ? "request" : "requests"}
-                      </span>
-                    </div>
-                    {/* Visual Progress Bar */}
-                    <div className="h-2.5 w-full bg-muted/60 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-linear-to-r from-amber-500 via-primary to-primary rounded-full transition-all duration-700 ease-out"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="pt-2 border-t border-border/50 flex justify-end">
-            <Button variant="ghost" size="sm" asChild className="text-xs text-primary gap-1">
-              <Link href="/dashboard/technician/my-services">
-                Expand Your Offerings
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" asChild className="text-xs gap-1 font-semibold">
+            <Link href="/dashboard/technician/requests">
+              Full Pipeline
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </Button>
         </div>
-      </div>
 
-      {/* -------------------- 3. Action Center: Urgent Queue & Quick Navigation -------------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Urgent Action Queue (2 cols) */}
-        <div className="lg:col-span-2 rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-500" />
-                Immediate Action Queue
-              </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                New incoming repair requests and in-progress jobs requiring status updates.
-              </p>
-            </div>
-            <Button variant="outline" size="sm" asChild className="text-xs gap-1">
-              <Link href="/dashboard/technician/requests">
-                Full Pipeline
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-            </Button>
+        {urgentRequests.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border/80 p-8 text-center space-y-2">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto" />
+            <p className="text-sm font-semibold text-foreground">You are all caught up!</p>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+              No new pending requests or active jobs waiting for action. Keep your services active to receive more bookings.
+            </p>
           </div>
-
-          {urgentRequests.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border/80 p-8 text-center space-y-2">
-              <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto" />
-              <p className="text-sm font-semibold text-foreground">You are all caught up!</p>
-              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                No new pending requests or active jobs waiting for action. Keep your services active to receive more bookings.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {urgentRequests.map((booking) => (
-                <div
-                  key={booking._id}
-                  className="rounded-xl border border-border/60 bg-background/50 p-4 hover:border-primary/40 transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-                >
-                  <div className="space-y-1.5 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-sm text-foreground truncate">
-                        {booking.serviceTitle}
-                      </span>
-                      {getStatusBadge(booking.status)}
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-                      <span className="flex items-center gap-1">
-                        <User className="h-3.5 w-3.5 text-muted-foreground" />
-                        {booking.customerName}
-                      </span>
-                      {booking.customerPhone && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                          {booking.customerPhone}
-                        </span>
-                      )}
-                      {booking.address && (
-                        <span className="flex items-center gap-1 truncate max-w-[200px]">
-                          <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                          {booking.address}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
-                    <span className="font-extrabold text-sm font-mono text-foreground">
-                      ${booking.finalAmount || booking.basePrice}
+        ) : (
+          <div className="space-y-3">
+            {urgentRequests.map((booking) => (
+              <div
+                key={booking._id}
+                className="rounded-xl border border-border/60 bg-background/50 p-4 hover:border-primary/40 transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+              >
+                <div className="space-y-1.5 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-sm text-foreground truncate">
+                      {booking.serviceTitle}
                     </span>
-                    <Button size="sm" asChild className="text-xs font-semibold">
-                      <Link href="/dashboard/technician/requests">
-                        Update
-                      </Link>
-                    </Button>
+                    {getStatusBadge(booking.status)}
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
+                    <span className="flex items-center gap-1">
+                      <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      {booking.customerName}
+                    </span>
+                    {booking.customerPhone && (
+                      <span className="flex items-center gap-1">
+                        <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                        {booking.customerPhone}
+                      </span>
+                    )}
+                    {booking.address && (
+                      <span className="flex items-center gap-1 truncate max-w-[240px]">
+                        <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        {booking.address}
+                      </span>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Quick Navigation Cards & Account Shortcut (1 col) */}
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-3">
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" />
-              Quick Shortcuts
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Frequently accessed technician management panels.
-            </p>
-
-            <div className="space-y-2.5 pt-2">
-              <Button variant="outline" asChild className="w-full justify-between h-auto py-3">
-                <Link href="/dashboard/technician/add-service">
-                  <div className="flex items-center gap-2.5">
-                    <PlusCircle className="h-4 w-4 text-primary" />
-                    <div className="text-left">
-                      <p className="text-xs font-semibold">Add New Service</p>
-                      <p className="text-[11px] text-muted-foreground">Publish a new repair listing</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-              </Button>
-
-              <Button variant="outline" asChild className="w-full justify-between h-auto py-3">
-                <Link href="/dashboard/technician/my-services">
-                  <div className="flex items-center gap-2.5">
-                    <Wrench className="h-4 w-4 text-primary" />
-                    <div className="text-left">
-                      <p className="text-xs font-semibold">My Catalog</p>
-                      <p className="text-[11px] text-muted-foreground">Manage {totalServices} listed services</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-              </Button>
-
-              <Button variant="outline" asChild className="w-full justify-between h-auto py-3">
-                <Link href="/dashboard/technician/requests">
-                  <div className="flex items-center gap-2.5">
-                    <ClipboardList className="h-4 w-4 text-primary" />
-                    <div className="text-left">
-                      <p className="text-xs font-semibold">Requests Pipeline</p>
-                      <p className="text-[11px] text-muted-foreground">Accept, progress & complete</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-              </Button>
-
-              <Button variant="outline" asChild className="w-full justify-between h-auto py-3">
-                <Link href="/dashboard/profile">
-                  <div className="flex items-center gap-2.5">
-                    <User className="h-4 w-4 text-primary" />
-                    <div className="text-left">
-                      <p className="text-xs font-semibold">Technician Profile</p>
-                      <p className="text-[11px] text-muted-foreground">Update bio, service area & phone</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-              </Button>
-            </div>
+                <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                  <span className="font-extrabold text-sm font-mono text-foreground">
+                    ${booking.finalAmount || booking.basePrice}
+                  </span>
+                  <Button size="sm" asChild className="text-xs font-semibold">
+                    <Link href="/dashboard/technician/requests">
+                      Update
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
+
     </div>
   );
 }

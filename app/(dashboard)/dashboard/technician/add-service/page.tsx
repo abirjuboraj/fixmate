@@ -34,7 +34,7 @@ export default async function TechnicianAddServicePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
 
       <div className="border-b border-border/60 pb-5">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">

@@ -76,7 +76,7 @@ export default async function AdminUsersPage({
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           All FixMate users. Search, filter, and change user
-          roles — admins cannot change their own role.
+          roles.
         </p>
       </div>
 

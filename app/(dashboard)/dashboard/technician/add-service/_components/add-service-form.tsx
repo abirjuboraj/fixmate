@@ -66,6 +66,30 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
   // Submission feedback states
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  
+  const isDirty =
+    title.trim() !== "" ||
+    category !== "" ||
+    serviceMode !== "" ||
+    basePrice.trim() !== "" ||
+    estimatedDuration.trim() !== "" ||
+    serviceArea.trim() !== "" ||
+    description.trim() !== "" ||
+    imageFile !== null
+
+  // Cancel clears the form and stays on the page — no surprise navigation.
+  const handleCancel = () => {
+    setTitle("")
+    setCategory("")
+    setServiceMode("")
+    setBasePrice("")
+    setEstimatedDuration("")
+    setServiceArea("")
+    setDescription("")
+    handleRemoveImage()
+    toast.info("Form cleared.")
+  }
+
   // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -89,7 +113,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // Validate all required fields and show Sonner toast on failure
+
     if (!title.trim()) {
       toast.error("Please enter a service title.")
       return
@@ -185,7 +209,7 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
   }
 
   return (
-    <Card className="max-w-3xl border-border/80 shadow-sm">
+    <Card className="w-full border-border/80 shadow-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="flex items-center gap-2 text-xl font-bold text-foreground">
           <Wrench className="h-5 w-5 text-amber-500" />
@@ -431,15 +455,15 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.back()}
-              disabled={isSubmitting}
+              onClick={handleCancel}
+              disabled={isSubmitting || !isDirty}
               className="w-1/2 sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isDirty}
               className="w-1/2 gap-2 font-semibold shadow-sm sm:w-auto"
             >
               {isSubmitting ? (

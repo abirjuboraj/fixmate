@@ -1,6 +1,3 @@
-import { ShieldCheck } from "lucide-react";
-
-// Route-level skeleton loader scoped strictly to the Admin Overview page.
 export function AdminOverviewSkeleton() {
   return (
     <div className="space-y-8 animate-pulse w-full" aria-label="Loading admin overview">

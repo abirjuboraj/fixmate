@@ -234,9 +234,9 @@ export function AdminUsersView({
   return (
     <div className="space-y-4">
       {/* ---------- Search + filters bar ---------- */}
-      <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 md:flex-row md:items-center">
+      <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between">
         {/* Search by name or email — searches live as you type */}
-        <div className="relative flex-1">
+        <div className="relative w-full md:w-80 lg:w-96">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={searchInput}
@@ -246,8 +246,8 @@ export function AdminUsersView({
           />
         </div>
 
-        {/* Filter by role */}
-        <div className="flex gap-2 items-center">
+        {/* Filter by role and category */}
+        <div className="flex gap-2 items-center flex-wrap sm:flex-nowrap">
           <Select
             value={currentRole || "All"}
             onValueChange={(value) =>
@@ -297,7 +297,7 @@ export function AdminUsersView({
           {currentCategory && (
             <span className="hidden sm:inline">
               {" "}
-              (technicians offering &quot;{currentCategory}&quot;)
+              (technicians offering &quot;{currentCategory}&quot; service)
             </span>
           )}
         </p>
