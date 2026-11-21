@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  ShieldCheck,
-  Clock,
-  Sparkles,
-} from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 
 const CATEGORIES = [
@@ -23,8 +16,6 @@ const QUICK_LINKS = [
   { name: "Home", href: "/" },
   { name: "All Services", href: "/services" },
   { name: "How It Works & About", href: "/about" },
-  { name: "Customer Portal", href: "/dashboard/customer" },
-  { name: "Technician Hub", href: "/dashboard/technician" },
 ];
 
 function XIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -97,9 +88,9 @@ export function Footer() {
     <footer className="w-full border-t border-border/80 bg-card/60 text-foreground transition-colors">
       {/* Main Footer Links */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
-          {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-5">
+          {/* Brand: full row on mobile/tablet, two columns on desktop */}
+          <div className="col-span-2 space-y-4 md:col-span-3 lg:col-span-2">
             <Logo showTagline={true} />
             <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
               FixMate is the smart on-demand repair platform connecting verified
@@ -160,7 +151,7 @@ export function Footer() {
             <h4 className="text-sm font-semibold tracking-wide text-foreground uppercase">
               Quick Links
             </h4>
-            <ul className="space-y-1 text-sm">
+            <ul className="space-y-0.5 text-xs sm:space-y-1 sm:text-sm">
               {QUICK_LINKS.map((link) => (
                 <li key={link.name}>
                   <Link
@@ -179,7 +170,7 @@ export function Footer() {
             <h4 className="text-sm font-semibold tracking-wide text-foreground uppercase">
               Popular Repairs
             </h4>
-            <ul className="space-y-1 text-sm">
+            <ul className="space-y-0.5 text-xs sm:space-y-1 sm:text-sm">
               {CATEGORIES.map((cat) => (
                 <li key={cat.name}>
                   <Link
@@ -193,8 +184,8 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Details */}
-          <div className="space-y-3">
+          {/* Contact: full row on mobile, third column beside the other two on tablet */}
+          <div className="col-span-2 space-y-3 md:col-span-1">
             <h4 className="text-sm font-semibold tracking-wide text-foreground uppercase">
               Support & Contact
             </h4>
@@ -218,20 +209,9 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="mt-12 border-t border-border/60 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        {/* Bottom Copyright — only real project routes are linked above */}
+        <div className="mt-12 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} FixMate Platform. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <Link href="/about" className="hover:text-primary transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/about" className="hover:text-primary transition-colors">
-              Terms of Service
-            </Link>
-            <Link href="/about" className="hover:text-primary transition-colors">
-              Safety & Guarantee
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

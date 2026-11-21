@@ -29,7 +29,7 @@ export function HeroSearch() {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex w-full max-w-md items-center gap-2 rounded-xl border border-neutral-200/20 bg-white/95 text-neutral-900 p-1.5 shadow-md backdrop-blur-md"
+      className="flex w-full max-w-xs items-center gap-2 rounded-xl border border-neutral-200/20 bg-white/95 text-neutral-900 p-1.5 shadow-md backdrop-blur-md sm:max-w-sm lg:max-w-md"
     >
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />

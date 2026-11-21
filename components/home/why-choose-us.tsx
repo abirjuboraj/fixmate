@@ -3,14 +3,11 @@ import {
   Award,
   Wallet,
   Clock,
-  CheckCircle2,
-  Users,
-  Wrench,
-  ThumbsUp,
   Star,
   Quote,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StatsCounter } from "./stats-counter";
 
 // Core Trust Points & Platform Highlights
 const TRUST_POINTS = [
@@ -41,34 +38,6 @@ const TRUST_POINTS = [
     description:
       "Clear pricing upfront with estimated duration and covered items. No hidden charges or surprise diagnostics fees.",
     color: "text-violet-600 bg-violet-500/10 border-violet-500/20",
-  },
-];
-
-// Key platform statistics
-const STATS = [
-  {
-    icon: Users,
-    value: "2,500+",
-    label: "Satisfied Customers",
-    description: "Across Dhaka & metropolitan regions",
-  },
-  {
-    icon: Wrench,
-    value: "4,800+",
-    label: "Successful Repairs",
-    description: "Phones, Laptops, ACs & appliances fixed",
-  },
-  {
-    icon: ThumbsUp,
-    value: "99.2%",
-    label: "Positive Satisfaction",
-    description: "Backed by verified customer reviews",
-  },
-  {
-    icon: Star,
-    value: "4.9 / 5",
-    label: "Average Rating",
-    description: "Rated across all technician jobs",
   },
 ];
 
@@ -153,34 +122,9 @@ export function WhyChooseUs() {
           </div>
         </div>
 
-        {/* ── PART 2: PLATFORM NUMBERS & STATS ── */}
-        <div className="rounded-3xl border border-border/70 bg-gradient-to-br from-primary/5 via-card to-card p-8 sm:p-12 shadow-xs">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 divide-y lg:divide-y-0 lg:divide-x divide-border/60">
-            {STATS.map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={stat.label}
-                  className={`flex flex-col items-center text-center space-y-2 ${
-                    idx > 0 ? "pt-6 lg:pt-0 lg:px-6" : "lg:pr-6"
-                  }`}
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-1">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm font-bold text-foreground">
-                    {stat.label}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {stat.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+        {/* ── PART 2: PLATFORM NUMBERS & STATS (count up on scroll) ── */}
+        <div className="rounded-3xl border border-border/70 bg-gradient-to-br from-primary/5 via-card to-card p-4 shadow-xs sm:p-8 lg:p-12">
+          <StatsCounter />
         </div>
 
         {/* ── PART 3: TESTIMONIALS ── */}
