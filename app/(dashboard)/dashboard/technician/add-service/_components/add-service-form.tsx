@@ -256,8 +256,8 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
             />
           </div>
 
-          {/* Category & Service Mode (2-Column Grid) */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Row 1: Category, Service Mode & Starting Price */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             {/* Category Dropdown */}
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
@@ -303,11 +303,8 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          {/* Base Price & Estimated Duration (2-Column Grid) */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Base Price */}
+            {/* Starting Price */}
             <div className="space-y-1.5">
               <Label
                 htmlFor="basePrice"
@@ -331,9 +328,12 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                 Starting rate displayed on public service cards.
               </p>
             </div>
+          </div>
 
+          {/* Row 2: Estimated Duration (1/3) & Service Area (2/3) */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             {/* Estimated Duration */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 sm:col-span-1">
               <Label
                 htmlFor="estimatedDuration"
                 className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
@@ -351,26 +351,26 @@ export function AddServiceForm({ technician }: AddServiceFormProps) {
                 required
               />
             </div>
-          </div>
 
-          {/* Service Area */}
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="serviceArea"
-              className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
-            >
-              <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-              Service Area
-            </Label>
-            <Input
-              id="serviceArea"
-              name="serviceArea"
-              type="text"
-              placeholder="e.g. Dhanmondi, Mirpur, Gulshan, Dhaka"
-              value={serviceArea}
-              onChange={(e) => setServiceArea(e.target.value)}
-              required
-            />
+            {/* Service Area */}
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label
+                htmlFor="serviceArea"
+                className="flex items-center gap-1.5 text-xs font-medium sm:text-sm"
+              >
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                Service Area
+              </Label>
+              <Input
+                id="serviceArea"
+                name="serviceArea"
+                type="text"
+                placeholder="e.g. Dhanmondi, Mirpur, Gulshan, Dhaka"
+                value={serviceArea}
+                onChange={(e) => setServiceArea(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           {/* Service Banner Image Upload (ImgBB) */}

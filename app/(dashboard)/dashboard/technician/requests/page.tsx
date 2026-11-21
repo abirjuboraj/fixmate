@@ -11,7 +11,13 @@ export const metadata = {
   description: "Manage incoming repair service requests, update job statuses, and complete orders.",
 };
 
-export default async function TechnicianRequestsPage() {
+export default async function TechnicianRequestsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ highlight?: string }>;
+}) {
+  const { highlight } = await searchParams;
+
   // 1. Verify session on server
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -48,7 +54,7 @@ export default async function TechnicianRequestsPage() {
       </div>
 
       {/* Interactive Technician Client View */}
-      <TechnicianRequestsClient initialBookings={bookings} />
+      <TechnicianRequestsClient initialBookings={bookings} highlightId={highlight} />
     </div>
   );
 }

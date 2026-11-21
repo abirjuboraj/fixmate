@@ -25,6 +25,12 @@ import {
 
 import type { ServiceItem } from "@/types";
 import { updateServiceApproval } from "@/lib/action/services";
+import { useHighlight } from "@/hooks/use-highlight";
+import {
+  HIGHLIGHT_CARD_CLASS,
+  HIGHLIGHT_ROW_CLASS,
+  HIGHLIGHT_TRANSITION,
+} from "@/lib/highlight";
 import { ConfirmRejectModal } from "./confirm-reject-modal";
 import { toast } from "sonner";
 
@@ -32,6 +38,7 @@ interface AdminServicesViewProps {
   services: ServiceItem[];
   fetchError: string | null;
   initialStatus: string;
+  highlightId?: string;
 }
 
 
@@ -88,8 +95,16 @@ export function AdminServicesView({
   services,
   fetchError,
   initialStatus,
+  highlightId,
 }: AdminServicesViewProps) {
   const router = useRouter();
+
+  // Shared highlight behaviour (scroll into view + 5s glow + smooth fade).
+  const isHighlighting = useHighlight(
+    highlightId,
+    "service-row-",
+    "service-card-",
+  );
 
   // All services are fetched ONCE by the server. Filtering here in the browser
   // makes pill clicks instant — no server round trip, no loading state.
@@ -315,9 +330,17 @@ export function AdminServicesView({
               <TableBody>
                 {visibleServices.map((service) => {
                   const badge = getStatusBadge(service.approvalStatus);
+                  const isHighlighted =
+                    isHighlighting && service._id === highlightId;
 
                   return (
-                    <TableRow key={service._id}>
+                    <TableRow
+                      key={service._id}
+                      id={`service-row-${service._id}`}
+                      className={`${HIGHLIGHT_TRANSITION} ${
+                        isHighlighted ? HIGHLIGHT_ROW_CLASS : ""
+                      }`}
+                    >
                       {/* Image + title */}
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -379,11 +402,16 @@ export function AdminServicesView({
           <div className="md:hidden space-y-3">
             {visibleServices.map((service) => {
               const badge = getStatusBadge(service.approvalStatus);
+              const isHighlighted =
+                isHighlighting && service._id === highlightId;
 
               return (
                 <div
                   key={service._id}
-                  className="rounded-xl border border-border/70 bg-card overflow-hidden"
+                  id={`service-card-${service._id}`}
+                  className={`rounded-xl border bg-card overflow-hidden ${HIGHLIGHT_TRANSITION} ${
+                    isHighlighted ? HIGHLIGHT_CARD_CLASS : "border-border/70"
+                  }`}
                 >
                   <div className="p-4 flex gap-3">
                     <ServiceImage src={service.image} alt={service.title} />

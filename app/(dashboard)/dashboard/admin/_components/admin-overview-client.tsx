@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { AdminUser, ServiceItem, BookingItem, BookingStatus, PaymentRecord } from "@/types";
+import { withHighlight } from "@/lib/highlight";
 
 interface AdminOverviewClientProps {
   users: AdminUser[];
@@ -515,7 +516,13 @@ export function AdminOverviewClient({
                       </div>
                     </div>
                     <Button size="sm" asChild className="self-end sm:self-center text-xs font-semibold">
-                      <Link href="/dashboard/admin/services?status=pending">
+                      <Link
+                        href={withHighlight(
+                          "/dashboard/admin/services?status=pending",
+                          service._id,
+                          "service-row-",
+                        )}
+                      >
                         Review Now
                       </Link>
                     </Button>
@@ -555,7 +562,11 @@ export function AdminOverviewClient({
                     </div>
                     <Button variant="outline" size="sm" asChild className="self-end sm:self-center text-xs">
                       <Link
-                        href={`/dashboard/admin/bookings?status=${booking.status}&highlight=${booking._id}#booking-row-${booking._id}`}
+                        href={withHighlight(
+                          `/dashboard/admin/bookings?status=${booking.status}`,
+                          booking._id,
+                          "booking-row-",
+                        )}
                       >
                         View Details
                       </Link>

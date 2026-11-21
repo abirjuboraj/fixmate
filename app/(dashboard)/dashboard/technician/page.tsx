@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -5,20 +6,24 @@ import { AUTH_URL, BookingItem, type ServiceItem } from "@/types";
 import { getTechnicianServices } from "@/lib/api/services";
 import { getTechnicianBookings } from "@/lib/api/bookings";
 import { TechnicianOverviewClient } from "./_components/technician-overview-client";
-import { toast } from "sonner";
+import { TechnicianOverviewSkeleton } from "./_components/technician-overview-skeleton";
 
 export const metadata = {
   title: "Technician Dashboard | FixMate",
   description: "Overview of your services, active repair pipeline, and request analytics.",
 };
 
-export default async function TechnicianDashboardPage() {
+/**
+ * Data + auth live in this async child, wrapped in a scoped Suspense boundary
+ * by the page below. That way the loader shows only for this overview page —
+ * no dashboard-layout loader, and no double loader on menu switches.
+ */
+async function TechnicianOverviewContent() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session || !session.user) {
-    toast.info("Please sign in to continue");
     redirect("/sign-in?reason=protected");
   }
 
@@ -56,5 +61,13 @@ export default async function TechnicianDashboardPage() {
       services={services}
       bookings={bookings}
     />
+  );
+}
+
+export default function TechnicianDashboardPage() {
+  return (
+    <Suspense fallback={<TechnicianOverviewSkeleton />}>
+      <TechnicianOverviewContent />
+    </Suspense>
   );
 }

@@ -28,6 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { BookingItem, BookingStatus, CustomUser } from "@/types";
+import { withHighlight } from "@/lib/highlight";
 
 interface CustomerOverviewClientProps {
   user: CustomUser;
@@ -362,7 +363,13 @@ export function CustomerOverviewClient({
                     ${Number(booking.finalAmount || booking.basePrice || 0).toFixed(2)}
                   </span>
                   <Button size="sm" variant="outline" asChild className="text-xs font-semibold">
-                    <Link href="/dashboard/customer/bookings">
+                    <Link
+                      href={withHighlight(
+                        "/dashboard/customer/bookings",
+                        booking._id,
+                        "booking-row-",
+                      )}
+                    >
                       Details
                     </Link>
                   </Button>

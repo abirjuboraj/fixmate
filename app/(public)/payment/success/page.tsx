@@ -59,10 +59,10 @@ export default async function PaymentSuccessPage({
   const dateText =
     paidAt && !Number.isNaN(paidAt.getTime())
       ? paidAt.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
       : "—";
   const transactionId = payment?.transactionId ? String(payment.transactionId) : "";
   const serviceTitle = payment?.serviceTitle || "Repair Service";
@@ -149,12 +149,12 @@ export default async function PaymentSuccessPage({
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-muted-foreground shrink-0">
+                  <span className="shrink-0 whitespace-nowrap text-muted-foreground">
                     Transaction ID
                   </span>
-                  <span className="flex items-center gap-1 min-w-0">
+                  <span className="flex min-w-0 flex-1 items-center gap-1 sm:flex-none sm:w-auto sm:max-w-[240px]">
                     <span
-                      className="font-mono text-[11px] text-muted-foreground truncate max-w-50"
+                      className="min-w-0 flex-1 truncate font-mono text-[11px] text-muted-foreground"
                       title={transactionId}
                     >
                       {transactionId || "—"}

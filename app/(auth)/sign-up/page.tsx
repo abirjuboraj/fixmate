@@ -175,7 +175,7 @@ export default function SignUpPage() {
                     <CardTitle className="text-2xl font-bold tracking-tight">
                         Create your account
                     </CardTitle>
-                    <CardDescription className="text-sm [@media(max-height:780px)]:hidden">
+                    <CardDescription className="text-sm">
                         Book trusted repairs or offer your technician services.
                     </CardDescription>
                 </div>
@@ -206,9 +206,7 @@ export default function SignUpPage() {
                                 <span className="text-sm font-semibold text-foreground">
                                     Customer
                                 </span>
-                                <span className="hidden text-[11px] text-muted-foreground lg:inline">
-                                    Book repairs &amp; track jobs
-                                </span>
+
                             </button>
 
                             {/* Technician Option */}
@@ -229,9 +227,7 @@ export default function SignUpPage() {
                                 <span className="text-sm font-semibold text-foreground">
                                     Technician
                                 </span>
-                                <span className="hidden text-[11px] text-muted-foreground lg:inline">
-                                    List services &amp; fix devices
-                                </span>
+
                             </button>
                         </div>
                     </div>
@@ -273,7 +269,7 @@ export default function SignUpPage() {
 
                     {/* Profile Image Input (Ready for ImgBB) */}
                     <div className="space-y-1.5">
-                        <Label htmlFor="image">
+                        <Label htmlFor="image" className="w-fit">
                             Profile Photo <span className="text-destructive">*</span>
                         </Label>
                         <div className="flex items-center gap-2.5">

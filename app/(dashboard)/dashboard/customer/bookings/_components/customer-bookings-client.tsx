@@ -30,10 +30,17 @@ import {
 } from "@/components/ui/table";
 import { BookingItem, BookingStatus, PaymentStatus } from "@/types";
 import { cancelBooking, initiateBookingPayment } from "@/lib/action/bookings";
+import { useHighlight } from "@/hooks/use-highlight";
+import {
+  HIGHLIGHT_CARD_CLASS,
+  HIGHLIGHT_ROW_CLASS,
+  HIGHLIGHT_TRANSITION,
+} from "@/lib/highlight";
 import { toast } from "sonner";
 
 interface CustomerBookingsClientProps {
   initialBookings: BookingItem[];
+  highlightId?: string;
 }
 
 /**
@@ -158,8 +165,14 @@ function formatDisplayDate(dateInput?: Date | string) {
 
 export function CustomerBookingsClient({
   initialBookings,
+  highlightId,
 }: CustomerBookingsClientProps) {
   const router = useRouter();
+  const isHighlighting = useHighlight(
+    highlightId,
+    "booking-row-",
+    "booking-card-",
+  );
   const [bookings, setBookings] = useState<BookingItem[]>(initialBookings || []);
 
   // Modal state for booking cancellation confirmation
@@ -227,7 +240,7 @@ export function CustomerBookingsClient({
 
       if (checkoutUrl) {
         // Redirect user to Stripe Checkout hosted payment page
-        window.location.href = checkoutUrl;
+        window.location.assign(checkoutUrl);
         return;
       }
 
@@ -283,7 +296,7 @@ export function CustomerBookingsClient({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bookings.map((booking) => {
+                {bookings.map((booking, index) => {
                   const amount =
                     booking.finalAmount !== undefined
                       ? booking.finalAmount
@@ -296,7 +309,15 @@ export function CustomerBookingsClient({
                   const isPaid = booking.paymentStatus === "paid";
 
                   return (
-                    <TableRow key={booking._id || Math.random()}>
+                    <TableRow
+                      key={booking._id || index}
+                      id={`booking-row-${booking._id}`}
+                      className={`${HIGHLIGHT_TRANSITION} ${
+                        isHighlighting && booking._id === highlightId
+                          ? HIGHLIGHT_ROW_CLASS
+                          : ""
+                      }`}
+                    >
                       {/* Service Info with Image */}
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -443,7 +464,7 @@ export function CustomerBookingsClient({
 
           {/* ── MOBILE CARDS VIEW (Visible on sm & down) ── */}
           <div className="md:hidden space-y-4">
-            {bookings.map((booking) => {
+            {bookings.map((booking, index) => {
               const amount =
                 booking.finalAmount !== undefined
                   ? booking.finalAmount
@@ -457,8 +478,13 @@ export function CustomerBookingsClient({
 
               return (
                 <div
-                  key={booking._id || Math.random()}
-                  className="rounded-2xl border border-border/80 bg-card p-4 shadow-xs space-y-4"
+                  key={booking._id || index}
+                  id={`booking-card-${booking._id}`}
+                  className={`rounded-2xl border bg-card p-4 shadow-xs space-y-4 ${HIGHLIGHT_TRANSITION} ${
+                    isHighlighting && booking._id === highlightId
+                      ? HIGHLIGHT_CARD_CLASS
+                      : "border-border/80"
+                  }`}
                 >
                   {/* Top: Service info + Thumbnail */}
                   <div className="flex items-start gap-3">

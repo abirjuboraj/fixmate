@@ -24,6 +24,7 @@ export default async function AdminServicesPage({
   const params = await searchParams;
   const rawStatus = typeof params.status === "string" ? params.status : "";
   const currentStatus = VALID_STATUSES.includes(rawStatus) ? rawStatus : "pending";
+  const highlightId = typeof params.highlight === "string" ? params.highlight : "";
 
   let services: ServiceItem[] = [];
   let fetchError: string | null = null;
@@ -59,6 +60,7 @@ export default async function AdminServicesPage({
         services={services}
         fetchError={fetchError}
         initialStatus={currentStatus}
+        highlightId={highlightId}
       />
     </div>
   );

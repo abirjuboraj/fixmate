@@ -11,7 +11,13 @@ export const metadata = {
   description: "Track all your submitted repair service requests, statuses, and payments.",
 };
 
-export default async function CustomerBookingsPage() {
+export default async function CustomerBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ highlight?: string }>;
+}) {
+  const { highlight } = await searchParams;
+
   // 1. Verify user session on server
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -48,7 +54,7 @@ export default async function CustomerBookingsPage() {
         </p>
       </div>
 
-      <CustomerBookingsClient initialBookings={bookings} />
+      <CustomerBookingsClient initialBookings={bookings} highlightId={highlight} />
     </div>
   );
 }

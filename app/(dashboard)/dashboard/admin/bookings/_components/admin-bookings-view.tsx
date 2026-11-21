@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Ban,
@@ -26,6 +26,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { BookingItem, BookingStatus, PaymentStatus } from "@/types";
+import { useHighlight } from "@/hooks/use-highlight";
+import {
+  HIGHLIGHT_CARD_CLASS,
+  HIGHLIGHT_ROW_CLASS,
+  HIGHLIGHT_TRANSITION,
+} from "@/lib/highlight";
 
 interface AdminBookingsViewProps {
   bookings: BookingItem[];
@@ -200,25 +206,12 @@ export function AdminBookingsView({
     (booking) => status === "all" || booking.status === status,
   );
 
-  // Scroll highlighted item into view if provided
-  useEffect(() => {
-    if (highlightId) {
-      const el = document.getElementById(`booking-row-${highlightId}`) || document.getElementById(`booking-card-${highlightId}`);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-  }, [highlightId]);
-
-  const [isHighlighting, setIsHighlighting] = useState(Boolean(highlightId));
-
-  useEffect(() => {
-    if (!highlightId) return;
-
-    const timer = setTimeout(() => setIsHighlighting(false), 3000);
-
-    return () => clearTimeout(timer);
-  }, [highlightId]);
+  // Shared highlight behaviour (scroll + 5s glow + smooth fade).
+  const isHighlighting = useHighlight(
+    highlightId,
+    "booking-row-",
+    "booking-card-",
+  );
 
   const handleStatusFilter = (newStatus: string) => {
     // Local state only — instant. Keep the URL shareable without navigating.
@@ -336,11 +329,9 @@ export function AdminBookingsView({
                     <TableRow
                       key={booking._id}
                       id={`booking-row-${booking._id}`}
-                      className={
-                        isHighlighted
-                          ? "bg-primary/10 ring-2 ring-primary/40 transition-all duration-500 animate-pulse"
-                          : ""
-                      }
+                      className={`${HIGHLIGHT_TRANSITION} ${
+                        isHighlighted ? HIGHLIGHT_ROW_CLASS : ""
+                      }`}
                     >
                       {/* Service: thumbnail + title + category */}
                       <TableCell>
@@ -413,8 +404,8 @@ export function AdminBookingsView({
                 <div
                   key={booking._id}
                   id={`booking-card-${booking._id}`}
-                  className={`rounded-xl border bg-card p-4 shadow-xs space-y-3 transition-all duration-700 ${isHighlighted
-                    ? "border-primary ring-2 ring-primary/40 bg-primary/5 animate-pulse"
+                  className={`rounded-xl border bg-card p-4 shadow-xs space-y-3 ${HIGHLIGHT_TRANSITION} ${isHighlighted
+                    ? HIGHLIGHT_CARD_CLASS
                     : "border-border/70"
                     }`}
                 >

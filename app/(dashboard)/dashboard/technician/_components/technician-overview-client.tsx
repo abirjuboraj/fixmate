@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ServiceItem, BookingItem, BookingStatus } from "@/types";
+import { withHighlight } from "@/lib/highlight";
 
 interface TechnicianOverviewClientProps {
   technicianName: string;
@@ -416,7 +417,13 @@ export function TechnicianOverviewClient({
                     ${booking.finalAmount || booking.basePrice}
                   </span>
                   <Button size="sm" asChild className="text-xs font-semibold">
-                    <Link href="/dashboard/technician/requests">
+                    <Link
+                      href={withHighlight(
+                        "/dashboard/technician/requests",
+                        booking._id,
+                        "booking-row-",
+                      )}
+                    >
                       Update
                     </Link>
                   </Button>

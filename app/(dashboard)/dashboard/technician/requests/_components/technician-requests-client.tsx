@@ -39,10 +39,17 @@ import {
 } from "@/components/ui/table";
 import { BookingItem, BookingStatus, PaymentStatus } from "@/types";
 import { updateBookingStatus } from "@/lib/action/bookings";
+import { useHighlight } from "@/hooks/use-highlight";
+import {
+  HIGHLIGHT_CARD_CLASS,
+  HIGHLIGHT_ROW_CLASS,
+  HIGHLIGHT_TRANSITION,
+} from "@/lib/highlight";
 import { toast } from "sonner";
 
 interface TechnicianRequestsClientProps {
   initialBookings: BookingItem[];
+  highlightId?: string;
 }
 
 // Filter tabs definition
@@ -178,8 +185,14 @@ function formatDisplayDate(dateInput?: Date | string) {
 
 export function TechnicianRequestsClient({
   initialBookings,
+  highlightId,
 }: TechnicianRequestsClientProps) {
   const router = useRouter();
+  const isHighlighting = useHighlight(
+    highlightId,
+    "booking-row-",
+    "booking-card-",
+  );
 
   // Local state for all technician bookings
   const [bookings, setBookings] = useState<BookingItem[]>(initialBookings || []);
@@ -419,7 +432,7 @@ export function TechnicianRequestsClient({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredBookings.map((booking) => {
+                {filteredBookings.map((booking, index) => {
                   const bookingId = booking._id || "";
                   const isBookingBusy = !!loadingAction && loadingAction.startsWith(`${bookingId}:`);
                   const isAccepting = loadingAction === `${bookingId}:accepted`;
@@ -441,7 +454,15 @@ export function TechnicianRequestsClient({
                       : booking.basePrice;
 
                   return (
-                    <TableRow key={bookingId || Math.random()}>
+                    <TableRow
+                      key={bookingId || index}
+                      id={`booking-row-${bookingId}`}
+                      className={`${HIGHLIGHT_TRANSITION} ${
+                        isHighlighting && booking._id === highlightId
+                          ? HIGHLIGHT_ROW_CLASS
+                          : ""
+                      }`}
+                    >
                       {/* Customer Name & Phone */}
                       <TableCell>
                         <div className="space-y-1">
@@ -602,7 +623,7 @@ export function TechnicianRequestsClient({
 
           {/* ── MOBILE CARDS VIEW (Visible on md & down) ── */}
           <div className="lg:hidden space-y-4">
-            {filteredBookings.map((booking) => {
+            {filteredBookings.map((booking, index) => {
               const bookingId = booking._id || "";
               const isBookingBusy = !!loadingAction && loadingAction.startsWith(`${bookingId}:`);
               const isAccepting = loadingAction === `${bookingId}:accepted`;
@@ -621,8 +642,13 @@ export function TechnicianRequestsClient({
 
               return (
                 <div
-                  key={bookingId || Math.random()}
-                  className="rounded-2xl border border-border/80 bg-card p-4 shadow-xs space-y-3.5"
+                  key={bookingId || index}
+                  id={`booking-card-${bookingId}`}
+                  className={`rounded-2xl border bg-card p-4 shadow-xs space-y-3.5 ${HIGHLIGHT_TRANSITION} ${
+                    isHighlighting && booking._id === highlightId
+                      ? HIGHLIGHT_CARD_CLASS
+                      : "border-border/80"
+                  }`}
                 >
                   {/* Card Header: Service Title & Status */}
                   <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-3">
