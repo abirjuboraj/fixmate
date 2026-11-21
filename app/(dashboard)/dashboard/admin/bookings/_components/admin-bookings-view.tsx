@@ -30,7 +30,7 @@ import type { BookingItem, BookingStatus, PaymentStatus } from "@/types";
 interface AdminBookingsViewProps {
   bookings: BookingItem[];
   fetchError: string | null;
-  currentStatus: string;
+  initialStatus: string;
   highlightId?: string;
 }
 
@@ -189,10 +189,16 @@ function BookingImage({ src, alt }: { src?: string; alt: string }) {
 export function AdminBookingsView({
   bookings,
   fetchError,
-  currentStatus,
+  initialStatus,
   highlightId,
 }: AdminBookingsViewProps) {
   const router = useRouter();
+
+  // All bookings arrive from the server once; filtering is local and instant.
+  const [status, setStatus] = useState(initialStatus);
+  const visibleBookings = bookings.filter(
+    (booking) => status === "all" || booking.status === status,
+  );
 
   // Scroll highlighted item into view if provided
   useEffect(() => {
@@ -214,8 +220,14 @@ export function AdminBookingsView({
     return () => clearTimeout(timer);
   }, [highlightId]);
 
-  const handleStatusFilter = (status: string) => {
-    router.push(`/dashboard/admin/bookings?status=${status}`);
+  const handleStatusFilter = (newStatus: string) => {
+    // Local state only — instant. Keep the URL shareable without navigating.
+    setStatus(newStatus);
+    window.history.replaceState(
+      null,
+      "",
+      `/dashboard/admin/bookings?status=${newStatus}`,
+    );
   };
 
   // ---------- Error state (backend unreachable, 500, etc.) ----------
@@ -245,7 +257,7 @@ export function AdminBookingsView({
       {/* ---------- Status filter pills + result count ---------- */}
       <div className="flex flex-wrap items-center gap-2">
         {STATUS_FILTERS.map((filter) => {
-          const isActive = currentStatus === filter.value;
+          const isActive = status === filter.value;
 
           return (
             <Button
@@ -262,25 +274,25 @@ export function AdminBookingsView({
 
         <span className="text-sm text-muted-foreground ml-auto">
           <span className="font-semibold text-foreground">
-            {bookings.length}
+            {visibleBookings.length}
           </span>{" "}
-          booking{bookings.length === 1 ? "" : "s"}
+          booking{visibleBookings.length === 1 ? "" : "s"}
         </span>
       </div>
 
       {/* ---------- Empty state ---------- */}
-      {bookings.length === 0 ? (
+      {visibleBookings.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-12 text-center max-w-lg mx-auto">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <Inbox className="h-7 w-7" />
           </div>
           <h3 className="mt-4 text-base font-semibold text-foreground">
-            {currentStatus === "all"
+            {status === "all"
               ? "No bookings yet"
-              : `No ${STATUS_FILTERS.find((f) => f.value === currentStatus)?.label.toLowerCase()} bookings`}
+              : `No ${STATUS_FILTERS.find((f) => f.value === status)?.label.toLowerCase()} bookings`}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            {currentStatus === "all"
+            {status === "all"
               ? "Once customers start requesting repairs, their bookings will appear here."
               : "No bookings match this status right now. Try another filter."}
           </p>
@@ -291,12 +303,12 @@ export function AdminBookingsView({
             size="sm"
             className="mt-4 gap-2 font-medium"
             onClick={() =>
-              currentStatus !== "all"
+              status !== "all"
                 ? handleStatusFilter("all")
                 : router.push("/dashboard/admin")
             }
           >
-            {currentStatus !== "all" ? "Show All Bookings" : "Back to Dashboard"}
+            {status !== "all" ? "Show All Bookings" : "Back to Dashboard"}
           </Button>
         </div>
       ) : (
@@ -318,7 +330,7 @@ export function AdminBookingsView({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bookings.map((booking) => {
+                {visibleBookings.map((booking) => {
                   const isHighlighted = isHighlighting && booking._id === highlightId;
                   return (
                     <TableRow
@@ -395,7 +407,7 @@ export function AdminBookingsView({
 
           {/* ---------- Mobile: cards ---------- */}
           <div className="md:hidden space-y-3">
-            {bookings.map((booking) => {
+            {visibleBookings.map((booking) => {
               const isHighlighted = isHighlighting && booking._id === highlightId;
               return (
                 <div

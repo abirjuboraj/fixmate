@@ -1,6 +1,3 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { AUTH_URL } from "@/types";
 import type { ServiceItem } from "@/types";
 import { ShieldCheck } from "lucide-react";
@@ -22,22 +19,8 @@ export default async function AdminServicesPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session || !session.user) {
-    redirect("/sign-in");
-  }
-
-  const userRole = (session.user as { role?: string }).role || "customer";
-
-
-  // Only admins may open this page
-  if (userRole !== "admin") {
-    redirect(userRole === "technician" ? "/dashboard/technician" : "/dashboard/customer");
-  }
-
+  // The admin layout already verified the session + role, so no extra
+  // auth.api.getSession() call is needed here.
   const params = await searchParams;
   const rawStatus = typeof params.status === "string" ? params.status : "";
   const currentStatus = VALID_STATUSES.includes(rawStatus) ? rawStatus : "pending";
@@ -46,12 +29,8 @@ export default async function AdminServicesPage({
   let fetchError: string | null = null;
 
   try {
-    const api =
-      currentStatus === "all"
-        ? `${AUTH_URL}/api/admin/services`
-        : `${AUTH_URL}/api/admin/services?status=${currentStatus}`;
-
-    const result = await getAllServices(api);
+    // Fetch ALL services once. The client view filters them instantly.
+    const result = await getAllServices(`${AUTH_URL}/api/admin/services`);
     services = (result?.data as ServiceItem[]) ?? [];
   } catch (error) {
     fetchError =
@@ -79,7 +58,7 @@ export default async function AdminServicesPage({
       <AdminServicesView
         services={services}
         fetchError={fetchError}
-        currentStatus={currentStatus}
+        initialStatus={currentStatus}
       />
     </div>
   );

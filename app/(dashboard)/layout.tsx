@@ -1,83 +1,40 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/server";
+import type { UserRole } from "@/types";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
-import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import { UserRole } from "@/types";
-import { DashboardSidebar } from "@/components/dashboard/sidebar";
-import { DashboardTopbar } from "@/components/dashboard/topbar";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-
-export default function DashboardLayout({
+/**
+ * SERVER layout: the session (and therefore the role) is resolved on the
+ * server BEFORE any HTML is sent. The old client version briefly fell back to
+ * "customer" while useSession() loaded, so admins/technicians saw the wrong
+ * menu for a moment. This version cannot flash the wrong role.
+ */
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
+  const session = await getSession();
 
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user as
-    | {
-      name?: string;
-      email?: string;
-      image?: string | null;
-      role?: UserRole;
-    }
-    | undefined;
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
 
-  // Actual role retrieved from Better Auth session (defaults to customer if not set)
-  const userRole: UserRole = user?.role || "customer";
+  const user = session.user as {
+    name?: string;
+    email?: string;
+    image?: string | null;
+    role?: UserRole;
+  };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      {/* Desktop Fixed/Collapsible Sidebar */}
-      <div
-        className={`hidden lg:block shrink-0 transition-all duration-300 ease-in-out ${isDesktopCollapsed ? "w-20" : "w-64"
-          }`}
-      >
-        <div className="fixed inset-y-0 left-0 z-30 h-full transition-all duration-300 ease-in-out">
-          <div className={`h-full ${isDesktopCollapsed ? "w-20" : "w-64"}`}>
-            <DashboardSidebar
-              userRole={userRole}
-              userName={user?.name}
-              userEmail={user?.email}
-              isCollapsed={isDesktopCollapsed}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile & Tablet Drawer Sidebar (using shadcn Sheet) */}
-      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="p-0 w-72 sm:w-80">
-          <DashboardSidebar
-            userRole={userRole}
-            userName={user?.name}
-            userEmail={user?.email}
-            isCollapsed={false}
-            onItemClick={() => setMobileMenuOpen(false)}
-          />
-        </SheetContent>
-      </Sheet>
-
-      {/* Main Content Area */}
-      <div className="flex flex-1 flex-col min-w-0">
-        <DashboardTopbar
-          userRole={userRole}
-          userName={user?.name}
-          userEmail={user?.email}
-          userImage={user?.image}
-          onMobileMenuToggle={() => setMobileMenuOpen(true)}
-          onDesktopCollapseToggle={() =>
-            setIsDesktopCollapsed(!isDesktopCollapsed)
-          }
-          isDesktopCollapsed={isDesktopCollapsed}
-        />
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {children}
-        </main>
-      </div>
-    </div>
+    <DashboardShell
+      userRole={user.role || "customer"}
+      userName={user.name}
+      userEmail={user.email}
+      userImage={user.image}
+    >
+      {children}
+    </DashboardShell>
   );
 }

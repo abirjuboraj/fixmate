@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
@@ -31,7 +31,7 @@ import { toast } from "sonner";
 interface AdminServicesViewProps {
   services: ServiceItem[];
   fetchError: string | null;
-  currentStatus: string;
+  initialStatus: string;
 }
 
 
@@ -87,9 +87,20 @@ const ServiceImage = ({ src, alt }: { src?: string; alt: string }) => {
 export function AdminServicesView({
   services,
   fetchError,
-  currentStatus,
+  initialStatus,
 }: AdminServicesViewProps) {
   const router = useRouter();
+
+  // All services are fetched ONCE by the server. Filtering here in the browser
+  // makes pill clicks instant — no server round trip, no loading state.
+  const [status, setStatus] = useState(initialStatus);
+  const visibleServices = useMemo(
+    () =>
+      services.filter(
+        (service) => status === "all" || service.approvalStatus === status,
+      ),
+    [services, status],
+  );
 
 
   const [rejectingService, setRejectingService] = useState<ServiceItem | null>(null);
@@ -99,11 +110,14 @@ export function AdminServicesView({
 
 
 
-  const handleStatusFilter = (status: string) => {
-    router.push(
-      status === "all"
-        ? "/dashboard/admin/services?status=all"
-        : `/dashboard/admin/services?status=${status}`
+  const handleStatusFilter = (newStatus: string) => {
+    // Just update local state — instant. The URL is updated without a
+    // navigation so deep links still work, but no server request is made.
+    setStatus(newStatus);
+    window.history.replaceState(
+      null,
+      "",
+      `/dashboard/admin/services?status=${newStatus}`,
     );
   };
 
@@ -228,7 +242,7 @@ export function AdminServicesView({
       {/* ---------- Status filter pills ---------- */}
       <div className="flex flex-wrap items-center gap-2">
         {STATUS_FILTERS.map((filter) => {
-          const isActive = currentStatus === filter.value;
+          const isActive = status === filter.value;
 
           return (
             <Button
@@ -251,20 +265,20 @@ export function AdminServicesView({
         })}
 
         <span className="text-sm text-muted-foreground ml-auto">
-          <span className="font-semibold text-foreground">{services.length}</span>{" "}
-          service{services.length === 1 ? "" : "s"}
+          <span className="font-semibold text-foreground">{visibleServices.length}</span>{" "}
+          service{visibleServices.length === 1 ? "" : "s"}
         </span>
       </div>
 
       {/* ---------- Empty state ---------- */}
-      {services.length === 0 ? (
+      {visibleServices.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-12 text-center">
           <SearchX className="h-10 w-10 mx-auto text-muted-foreground" />
           <h3 className="mt-4 font-semibold text-foreground">
-            No {currentStatus !== "all" ? currentStatus : ""} services
+            No {status !== "all" ? status : ""} services
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            {currentStatus === "pending"
+            {status === "pending"
               ? "Great news — there are no services waiting for review."
               : "No services match this filter right now."}
           </p>
@@ -275,12 +289,12 @@ export function AdminServicesView({
             size="sm"
             className="mt-4 gap-2 font-medium"
             onClick={() =>
-              currentStatus !== "all"
+              status !== "all"
                 ? handleStatusFilter("all")
                 : router.push("/dashboard/admin")
             }
           >
-            {currentStatus !== "all" ? "Show All Services" : "Back to Dashboard"}
+            {status !== "all" ? "Show All Services" : "Back to Dashboard"}
           </Button>
         </div>
       ) : (
@@ -299,7 +313,7 @@ export function AdminServicesView({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {services.map((service) => {
+                {visibleServices.map((service) => {
                   const badge = getStatusBadge(service.approvalStatus);
 
                   return (
@@ -363,7 +377,7 @@ export function AdminServicesView({
 
           {/* ---------- Mobile: cards ---------- */}
           <div className="md:hidden space-y-3">
-            {services.map((service) => {
+            {visibleServices.map((service) => {
               const badge = getStatusBadge(service.approvalStatus);
 
               return (

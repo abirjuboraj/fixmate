@@ -1,9 +1,5 @@
-// SERVER COMPONENT — fallback loader for the dashboard segment.
-// Covers routes without their own loading.tsx:
-// /dashboard, /dashboard/admin, /dashboard/customer (overview),
-// /dashboard/admin/bookings and /dashboard/admin/transactions.
-import { RouteLoader } from "@/components/shared/route-loader";
+import { DashboardShellSkeleton } from "@/components/dashboard/dashboard-shell-skeleton";
 
 export default function LoadingDashboard() {
-  return <RouteLoader label="Loading dashboard..." />;
+  return <DashboardShellSkeleton />;
 }

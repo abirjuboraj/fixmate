@@ -2,9 +2,13 @@
 
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { cache } from "react"
 import { auth } from "./auth"
 
-export const getSession = async () => {
+// React cache() de-duplicates this call inside a single server request.
+// The layout's requireRole(), the page, and authFetch() all share one result
+// instead of hitting MongoDB several times per navigation.
+export const getSession = cache(async () => {
 
     const session = await auth.api.getSession(
         {
@@ -13,7 +17,7 @@ export const getSession = async () => {
     )
 
     return session
-}
+})
 
 export const getToken = async (): Promise<string> => {
     const session = await getSession();

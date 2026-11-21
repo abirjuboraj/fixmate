@@ -35,7 +35,8 @@ export default async function AdminBookingsPage({
   let fetchError: string | null = null;
 
   try {
-    const result = await getAllBookings(currentStatus);
+    // Fetch everything once; the client view filters by status instantly.
+    const result = await getAllBookings("all");
     bookings = (result?.data as BookingItem[]) ?? [];
   } catch (error) {
     fetchError =
@@ -63,7 +64,7 @@ export default async function AdminBookingsPage({
       <AdminBookingsView
         bookings={bookings}
         fetchError={fetchError}
-        currentStatus={currentStatus}
+        initialStatus={currentStatus}
         highlightId={highlightId}
       />
     </div>
