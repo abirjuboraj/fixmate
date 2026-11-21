@@ -14,7 +14,6 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
-/** Client shell: only UI state lives here (drawer + collapse). */
 export function DashboardShell({
   userRole,
   userName,

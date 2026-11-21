@@ -1,10 +1,6 @@
 "use client";
 
-// Fires a single sonner toast when the page mounts.
-// Used on server pages (payment success / cancel) that don't have their
-// own client component but still need a toast notification.
-
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 interface PageToastProps {
@@ -12,11 +8,15 @@ interface PageToastProps {
   message: string;
 }
 
+/** Fires a single toast on mount (StrictMode-safe). */
 export function PageToast({ type, message }: PageToastProps) {
+  const fired = useRef(false);
+
   useEffect(() => {
+    if (fired.current) return;
+    fired.current = true;
     toast[type](message);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [type, message]);
 
   return null;
 }

@@ -10,7 +10,7 @@ export default async function DashboardIndexPage() {
   });
 
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   const role = ((session.user as { role?: string }).role || "customer") as UserRole;

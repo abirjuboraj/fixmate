@@ -14,7 +14,7 @@ export default async function ProfilePage() {
 
   // Protect route
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   const user = session.user as {

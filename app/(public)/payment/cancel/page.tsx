@@ -4,7 +4,6 @@ import {
   XCircle,
   AlertTriangle,
   RotateCcw,
-  ArrowRight,
   ShieldX,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,24 +15,16 @@ export const metadata = {
   description: "Your repair service payment was not completed.",
 };
 
-interface PaymentCancelPageProps {
-  searchParams: Promise<{ booking_id?: string }>;
-}
-
 /**
  * Server Component: Payment Cancel Page
  * Rendered when a customer cancels Stripe Checkout or closes the tab.
  * Informs the user that no charge was made, and allows returning to My Bookings.
  */
-export default async function PaymentCancelPage({
-  searchParams,
-}: PaymentCancelPageProps) {
+export default async function PaymentCancelPage() {
   const session = await getSession();
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
-
-  const { booking_id } = await searchParams;
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-background">

@@ -18,7 +18,7 @@ export default async function TechnicianRequestsPage() {
   });
 
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   // 2. Role verification (must be technician or admin)

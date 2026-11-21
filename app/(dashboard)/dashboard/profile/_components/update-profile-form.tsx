@@ -170,7 +170,7 @@ export function UpdateProfileForm({ initialUser }: UpdateProfileFormProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
    
-      <Card className="h-fit rounded-2xl border-border/70 p-6 shadow-xs">
+      <Card className="mx-auto h-fit w-full max-w-xs rounded-2xl border-border/70 p-6 shadow-xs sm:max-w-md lg:max-w-none">
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="relative">
             <Avatar className="h-20 w-20 ring-2 ring-primary/20">

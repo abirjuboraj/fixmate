@@ -3,12 +3,7 @@ import { getSession } from "@/lib/server";
 import type { UserRole } from "@/types";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
-/**
- * SERVER layout: the session (and therefore the role) is resolved on the
- * server BEFORE any HTML is sent. The old client version briefly fell back to
- * "customer" while useSession() loaded, so admins/technicians saw the wrong
- * menu for a moment. This version cannot flash the wrong role.
- */
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -17,7 +12,7 @@ export default async function DashboardLayout({
   const session = await getSession();
 
   if (!session?.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   const user = session.user as {

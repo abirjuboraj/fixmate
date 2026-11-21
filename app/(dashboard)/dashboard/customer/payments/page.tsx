@@ -32,7 +32,7 @@ export const metadata = {
 export default async function CustomerPaymentsPage() {
   const session = await getSession();
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   const result = await getMyPayments();

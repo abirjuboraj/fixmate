@@ -8,6 +8,7 @@ import {
     Eye,
     EyeOff,
     UserCheck,
+    UserPlus,
     Wrench,
     Check,
     X,
@@ -136,7 +137,7 @@ export default function SignUpPage() {
                 image: imageUrl,
             };
 
-            const { data, error } = await signUp.email({
+            const { error } = await signUp.email({
                 name: signUpPayload.name,
                 email: signUpPayload.email,
                 password: signUpPayload.password,
@@ -166,42 +167,47 @@ export default function SignUpPage() {
 
     return (
         <Card className="w-full shadow-lg border-border/80">
-            <CardHeader className="space-y-1.5 text-center pb-6">
-                <CardTitle className="text-2xl font-bold tracking-tight">
-                    Create an Account
-                </CardTitle>
-                <CardDescription className="text-sm">
-                    Join FixMate to book repair services or list technician offerings.
-                </CardDescription>
+            <CardHeader className="space-y-2 px-5 pt-4 pb-3 text-center sm:px-6 [@media(max-height:780px)]:pt-3">
+                <div className="mx-auto hidden h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15 [@media(min-height:781px)]:flex">
+                    <UserPlus className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                    <CardTitle className="text-2xl font-bold tracking-tight">
+                        Create your account
+                    </CardTitle>
+                    <CardDescription className="text-sm [@media(max-height:780px)]:hidden">
+                        Book trusted repairs or offer your technician services.
+                    </CardDescription>
+                </div>
             </CardHeader>
 
             <form onSubmit={handleSubmit}>
-                <CardContent className="space-y-5">
+                <CardContent className="space-y-3 p-4 sm:p-5">
 
                     {/* Role Selection: Customer or Technician */}
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                         <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                             Select Your Role
                         </Label>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-2.5">
                             {/* Customer Option */}
                             <button
                                 type="button"
                                 onClick={() => handleRoleChange("customer")}
-                                className={`flex flex-col items-center justify-center p-3.5 rounded-xl border-2 transition-all cursor-pointer text-center ${role === "customer"
+                                className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border-2 transition-all cursor-pointer text-center ${role === "customer"
                                     ? "border-primary bg-primary/5 text-primary shadow-xs"
                                     : "border-border/80 hover:border-border hover:bg-muted/40 text-muted-foreground"
                                     }`}
                             >
                                 <UserCheck
-                                    className={`h-5 w-5 mb-1.5 ${role === "customer" ? "text-primary" : "text-muted-foreground"
+                                    className={`h-4 w-4 shrink-0 ${role === "customer" ? "text-primary" : "text-muted-foreground"
                                         }`}
                                 />
                                 <span className="text-sm font-semibold text-foreground">
                                     Customer
                                 </span>
-                                <span className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                                    Book repairs & track jobs
+                                <span className="hidden text-[11px] text-muted-foreground lg:inline">
+                                    Book repairs &amp; track jobs
                                 </span>
                             </button>
 
@@ -209,13 +215,13 @@ export default function SignUpPage() {
                             <button
                                 type="button"
                                 onClick={() => handleRoleChange("technician")}
-                                className={`flex flex-col items-center justify-center p-3.5 rounded-xl border-2 transition-all cursor-pointer text-center ${role === "technician"
+                                className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border-2 transition-all cursor-pointer text-center ${role === "technician"
                                     ? "border-amber-500 bg-amber-500/5 text-amber-600 shadow-xs"
                                     : "border-border/80 hover:border-border hover:bg-muted/40 text-muted-foreground"
                                     }`}
                             >
                                 <Wrench
-                                    className={`h-5 w-5 mb-1.5 ${role === "technician"
+                                    className={`h-4 w-4 shrink-0 ${role === "technician"
                                         ? "text-amber-500"
                                         : "text-muted-foreground"
                                         }`}
@@ -223,53 +229,56 @@ export default function SignUpPage() {
                                 <span className="text-sm font-semibold text-foreground">
                                     Technician
                                 </span>
-                                <span className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                                    List services & fix devices
+                                <span className="hidden text-[11px] text-muted-foreground lg:inline">
+                                    List services &amp; fix devices
                                 </span>
                             </button>
                         </div>
                     </div>
 
-                    {/* Full Name */}
-                    <div className="space-y-1.5">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="e.g. Abir Hossen"
-                            value={name}
-                            onChange={handleNameChange}
-                            required
-                            autoComplete="name"
-                        />
-                    </div>
-
-                    {/* Email Address */}
-                    <div className="space-y-1.5">
-                        <Label htmlFor="email">Email Address</Label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    {/* Name + email sit side by side from sm up to save height */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="name">Full Name</Label>
                             <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                className="pl-9"
-                                value={email}
-                                onChange={handleEmailChange}
+                                id="name"
+                                name="name"
+                                type="text"
+                                placeholder=" Your Name"
+                                value={name}
+                                onChange={handleNameChange}
                                 required
-                                autoComplete="email"
+                                autoComplete="name"
                             />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="email">Email Address</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    className="pl-9"
+                                    value={email}
+                                    onChange={handleEmailChange}
+                                    required
+                                    autoComplete="email"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Profile Image Input (Ready for ImgBB) */}
                     <div className="space-y-1.5">
-                        <Label htmlFor="image">Profile Photo (Optional)</Label>
-                        <div className="flex items-center gap-3">
+                        <Label htmlFor="image">
+                            Profile Photo <span className="text-destructive">*</span>
+                        </Label>
+                        <div className="flex items-center gap-2.5">
                             {imagePreview ? (
-                                <div className="relative h-14 w-14 rounded-xl border border-border overflow-hidden shrink-0 group">
+                                <div className="relative h-12 w-12 rounded-xl border border-border overflow-hidden shrink-0 group">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={imagePreview}
@@ -286,8 +295,8 @@ export default function SignUpPage() {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="h-14 w-14 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center shrink-0 text-muted-foreground">
-                                    <ImageIcon className="h-6 w-6" />
+                                <div className="h-12 w-12 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center shrink-0 text-muted-foreground">
+                                    <ImageIcon className="h-5 w-5" />
                                 </div>
                             )}
 
@@ -300,7 +309,7 @@ export default function SignUpPage() {
                                     onChange={handleImageChange}
                                     className="cursor-pointer file:cursor-pointer file:text-xs file:font-semibold file:text-primary file:border-0 file:bg-transparent text-xs"
                                 />
-                                <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                                <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1 [@media(max-height:780px)]:hidden">
                                     <UploadCloud className="h-3 w-3" />
                                     PNG, JPG or WebP
                                 </p>
@@ -340,7 +349,7 @@ export default function SignUpPage() {
 
                         {/* Password Validation Requirements Display */}
                         {password.length > 0 && (
-                            <div className="space-y-1 pt-2 text-xs">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-1 pt-1.5 text-[11px]">
                                 <div
                                     className={`flex items-center gap-1.5 ${hasMinLength ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
                                         }`}
@@ -379,10 +388,10 @@ export default function SignUpPage() {
                     </div>
                 </CardContent>
 
-                <CardFooter className="flex flex-col space-y-4 pt-6 border-t border-border/40 mt-3">
+                <CardFooter className="flex flex-col space-y-2 px-5 pt-3 pb-3 border-t border-border/40 mt-1 sm:px-6">
                     <Button
                         type="submit"
-                        className="w-full gap-2 shadow-sm font-semibold h-10"
+                        className="w-full gap-2 shadow-sm font-semibold h-9"
                         disabled={isLoading || (password.length > 0 && !isPasswordValid)}
                     >
                         {isLoading ? (
@@ -399,7 +408,14 @@ export default function SignUpPage() {
                     </Button>
 
                     {/* Google Social Login */}
-                    <SocialAuthButtons mode="sign-up" callbackURL="/dashboard" />
+                    <SocialAuthButtons
+                        mode="sign-up"
+                        callbackURL={
+                            role === "customer"
+                                ? "/dashboard/customer"
+                                : "/dashboard/technician"
+                        }
+                    />
 
                     <p className="text-center text-xs text-muted-foreground pt-1">
                         Already have an account?{" "}

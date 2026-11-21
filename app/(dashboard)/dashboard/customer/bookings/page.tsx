@@ -18,7 +18,7 @@ export default async function CustomerBookingsPage() {
   });
 
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   // Role verification (must be customer or admin accessing)

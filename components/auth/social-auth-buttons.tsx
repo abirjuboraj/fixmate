@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { authClient, signIn } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
 import { toast } from "sonner";
 
 interface SocialAuthButtonsProps {
@@ -58,7 +58,7 @@ export function SocialAuthButtons({
   };
 
   return (
-    <div className="w-full space-y-3">
+    <div className="w-full space-y-2">
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-border/80" />
@@ -75,7 +75,7 @@ export function SocialAuthButtons({
         variant="outline"
         onClick={handleGoogleSignIn}
         disabled={isGoogleLoading}
-        className="w-full gap-2.5 h-10 font-medium text-foreground bg-card hover:bg-muted/60 border-border/80 shadow-xs transition-all cursor-pointer"
+        className="w-full gap-2.5 h-8 font-medium text-foreground bg-card hover:bg-muted/60 border-border/80 shadow-xs transition-all cursor-pointer"
       >
         {isGoogleLoading ? (
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />

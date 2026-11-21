@@ -19,7 +19,7 @@ export default async function TechnicianDashboardPage() {
 
   if (!session || !session.user) {
     toast.info("Please sign in to continue");
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   const userRole = (session.user as { role?: string }).role || "customer";

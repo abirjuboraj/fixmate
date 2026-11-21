@@ -24,7 +24,7 @@ export default async function AdminUsersPage({
   });
 
   if (!session || !session.user) {
-    redirect("/sign-in");
+    redirect("/sign-in?reason=protected");
   }
 
   const userRole = (session.user as { role?: string }).role || "customer";

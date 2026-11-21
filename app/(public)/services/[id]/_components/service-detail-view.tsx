@@ -59,7 +59,9 @@ export function ServiceDetailView({
 
       return (
         <Button asChild className="w-full sm:w-auto gap-2 font-semibold shadow-sm">
-          <Link href={`/sign-in?callbackURL=${encodeURIComponent(pathname)}`}>
+          <Link
+            href={`/sign-in?callbackURL=${encodeURIComponent(pathname)}&reason=request-repair`}
+          >
             <Wrench className="h-4 w-4" />
             Request Repair
           </Link>
