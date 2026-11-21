@@ -148,13 +148,13 @@ export default async function PaymentSuccessPage({
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-4">
                   <span className="shrink-0 whitespace-nowrap text-muted-foreground">
                     Transaction ID
                   </span>
-                  <span className="flex min-w-0 flex-1 items-center gap-1 sm:flex-none sm:w-auto sm:max-w-[240px]">
+                  <span className="flex w-[58%] min-w-0 items-center justify-end gap-1 sm:w-auto sm:max-w-[240px]">
                     <span
-                      className="min-w-0 flex-1 truncate font-mono text-[11px] text-muted-foreground"
+                      className="min-w-0 flex-1 truncate text-right font-mono text-[11px] text-muted-foreground"
                       title={transactionId}
                     >
                       {transactionId || "—"}

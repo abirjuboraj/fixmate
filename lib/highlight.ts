@@ -2,13 +2,14 @@
 export const HIGHLIGHT_DURATION_MS = 5000;
 
 export const HIGHLIGHT_ROW_CLASS =
-  "bg-primary/10 outline outline-2 -outline-offset-2 outline-primary/50";
+  "bg-primary/10";
 
 export const HIGHLIGHT_CARD_CLASS =
-  "border-primary bg-primary/5 ring-2 ring-inset ring-primary/50";
+  "bg-primary/5";
 
 
-export const HIGHLIGHT_TRANSITION = "transition-all duration-700";
+export const HIGHLIGHT_TRANSITION =
+  "transition-colors duration-1500 ease-in-out";
 
 
 export function withHighlight(
