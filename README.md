@@ -9,7 +9,7 @@ job pipeline; admins moderate services and oversee the platform.
 
 https://fixmate-mu.vercel.app
 
-> Replace this with your final deployed URL if it differs.
+
 
 ## Admin credentials
 
