@@ -11,7 +11,7 @@ interface RouteLoaderProps {
 export function RouteLoader({ label = "Loading..." }: RouteLoaderProps) {
   return (
     <div
-      className="flex min-h-[60vh] flex-col items-center justify-center gap-5 px-4 text-center"
+      className="flex min-h-dvh flex-col items-center justify-center gap-5 px-4 text-center"
       role="status"
       aria-label={label}
     >

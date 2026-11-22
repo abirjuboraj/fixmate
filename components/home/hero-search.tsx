@@ -29,20 +29,24 @@ export function HeroSearch() {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex w-full max-w-xs items-center gap-2 rounded-xl border border-neutral-200/20 bg-white/95 text-neutral-900 p-1.5 shadow-md backdrop-blur-md sm:max-w-sm lg:max-w-md"
+      className="flex w-full max-w-[240px] items-center gap-1.5 rounded-xl border border-neutral-200/20 bg-white/95 p-1 text-neutral-900 shadow-md backdrop-blur-md sm:max-w-sm sm:gap-2 sm:p-1.5 lg:w-2/3 lg:max-w-none"
     >
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-500 sm:left-3 sm:h-4 sm:w-4" />
         <Input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search a repair: iPhone screen, AC..."
-          className="border-0 bg-transparent pl-9 text-neutral-900 placeholder:text-neutral-500 shadow-none focus-visible:ring-0 text-sm font-medium"
+          className="h-8 border-0 bg-transparent pl-8 text-xs font-medium text-neutral-900 shadow-none placeholder:text-neutral-500 focus-visible:ring-0 sm:h-9 sm:pl-9 sm:text-sm"
           aria-label="Search repair services"
         />
       </div>
-      <Button type="submit" className="gap-1.5 shadow-sm font-semibold shrink-0">
+      <Button
+        type="submit"
+        size="sm"
+        className="h-8 shrink-0 gap-1 rounded-lg px-2.5 text-xs font-semibold shadow-sm sm:h-9 sm:px-3 sm:text-sm"
+      >
         Search
       </Button>
     </form>

@@ -4,8 +4,12 @@ import { ArrowRight, ShieldCheck, Star, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeroSearch } from "@/components/home/hero-search";
 
+// High-resolution hero image supplied for the project: a FixMate technician
+// installing a pendant light in a customer's home.
+// Cache-busting query so Next's image optimizer serves the latest file after
+// the banner image is replaced with the same filename.
 const REPAIR_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1920&auto=format&fit=crop";
+  "/images/FixMate%20Living%20Room%20Light%20Repair.png?v=2";
 
 const POPULAR_QUICK_TAGS = [
   { label: "iPhone", query: "Smartphone" },
@@ -26,45 +30,51 @@ export function HeroSection() {
         fill
         priority
         sizes="100vw"
-        className="object-cover object-[62%_center] sm:object-center lg:object-right"
+        className="object-cover object-[72%_top] sm:object-[74%_top] lg:object-top"
       />
 
       {/* Mobile: softer top-to-bottom overlay so the photo is still visible.
           Tablet/desktop: classic left-to-right dark-to-clear overlay. */}
-      <div className="absolute inset-0 bg-linear-to-b from-neutral-950/80 via-neutral-950/55 to-neutral-950/85 sm:bg-linear-to-r sm:from-neutral-950 sm:via-neutral-950/75 sm:to-neutral-950/20" />
+      <div className="absolute inset-0 bg-linear-to-b from-neutral-950/85 via-neutral-950/75 to-neutral-950/90 sm:bg-linear-to-r sm:from-neutral-950 sm:via-neutral-950/65 sm:to-neutral-950/10" />
+
+      {/* Gentle lift on the right so the repair area and technician stay bright */}
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-l from-white/15 via-transparent to-transparent sm:from-white/10" />
 
       {/* ── FOREGROUND CONTENT ── */}
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <div className="max-w-xl space-y-5 rounded-2xl bg-neutral-950/35 p-5 backdrop-blur-[2px] sm:max-w-2xl sm:space-y-7 sm:rounded-none sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+        <div className="max-w-[16rem] space-y-4 text-left sm:max-w-[22rem] sm:space-y-7 lg:max-w-[38rem]">
           {/* Subtle Tagline */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium text-neutral-200 backdrop-blur-md border border-white/15 sm:px-3.5 sm:text-xs">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-medium text-neutral-200 backdrop-blur-md border border-white/15 sm:px-3.5 sm:text-[11px] lg:text-xs">
             <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
             <span>Doorstep Visits &amp; Shop Drop-Offs Available</span>
           </div>
 
           {/* Clean & Bold Headline */}
           <div className="space-y-3 sm:space-y-4">
-            <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
-              Professional Device &amp; Appliance Repairs.
+            <h1 className="text-[1.65rem] sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
+              Professional Device <br /> &amp; Appliance Repairs
             </h1>
-            <p className="text-sm sm:text-lg text-neutral-300 leading-relaxed max-w-xl">
-              Book certified local technicians for phones, computers, and home
-              appliances. Track your service in real time and pay only after
-              completion.
+            <p className="max-w-full text-xs text-neutral-300 leading-relaxed sm:text-base lg:text-lg">
+              <span className="block lg:inline">
+               Get reliable expert help for your devices and home appliances. Connect with trusted local technicians, stay updated on every step and enjoy hassle-free service from start to finish.
+              </span>{" "}
+              {/* <span className="block lg:inline">
+                Track your service in real time and pay only after completion.
+              </span> */}
             </p>
           </div>
 
           {/* Search Box & Quick Action */}
-          <div className="space-y-3.5 max-w-xl">
+          <div className="max-w-full space-y-3.5">
             {/* Mobile + tablet: shorter search with the CTA stacked below it.
                 Desktop: the original side-by-side row. */}
-            <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+            <div className="flex flex-col items-stretch gap-3 lg:flex-row lg:items-center">
               <HeroSearch />
               <Button
                 asChild
-                size="lg"
+                size="sm"
                 variant="secondary"
-                className="w-auto self-start gap-2 font-semibold shadow-md shrink-0 h-11 bg-white text-neutral-900 hover:bg-neutral-100 lg:self-auto"
+                className="h-8 w-auto shrink-0 self-start gap-1.5 rounded-lg px-3 text-xs font-semibold shadow-md bg-white text-neutral-900 hover:bg-neutral-100 sm:h-9 sm:text-sm lg:h-11 lg:w-auto lg:gap-2 lg:self-auto lg:text-sm"
               >
                 <Link href="/services">
                   Browse All
@@ -74,13 +84,15 @@ export function HeroSection() {
             </div>
 
             {/* Clean Quick Category Links */}
-            <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-neutral-400">
+            <div className="flex flex-wrap items-center gap-1.5 text-[10px] sm:gap-2 sm:text-xs text-neutral-400">
               <span className="font-medium text-neutral-300">Quick Search:</span>
-              {POPULAR_QUICK_TAGS.map((tag) => (
+              {POPULAR_QUICK_TAGS.map((tag, index) => (
                 <Link
                   key={tag.label}
                   href={`/services?search=${encodeURIComponent(tag.query)}`}
-                  className="rounded-md bg-white/10 px-2.5 py-1 text-neutral-200 hover:bg-white/20 hover:text-white transition-colors border border-white/10"
+                  className={`rounded-md border border-white/10 bg-white/10 px-2 py-1 text-neutral-200 transition-colors hover:bg-white/20 hover:text-white ${
+                    index >= 3 ? "hidden sm:inline-flex" : ""
+                  }`}
                 >
                   {tag.label}
                 </Link>
@@ -88,8 +100,8 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Trust row: stacked icon + label on mobile, inline on larger screens */}
-          <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/10 text-neutral-300 sm:gap-5 lg:gap-6">
+          {/* Trust row — hidden on mobile to leave room for the photo */}
+          <div className="hidden grid-cols-3 gap-2 border-t border-white/10 pt-4 text-neutral-300 sm:grid sm:gap-5 lg:gap-6">
             <div className="flex flex-col items-center gap-1 text-center sm:flex-row sm:items-start sm:gap-2 sm:text-left">
               <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0" />
               <div>

@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   // globals/connection pools must be shared correctly across warm invocations.
   serverExternalPackages: ["mongodb"],
   images: {
+    // Allow the cache-busting query used by the hero banner
+    localPatterns: [
+      { pathname: "/images/**", search: "?v=2" },
+      { pathname: "/images/**", search: "" },
+    ],
     remotePatterns: [
       // Unsplash — used for high-quality hero / marketing imagery
       { protocol: "https", hostname: "images.unsplash.com" },
