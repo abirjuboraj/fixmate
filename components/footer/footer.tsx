@@ -85,7 +85,10 @@ function GitHubIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-border/80 bg-card/60 text-foreground transition-colors">
+    <footer className="relative w-full bg-card/70 text-foreground shadow-[0_-8px_24px_-20px_rgba(0,0,0,0.25)] transition-colors">
+      {/* thin brand-tinted top accent */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
+
       {/* Main Footer Links */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-5">
@@ -103,7 +106,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="X (formerly Twitter)"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/80 bg-background text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
               >
                 <XIcon className="h-4 w-4" />
               </a>
@@ -112,7 +115,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/80 bg-background text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
               >
                 <FacebookIcon className="h-4 w-4" />
               </a>
@@ -121,7 +124,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/80 bg-background text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
               >
                 <InstagramIcon className="h-4 w-4" />
               </a>
@@ -130,7 +133,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/80 bg-background text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
               >
                 <LinkedInIcon className="h-4 w-4" />
               </a>
@@ -139,7 +142,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/80 bg-background text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
               >
                 <GitHubIcon className="h-4 w-4" />
               </a>
@@ -148,7 +151,8 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold tracking-wide text-foreground uppercase">
+            <h4 className="flex items-center text-sm font-semibold tracking-wide text-foreground uppercase">
+              <span/>
               Quick Links
             </h4>
             <ul className="space-y-0.5 text-xs sm:space-y-1 sm:text-sm">
@@ -156,7 +160,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="-mx-2 inline-block rounded px-2 py-1.5 text-muted-foreground hover:text-primary transition-colors"
+                    className="-mx-2 inline-block rounded-lg px-2 py-1.5 text-foreground/80 transition-all hover:translate-x-0.5 hover:bg-primary/5 hover:text-primary"
                   >
                     {link.name}
                   </Link>
@@ -167,7 +171,8 @@ export function Footer() {
 
           {/* Popular Categories */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold tracking-wide text-foreground uppercase">
+            <h4 className="flex items-center text-sm font-semibold tracking-wide text-foreground uppercase">
+              <span />
               Popular Repairs
             </h4>
             <ul className="space-y-0.5 text-xs sm:space-y-1 sm:text-sm">
@@ -175,7 +180,7 @@ export function Footer() {
                 <li key={cat.name}>
                   <Link
                     href={cat.href}
-                    className="-mx-2 inline-block rounded px-2 py-1.5 text-muted-foreground hover:text-primary transition-colors"
+                    className="-mx-2 inline-block rounded-lg px-2 py-1.5 text-foreground/80 transition-all hover:translate-x-0.5 hover:bg-primary/5 hover:text-primary"
                   >
                     {cat.name}
                   </Link>
@@ -186,8 +191,9 @@ export function Footer() {
 
           {/* Contact: full row on mobile, third column beside the other two on tablet */}
           <div className="col-span-2 space-y-3 md:col-span-1">
-            <h4 className="text-sm font-semibold tracking-wide text-foreground uppercase">
-              Support & Contact
+            <h4 className="flex items-center text-sm font-semibold tracking-wide text-foreground uppercase">
+              <span />
+              Support &amp; Contact
             </h4>
             <div className="space-y-3 text-sm text-muted-foreground">
               <div className="flex items-start gap-2.5">

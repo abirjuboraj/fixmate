@@ -10,7 +10,6 @@ import {
   LogOut,
 } from "lucide-react";
 
-import { authClient } from "@/lib/auth-client";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -59,7 +58,7 @@ export function MobileNavDrawer({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        className="flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-background hover:bg-muted cursor-pointer"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-background shadow-sm transition-colors hover:bg-primary/5 hover:text-primary cursor-pointer"
         aria-label="Open mobile navigation menu"
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

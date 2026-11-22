@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, ArrowLeft, ShieldCheck, Wrench, UserCheck } from "lucide-react";
+import { LogOut, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { authClient } from "@/lib/auth-client";
 import { DASHBOARD_MENUS } from "@/lib/navigation";
 import { UserRole } from "@/types";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getSidebarIcon } from "@/components/dashboard/sidebar-icons";
@@ -45,33 +44,12 @@ export function DashboardSidebar({
     }
   };
 
-  const getRoleBadgeVariant = (role: UserRole) => {
-    switch (role) {
-      case "admin":
-        return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
-      case "technician":
-        return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
-      default:
-        return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
-    }
-  };
-
-  const getRoleIcon = (role: UserRole) => {
-    switch (role) {
-      case "admin":
-        return <ShieldCheck className="h-3 w-3 mr-1 text-rose-500" />;
-      case "technician":
-        return <Wrench className="h-3 w-3 mr-1 text-amber-500" />;
-      default:
-        return <UserCheck className="h-3 w-3 mr-1 text-blue-500" />;
-    }
-  };
-
   return (
-    <aside className="flex h-full w-full flex-col justify-between bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all">
+    <aside className="relative flex h-full w-full flex-col justify-between border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-[1px_0_20px_-16px_rgba(0,0,0,0.3)] transition-all">
       <div className="flex flex-col">
         {/* Sidebar Header / Logo */}
-        <div className="flex h-16 items-center px-4 border-b border-sidebar-border">
+        <div className="relative flex h-16 items-center border-b border-sidebar-border px-4">
+          <div className="pointer-events-none absolute inset-x-0 -bottom-px h-px bg-linear-to-r from-transparent via-primary/30 to-transparent" />
           {isCollapsed ? (
             <div className="mx-auto">
               <Logo showTagline={false} textClassName="hidden" />
@@ -84,9 +62,10 @@ export function DashboardSidebar({
           )}
         </div>
 
-        {/* Section Heading */}
+        {/* Section Heading — small brand-tinted pill */}
         {!isCollapsed && (
-          <div className="px-4 pt-5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="mx-3 mt-4 inline-flex w-fit items-center rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
+            <span />
             {userRole} Menu
           </div>
         )}
@@ -106,10 +85,10 @@ export function DashboardSidebar({
                 href={item.href}
                 onClick={onItemClick}
                 title={isCollapsed ? item.title : undefined}
-                className={`group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${isCollapsed ? "justify-center" : "gap-3"
+                className={`group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${isCollapsed ? "justify-center" : "gap-3"
                   } ${isActive
                     ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground/90 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-sm"
                   }`}
               >
                 <IconComponent
@@ -131,7 +110,7 @@ export function DashboardSidebar({
           href="/"
           onClick={onItemClick}
           title={isCollapsed ? "Back to Home" : undefined}
-          className={`flex items-center rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors ${isCollapsed ? "justify-center" : "gap-2.5"
+          className={`flex items-center rounded-xl px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors ${isCollapsed ? "justify-center" : "gap-2.5"
             }`}
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
@@ -143,7 +122,7 @@ export function DashboardSidebar({
           size="sm"
           onClick={handleSignOut}
           title={isCollapsed ? "Sign Out" : undefined}
-          className={`w-full text-destructive hover:bg-destructive/10 hover:text-destructive justify-start text-xs font-medium px-3 py-2 h-auto ${isCollapsed ? "justify-center px-0" : "gap-2.5"
+          className={`w-full rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive justify-start text-xs font-medium px-3 py-2 h-auto ${isCollapsed ? "justify-center px-0" : "gap-2.5"
             }`}
         >
           <LogOut className="h-4 w-4 shrink-0" />

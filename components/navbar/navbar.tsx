@@ -58,13 +58,16 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/90 backdrop-blur-md transition-all">
+    <header className="sticky top-0 z-40 w-full bg-background/95 shadow-[0_1px_14px_-8px_rgba(0,0,0,0.25)] backdrop-blur-xl transition-all">
+      {/* thin brand-tinted accent line instead of a plain border */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
+
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         <Logo showTagline={false} />
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+        {/* Desktop Navigation — subtle segmented pill bar */}
+        <nav className="hidden items-center gap-0.5 rounded-full border border-border/70 bg-muted/40 p-1 shadow-xs md:flex">
           {NAV_LINKS.map((link) => {
             const isActive =
               link.href === "/"
@@ -75,10 +78,11 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative px-3.5 py-2 text-sm font-medium transition-colors rounded-md ${isActive
-                  ? "text-primary font-semibold bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                  }`}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-primary font-semibold text-primary-foreground shadow-sm"
+                    : "text-foreground/80 hover:bg-background hover:text-primary hover:shadow-xs"
+                }`}
               >
                 {link.label}
               </Link>
@@ -87,19 +91,26 @@ export function Navbar() {
         </nav>
 
         {/* Desktop Auth State */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden items-center gap-2 md:flex lg:gap-3">
           {isPending ? (
-            <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
+            <div className="h-9 w-28 animate-pulse rounded-full bg-muted" />
           ) : session && user ? (
-
             <UserDropdown user={user} onSignOut={handleSignOut} />
           ) : (
-
             <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild size="sm">
+              <Button
+                variant="ghost"
+                asChild
+                size="sm"
+                className="rounded-full font-medium"
+              >
                 <Link href="/sign-in">Sign In</Link>
               </Button>
-              <Button asChild size="sm" className="shadow-sm font-semibold">
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full px-5 font-semibold shadow-sm"
+              >
                 <Link href="/sign-up">Sign Up</Link>
               </Button>
             </div>

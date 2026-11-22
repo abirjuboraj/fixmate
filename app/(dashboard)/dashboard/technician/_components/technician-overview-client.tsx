@@ -352,19 +352,25 @@ export function TechnicianOverviewClient({
 
       {/* -------------------- 2. The Kept & Expanded Immediate Action Queue -------------------- */}
       <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
+        {/* Stacked on mobile so the button never crowds the text; side-by-side from sm up */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="min-w-0 flex-1">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <AlertCircle className="h-4 w-4 text-amber-500 shrink-0" />
               Immediate Action Queue
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
               New incoming repair requests and in-progress jobs requiring your review, action, or status completion.
             </p>
           </div>
-          <Button variant="outline" size="sm" asChild className="text-xs gap-1 font-semibold">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="shrink-0 self-start gap-1 text-xs font-semibold sm:self-auto"
+          >
             <Link href="/dashboard/technician/requests">
-              Full Pipeline
+              View All
               <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </Button>

@@ -18,11 +18,7 @@ import {
   Wrench,
 } from "lucide-react";
 
-/**
- * 7 Official FixMate Categories matching SERVICE_CATEGORIES from types/index.ts.
- * Clicking any category takes the user directly to `/services?category=<CategoryName>`
- * with that category pre-filtered!
- */
+
 const CATEGORIES = [
   {
     name: "Smartphone",
@@ -92,24 +88,9 @@ const CATEGORIES = [
   },
 ];
 
-/**
- * Client Component: "Popular Repair Categories" as a swipeable carousel (Embla).
- *
- * Why Embla? It's tiny (~3kb), has no CSS bundle to import, and works with
- * plain Tailwind classes — a much better fit for this site's clean theme than
- * a heavier library like Swiper.
- *
- * Responsive slides-per-view (controlled with CSS, not JS):
- *   mobile  ->  ~1.2 cards (next card peeks in, hints "swipe me")
- *   sm      ->  ~2 cards
- *   md      ->  3 cards
- *   lg      ->  4 cards
- */
+
 export function CategoriesCarousel() {
-  // Gentle autoplay: advances every 4s, pauses while hovered, and stops for
-  // good as soon as the visitor uses the arrows, dots, or drags the carousel.
-  // It also stops naturally at the last card because the loop is disabled.
-  // Skipped entirely when "reduce motion" is enabled in the OS settings.
+ 
   const plugins = useMemo(() => {
     if (
       typeof window !== "undefined" &&
@@ -120,12 +101,9 @@ export function CategoriesCarousel() {
 
     return [
       Autoplay({
-        delay: 4000,
+        delay: 3000,
         stopOnInteraction: true,
         stopOnMouseEnter: true,
-        // IMPORTANT: without this, the autoplay plugin jumps back to slide 1
-        // when it reaches the end (embla's default), which brings the first
-        // card right next to the last one. Stop quietly on the last card.
         stopOnLastSnap: true,
       }),
     ];
@@ -133,10 +111,6 @@ export function CategoriesCarousel() {
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
-      // NO infinite loop: at the end the carousel stops on the last cards
-      // instead of attaching the first card right after the last one.
-      // trimSnaps removes snaps that would leave empty space at the edges,
-      // so the final view still shows a full row of cards.
       loop: false,
       align: "start",
       containScroll: "trimSnaps",
@@ -144,13 +118,12 @@ export function CategoriesCarousel() {
     plugins
   );
 
-  // Carousel UI state: arrow availability, current dot, total dots
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [slideCount, setSlideCount] = useState(0);
 
-  // Keep the arrows and dots in sync with the carousel
+
   useEffect(() => {
     if (!emblaApi) return;
 
@@ -194,7 +167,7 @@ export function CategoriesCarousel() {
     <div className="space-y-6">
       {/* ---------- Carousel viewport ---------- */}
       <div
-        className="overflow-hidden"
+        className="overflow-hidden py-2"
         ref={emblaRef}
         role="region"
         aria-roledescription="carousel"
@@ -207,26 +180,21 @@ export function CategoriesCarousel() {
             const targetUrl = `/services?category=${encodeURIComponent(cat.slug)}`;
 
             return (
-              // IMPORTANT: keep CSS transforms/transitions off the slide
-              // element. Embla controls slide positioning with inline styles,
-              // and animating those same properties with CSS causes jumps.
+
               <Link
                 key={cat.name}
                 href={targetUrl}
-                // Basis = how wide one card is. It changes per breakpoint so
-                // exactly the right number of cards fits on each screen size.
+
                 className="
                   group flex h-full shrink-0 grow-0 basis-[82%]
                   focus-visible:outline-2 focus-visible:outline-primary
                   sm:basis-[46%]
-                  md:basis-[calc((100%_-_2rem)/3)]
-                  lg:basis-[calc((100%_-_3rem)/4)]
+                  md:basis-[calc((100%-2rem)/3)]
+                  lg:basis-[calc((100%-3rem)/4)]
                 "
               >
-                {/* All hover effects live on this INNER card, which is safe
-                    to transform because it isn't an Embla slide. */}
                 <div className="relative flex h-full flex-col justify-between rounded-2xl border border-border/70 bg-card p-6 shadow-xs transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-lg">
-                  {/* Top Badge (Optional for featured categories) */}
+
                   {cat.badge && (
                     <span className="absolute top-4 right-4 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-primary tracking-wide">
                       {cat.badge}
@@ -236,7 +204,7 @@ export function CategoriesCarousel() {
                   {/* Icon & Category Title */}
                   <div className="space-y-4">
                     <div
-                      className={`inline-flex h-12 w-12 items-center justify-center rounded-xl border bg-gradient-to-br ${cat.accentColor} transition-transform duration-300 group-hover:scale-110`}
+                      className={`inline-flex h-12 w-12 items-center justify-center rounded-xl border bg-linear-to-br ${cat.accentColor} transition-transform duration-300 group-hover:scale-110`}
                     >
                       <Icon className="h-6 w-6" />
                     </div>
@@ -270,8 +238,8 @@ export function CategoriesCarousel() {
               group flex h-full shrink-0 grow-0 basis-[82%]
               focus-visible:outline-2 focus-visible:outline-primary
               sm:basis-[46%]
-              md:basis-[calc((100%_-_2rem)/3)]
-              lg:basis-[calc((100%_-_3rem)/4)]
+              md:basis-[calc((100%-2rem)/3)]
+              lg:basis-[calc((100%-3rem)/4)]
             "
           >
             <div className="flex h-full flex-col justify-between rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-6 shadow-xs transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary group-hover:bg-primary/10">

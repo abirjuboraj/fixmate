@@ -90,12 +90,12 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
 
       <DropdownMenuContent
         align="end"
-        className="w-60 p-2 shadow-lg rounded-xl border-border/80"
+        className="w-60 rounded-2xl border-border/80 p-2 shadow-xl shadow-primary/10 ring-1 ring-border/50"
       >
         {/* User Info Header: Avatar, Name, Email and Role Badge */}
-        <DropdownMenuLabel className="p-2 font-normal">
+        <DropdownMenuLabel className="m-1 rounded-lg bg-muted/50 p-2.5 font-normal">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 ring-1 ring-border">
+            <Avatar className="h-10 w-10 ring-2 ring-primary/15">
               <AvatarImage
                 src={user.image || undefined}
                 alt={user.name || "User Avatar"}
@@ -132,7 +132,7 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
         {/* Dynamic Role-Based Dashboard Link */}
         <DropdownMenuItem
           onClick={() => router.push(dashboardHref)}
-          className="cursor-pointer py-2.5 flex items-center gap-2.5 text-sm font-medium"
+          className="cursor-pointer rounded-lg py-2.5 flex items-center gap-2.5 text-sm font-medium hover:bg-primary/5"
         >
           <LayoutDashboard className="h-4 w-4 text-primary" />
           <span>Dashboard</span>
@@ -141,7 +141,7 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
         {/* Update Profile Link */}
         <DropdownMenuItem
           onClick={() => router.push("/dashboard/profile")}
-          className="cursor-pointer py-2.5 flex items-center gap-2.5 text-sm font-medium"
+          className="cursor-pointer rounded-lg py-2.5 flex items-center gap-2.5 text-sm font-medium hover:bg-primary/5"
         >
           <UserIcon className="h-4 w-4 text-muted-foreground" />
           <span>Update Profile</span>
@@ -152,7 +152,7 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
         {/* Sign Out Action */}
         <DropdownMenuItem
           onClick={handleSignOut}
-          className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 py-2.5 flex items-center gap-2.5 text-sm font-medium"
+          className="cursor-pointer rounded-lg text-destructive focus:text-destructive focus:bg-destructive/10 hover:bg-destructive/5 py-2.5 flex items-center gap-2.5 text-sm font-medium"
         >
           <LogOut className="h-4 w-4" />
           <span>Sign Out</span>

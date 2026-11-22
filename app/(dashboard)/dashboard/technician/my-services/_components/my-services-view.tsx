@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useState } from "react"
 import {
   Pencil,
   Trash2,
@@ -8,19 +8,19 @@ import {
   PlusCircle,
   AlertTriangle,
   RefreshCw,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-import type { ServiceItem } from "@/types";
-import { deleteService, toggleServiceAvailability } from "@/lib/action/services";
-import { EditServiceModal } from "./edit-service-modal";
-import { ConfirmDeleteModal } from "./confirm-delete-modal";
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { toast } from "sonner"
+import type { ServiceItem } from "@/types"
+import { deleteService, toggleServiceAvailability } from "@/lib/action/services"
+import { EditServiceModal } from "./edit-service-modal"
+import { ConfirmDeleteModal } from "./confirm-delete-modal"
 
 interface MyServicesViewProps {
-  services: ServiceItem[];
-  fetchError: string | null;
+  services: ServiceItem[]
+  fetchError: string | null
 }
 
 const getApprovalBadge = (status: string) => {
@@ -29,28 +29,28 @@ const getApprovalBadge = (status: string) => {
       return {
         label: "Approved",
         className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-      };
+      }
     case "rejected":
       return {
         label: "Rejected",
         className: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
-      };
+      }
     default:
       return {
         label: "Pending",
         className: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-      };
+      }
   }
-};
+}
 
 // Small service image with a placeholder when the image is missing
 const ServiceImage = ({ src, alt }: { src: string; alt: string }) => {
   if (!src) {
     return (
-      <div className="h-12 w-20 rounded-lg border border-border/60 bg-muted/50 flex items-center justify-center shrink-0">
+      <div className="flex h-12 w-20 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/50">
         <ImageIcon className="h-4 w-4 text-muted-foreground" />
       </div>
-    );
+    )
   }
 
   return (
@@ -58,97 +58,95 @@ const ServiceImage = ({ src, alt }: { src: string; alt: string }) => {
     <img
       src={src}
       alt={alt}
-      className="h-12 w-20 rounded-lg border border-border/60 object-cover shrink-0"
+      className="h-12 w-20 shrink-0 rounded-lg border border-border/60 object-cover"
     />
-  );
-};
-
+  )
+}
 
 export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
+  const [serviceList, setServiceList] = useState<ServiceItem[]>(services)
 
-  const [serviceList, setServiceList] = useState<ServiceItem[]>(services);
-
-  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
-  const [deletingService, setDeletingService] = useState<ServiceItem | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null)
+  const [deletingService, setDeletingService] = useState<ServiceItem | null>(
+    null
+  )
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // ---------- Availability toggle ----------
   const handleToggleAvailability = async (
     serviceId: string,
     nextValue: boolean
   ) => {
-  
     setServiceList((prev) =>
       prev.map((s) =>
         s._id === serviceId ? { ...s, isAvailable: nextValue } : s
       )
-    );
+    )
 
- 
-     const result = await toggleServiceAvailability(serviceId, nextValue);
-      if (!result?.success) {
-        setServiceList((prev) =>
-          prev.map((s) =>
-            s._id === serviceId ? { ...s, isAvailable: !nextValue } : s
-          )
-        );
-        toast.error("Could not update availability", {
-          description: result?.message,
-        });
-      } else {
-        toast.success(
-          nextValue ? "Service is now available" : "Service is now hidden"
-        );
-      }
-  };
+    const result = await toggleServiceAvailability(serviceId, nextValue)
+    if (!result?.success) {
+      setServiceList((prev) =>
+        prev.map((s) =>
+          s._id === serviceId ? { ...s, isAvailable: !nextValue } : s
+        )
+      )
+      toast.error("Could not update availability", {
+        description: result?.message,
+      })
+    } else {
+      toast.success(
+        nextValue ? "Service is now available" : "Service is now hidden"
+      )
+    }
+  }
 
   // ---------- Edit ----------
 
   const handleServiceUpdated = (updated: ServiceItem) => {
     setServiceList((prev) =>
       prev.map((s) => (s._id === updated._id ? updated : s))
-    );
-    setEditingService(null);
-  };
+    )
+    setEditingService(null)
+  }
 
   // ---------- Delete ----------
   const handleDelete = async () => {
-    if (!deletingService?._id) return;
+    if (!deletingService?._id) return
 
-    setIsDeleting(true);
+    setIsDeleting(true)
 
     try {
-      const result = await deleteService(deletingService._id);
+      const result = await deleteService(deletingService._id)
 
       if (!result?.success) {
-        throw new Error(result?.message || "Failed to delete service");
+        throw new Error(result?.message || "Failed to delete service")
       }
 
       // Remove it from the screen
       setServiceList((prev) =>
         prev.filter((s) => s._id !== deletingService._id)
-      );
+      )
 
       toast.success("Service deleted", {
         description: `"${deletingService.title}" was removed.`,
-      });
+      })
 
-      setDeletingService(null);
+      setDeletingService(null)
     } catch (error) {
       toast.error("Failed to delete service", {
         description:
           error instanceof Error ? error.message : "Please try again.",
-      });
+      })
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   // ---------- Error state (backend unreachable etc.) ----------
   if (fetchError) {
     return (
-      <div className="rounded-xl border border-dashed border-destructive/40 bg-destructive/5 p-8 text-center max-w-lg mx-auto">
-        <AlertTriangle className="h-8 w-8 text-destructive mx-auto" />
+      <div className="mx-auto max-w-lg rounded-xl border border-dashed border-destructive/40 bg-destructive/5 p-8 text-center">
+        <AlertTriangle className="mx-auto h-8 w-8 text-destructive" />
         <h2 className="mt-3 text-base font-semibold">
           Could not load your services
         </h2>
@@ -162,14 +160,14 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
           Try Again
         </Button>
       </div>
-    );
+    )
   }
 
   // ---------- Empty state ----------
   if (serviceList.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border/80 bg-card/50 p-10 text-center max-w-lg mx-auto">
-        <ImageIcon className="h-8 w-8 text-muted-foreground mx-auto" />
+      <div className="mx-auto max-w-lg rounded-xl border border-dashed border-border/80 bg-card/50 p-10 text-center">
+        <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
         <h2 className="mt-3 text-base font-semibold">No services yet</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           You have not listed any repair service. Create your first one — it
@@ -182,13 +180,13 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
           </a>
         </Button>
       </div>
-    );
+    )
   }
 
   return (
     <>
       {/* ---------- Desktop table ---------- */}
-      <div className="hidden md:block rounded-xl border border-border/70 bg-card overflow-hidden">
+      <div className="hidden overflow-hidden rounded-xl border border-border/70 bg-card md:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-muted/30 text-left">
@@ -207,32 +205,29 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
               <th className="px-4 py-3 font-semibold text-muted-foreground">
                 Availability
               </th>
-              <th className="px-4 py-3 font-semibold text-muted-foreground text-right">
+              <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
             {serviceList.map((service) => {
-              const badge = getApprovalBadge(service.approvalStatus);
+              const badge = getApprovalBadge(service.approvalStatus)
 
               return (
                 <tr
                   key={service._id}
-                  className="border-b border-border/40 last:border-0 hover:bg-muted/20 transition-colors"
+                  className="border-b border-border/40 transition-colors last:border-0 hover:bg-muted/20"
                 >
                   {/* Image + title */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <ServiceImage
-                        src={service.image}
-                        alt={service.title}
-                      />
+                      <ServiceImage src={service.image} alt={service.title} />
                       <div className="min-w-0">
-                        <p className="font-medium text-foreground line-clamp-1">
+                        <p className="line-clamp-1 font-medium text-foreground">
                           {service.title}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                           {service.serviceMode} • {service.serviceArea}
                         </p>
                       </div>
@@ -261,7 +256,7 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
 
                   {/* Availability switch */}
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex cursor-pointer items-center gap-2">
                       <Switch
                         checked={service.isAvailable}
                         onCheckedChange={(checked) =>
@@ -280,43 +275,58 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
 
                   {/* Actions */}
                   <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setEditingService(service)}
-                        aria-label={`Edit ${service.title}`}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => setDeletingService(service)}
-                        aria-label={`Delete ${service.title}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div className="flex items-start  gap-1">
+                      {/* Edit Button */}
+                      <div className="group relative">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => setEditingService(service)}
+                          aria-label={`Edit ${service.title}`}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+
+                        <span className="invisible absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 rounded-md bg-primary/80 px-2.5 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                          Edit Service
+                        </span>
+                      </div>
+
+                      {/* Delete Button */}
+                      <div className="group relative">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-red-50"
+                          onClick={() => setDeletingService(service)}
+                          aria-label={`Delete ${service.title}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+
+                        <span className="invisible absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 rounded-md bg-red-400 px-2.5 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                          Delete Service
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
 
       {/* ---------- Mobile cards ---------- */}
-      <div className="md:hidden space-y-4">
+      <div className="space-y-4 md:hidden">
         {serviceList.map((service) => {
-          const badge = getApprovalBadge(service.approvalStatus);
+          const badge = getApprovalBadge(service.approvalStatus)
 
           return (
             <div
               key={service._id}
-              className="rounded-xl border border-border/70 bg-card overflow-hidden"
+              className="overflow-hidden rounded-xl border border-border/70 bg-card"
             >
               {service.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -326,18 +336,18 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
                   className="h-36 w-full object-cover"
                 />
               ) : (
-                <div className="h-36 w-full bg-muted/50 flex items-center justify-center">
+                <div className="flex h-36 w-full items-center justify-center bg-muted/50">
                   <ImageIcon className="h-6 w-6 text-muted-foreground" />
                 </div>
               )}
 
-              <div className="p-4 space-y-3">
+              <div className="space-y-3 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="font-semibold text-foreground leading-snug">
+                    <h3 className="leading-snug font-semibold text-foreground">
                       {service.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {service.category} • {service.serviceMode}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -346,13 +356,13 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
                   </div>
                   <Badge
                     variant="outline"
-                    className={`border-transparent shrink-0 ${badge.className}`}
+                    className={`shrink-0 border-transparent ${badge.className}`}
                   >
                     {badge.label}
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 border-t border-border/40">
+                <div className="flex items-center justify-between border-t border-border/40 pt-1">
                   <span className="font-semibold text-foreground">
                     ${service.basePrice}
                   </span>
@@ -364,10 +374,7 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
                     <Switch
                       checked={service.isAvailable}
                       onCheckedChange={(checked) =>
-                        handleToggleAvailability(
-                          service._id as string,
-                          checked
-                        )
+                        handleToggleAvailability(service._id as string, checked)
                       }
                       aria-label="Toggle availability"
                     />
@@ -396,7 +403,7 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -418,5 +425,5 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
         />
       )}
     </>
-  );
+  )
 }

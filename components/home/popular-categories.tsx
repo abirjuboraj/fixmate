@@ -2,11 +2,6 @@ import Link from "next/link";
 import { ArrowRight, Wrench } from "lucide-react";
 import { CategoriesCarousel } from "./categories-carousel";
 
-/**
- * Server Component: Section heading + swipeable category carousel.
- * The interactive part (Embla carousel, arrows, dots) lives in the
- * client component `categories-carousel.tsx`.
- */
 export function PopularCategories() {
   return (
     <section className="relative overflow-hidden border-b border-border/60 bg-muted/20 py-16 sm:py-20">
@@ -36,7 +31,6 @@ export function PopularCategories() {
           </Link>
         </div>
 
-        {/* Responsive carousel: swipe on touch, arrows/dots on desktop */}
         <CategoriesCarousel />
 
       </div>

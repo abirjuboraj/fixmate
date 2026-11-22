@@ -96,14 +96,15 @@ export function DashboardTopbar({
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border/80 bg-background/90 px-4 sm:px-6 backdrop-blur-md">
+    <header className="relative sticky top-0 z-30 flex h-16 w-full items-center justify-between bg-background/95 px-4 sm:px-6 shadow-[0_1px_14px_-8px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-primary/35 to-transparent" />
       {/* Left side: Toggles */}
       <div className="flex items-center gap-3">
         {/* Mobile menu sheet toggle button */}
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-lg lg:hidden"
+          className="h-9 w-9 rounded-full lg:hidden"
           onClick={onMobileMenuToggle}
           aria-label="Open mobile dashboard menu"
         >
@@ -114,7 +115,7 @@ export function DashboardTopbar({
         <Button
           variant="ghost"
           size="icon"
-          className="hidden lg:flex h-8 w-8 text-muted-foreground hover:text-foreground"
+          className="hidden lg:flex h-8 w-8 rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary"
           onClick={onDesktopCollapseToggle}
           aria-label={
             isDesktopCollapsed ? "Expand sidebar" : "Collapse sidebar"
@@ -147,7 +148,7 @@ export function DashboardTopbar({
           variant="ghost"
           size="sm"
           asChild
-          className="hidden sm:inline-flex text-xs font-medium text-muted-foreground hover:text-foreground gap-1.5"
+          className="hidden rounded-full px-3 text-xs font-medium text-foreground/80 hover:bg-primary/5 hover:text-primary gap-1.5 sm:inline-flex"
         >
           <Link href="/">
             <ArrowLeft className="h-3.5 w-3.5" />
@@ -160,7 +161,7 @@ export function DashboardTopbar({
             className="flex items-center rounded-full p-0.5 hover:ring-2 hover:ring-primary/40 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all cursor-pointer outline-none"
             aria-label="Open user menu"
           >
-            <Avatar className="h-8 w-8 ring-1 ring-border">
+            <Avatar className="h-8 w-8 ring-2 ring-primary/20">
               <AvatarImage src={userImage || undefined} alt={userName || "User"} />
               <AvatarFallback className="bg-primary/10 text-primary font-semibold text-xs">
                 {getInitials(userName)}
@@ -169,7 +170,7 @@ export function DashboardTopbar({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-56 p-1.5 shadow-lg rounded-xl border-border/80"
+            className="w-56 rounded-2xl border-border/80 p-1.5 shadow-xl shadow-primary/10 ring-1 ring-border/50"
           >
             <DropdownMenuLabel className="p-2 font-normal">
               <div className="flex flex-col space-y-1">
@@ -195,14 +196,14 @@ export function DashboardTopbar({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => router.push("/dashboard/profile")}
-              className="cursor-pointer py-2 flex items-center gap-2"
+              className="cursor-pointer rounded-lg py-2 flex items-center gap-2 hover:bg-primary/5"
             >
               <User className="h-4 w-4 text-muted-foreground" />
               <span>Update Profile</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push("/")}
-              className="cursor-pointer py-2 flex items-center gap-2 sm:hidden"
+              className="cursor-pointer rounded-lg py-2 flex items-center gap-2 hover:bg-primary/5 sm:hidden"
             >
               <ArrowLeft className="h-4 w-4 text-muted-foreground" />
               <span>Return to Home</span>
@@ -210,7 +211,7 @@ export function DashboardTopbar({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleSignOut}
-              className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 py-2 flex items-center gap-2"
+              className="cursor-pointer rounded-lg text-destructive focus:text-destructive focus:bg-destructive/10 hover:bg-destructive/5 py-2 flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>

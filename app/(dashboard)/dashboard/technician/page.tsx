@@ -13,11 +13,7 @@ export const metadata = {
   description: "Overview of your services, active repair pipeline, and request analytics.",
 };
 
-/**
- * Data + auth live in this async child, wrapped in a scoped Suspense boundary
- * by the page below. That way the loader shows only for this overview page —
- * no dashboard-layout loader, and no double loader on menu switches.
- */
+
 async function TechnicianOverviewContent() {
   const session = await auth.api.getSession({
     headers: await headers(),
