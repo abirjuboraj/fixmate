@@ -152,3 +152,12 @@
     animation: none;
   }
 }
+
+/* Keeps scrolling but hides the visible scrollbar (e.g. modal bodies) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

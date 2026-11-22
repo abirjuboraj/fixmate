@@ -194,42 +194,27 @@ export function TechnicianRequestsClient({
     "booking-card-",
   );
 
-  // Local state for all technician bookings
+
   const [bookings, setBookings] = useState<BookingItem[]>(initialBookings || []);
-
-  // Filter tab state
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-
-  // Loading state tracking both booking ID and specific action (e.g. "booking123:accepted")
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
-
-  // Modal state for Mark Completed
   const [completingBooking, setCompletingBooking] = useState<BookingItem | null>(
     null
   );
   const [finalAmountInput, setFinalAmountInput] = useState<string>("");
   const [isSubmittingCompletion, setIsSubmittingCompletion] = useState(false);
-
-  // Modal state for Reject confirmation (requirement: always confirm
-  // before rejecting a customer's repair request)
   const [rejectingBooking, setRejectingBooking] = useState<BookingItem | null>(
     null
   );
-
-  // Modal state to view full problem description
   const [viewingProblemBooking, setViewingProblemBooking] = useState<BookingItem | null>(
     null
   );
 
-  // Filter bookings based on active tab
   const filteredBookings = useMemo(() => {
     if (activeTab === "all") return bookings;
     return bookings.filter((b) => b.status === activeTab);
   }, [bookings, activeTab]);
 
-  /**
-   * Action: Accept or Reject a requested booking
-   */
   const handleStatusChange = async (
     bookingId: string,
     newStatus: "accepted" | "rejected" | "in-progress"
@@ -243,8 +228,6 @@ export function TechnicianRequestsClient({
       if (res && res.success === false) {
         throw new Error(res.message || `Failed to update status to ${newStatus}`);
       }
-
-      // Optimistically update local state
       setBookings((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, status: newStatus } : b))
       );
@@ -423,11 +406,11 @@ export function TechnicianRequestsClient({
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="w-[220px]">Customer Details</TableHead>
-                  <TableHead className="w-[180px]">Service &amp; Price</TableHead>
-                  <TableHead className="w-[140px]">Preferred Date</TableHead>
-                  <TableHead className="w-[240px]">Problem &amp; Address</TableHead>
-                  <TableHead className="w-[110px]">Status</TableHead>
+                  <TableHead className="w-55">Customer Details</TableHead>
+                  <TableHead className="w-45">Service &amp; Price</TableHead>
+                  <TableHead className="w-35">Preferred Date</TableHead>
+                  <TableHead className="w-60">Problem &amp; Address</TableHead>
+                  <TableHead className="w-27.5">Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -504,7 +487,7 @@ export function TechnicianRequestsClient({
 
                       {/* Problem Description & Address */}
                       <TableCell>
-                        <div className="space-y-1 max-w-[260px]">
+                        <div className="space-y-1 max-w-65">
                           <div>
                             <p
                               className="text-xs  max-w-xs truncate text-foreground leading-relaxed"
@@ -687,7 +670,7 @@ export function TechnicianRequestsClient({
                   <div className="space-y-1.5 text-xs border-t border-border/50 pt-2.5">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
-                      <span>Preferred: {formatDisplayDate(booking.preferredDate)}</span>
+                      <span>Preferred Date: {formatDisplayDate(booking.preferredDate)}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -765,7 +748,7 @@ export function TechnicianRequestsClient({
                         ) : (
                           <Play className="h-3.5 w-3.5" />
                         )}
-                        Start Work (In Progress)
+                        Start Work
                       </Button>
                     )}
 

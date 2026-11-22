@@ -177,6 +177,9 @@ export interface ServiceDetailItem {
   // Profile photo of the technician (from their user record);
   // null/absent → the details page shows an initials avatar instead
   technicianImage?: string | null;
+  // Service area and short bio from the technician's user profile
+  technicianArea?: string | null;
+  technicianBio?: string | null;
   approvalStatus: string;
   isAvailable: boolean;
   createdAt?: string;

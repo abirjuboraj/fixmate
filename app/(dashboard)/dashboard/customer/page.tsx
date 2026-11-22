@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { BookingItem, CustomUser } from "@/types";
 import { getMyBookings } from "@/lib/api/bookings";
@@ -28,6 +28,7 @@ async function CustomerOverviewContent() {
     const bookingsResult = await getMyBookings();
     bookings = bookingsResult?.data ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load customer bookings for overview:", error);
   }
 

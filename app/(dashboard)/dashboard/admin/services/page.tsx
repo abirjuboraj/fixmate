@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { AUTH_URL } from "@/types";
 import type { ServiceItem } from "@/types";
 import { ShieldCheck } from "lucide-react";
@@ -34,6 +35,7 @@ export default async function AdminServicesPage({
     const result = await getAllServices(`${AUTH_URL}/api/admin/services`);
     services = (result?.data as ServiceItem[]) ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     fetchError =
       error instanceof Error ? error.message : "Failed to load services";
   }

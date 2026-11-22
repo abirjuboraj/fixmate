@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { AUTH_URL } from "@/types";
@@ -40,6 +40,7 @@ export default async function TechnicianMyServicesPage() {
 
     services = (result?.data as ServiceItem[]) ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     fetchError =
       error instanceof Error ? error.message : "Failed to load your services";
   }

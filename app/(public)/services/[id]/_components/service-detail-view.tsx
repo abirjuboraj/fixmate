@@ -1,9 +1,4 @@
 "use client";
-
-// This is the main client component for the service details page.
-// It receives service data and the user's role (passed from the server component).
-// It handles the "Request Repair" button behavior based on the user's role.
-
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,7 +11,7 @@ import {
   Tag,
   Wrench,
   Mail,
-  User,
+  FileText,
   CheckCircle2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -29,10 +24,7 @@ import { RequestRepairModal } from "./request-repair-modal";
 
 interface ServiceDetailViewProps {
   service: ServiceDetailItem;
-  // null = logged out, "customer" | "technician" | "admin" = logged in
   userRole: string | null;
-  // session identity of the logged-in user ("" when logged out),
-  // pre-filled read-only inside the request modal
   userName: string;
   userEmail: string;
   serviceId: string;
@@ -48,7 +40,6 @@ export function ServiceDetailView({
 
   const pathname = usePathname();
 
-  // Request modal — only ever opened in Case 3 (logged-in customer)
   const [showRequestModal, setShowRequestModal] = useState(false);
 
   const isHomeVisit = service.serviceMode === "Home Visit";
@@ -70,7 +61,7 @@ export function ServiceDetailView({
     }
 
     if (userRole === "technician" || userRole === "admin") {
-      // Technicians and admins cannot book services
+    
       return (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <Button
@@ -88,7 +79,6 @@ export function ServiceDetailView({
     }
 
 
-    // Case 3: Customer → open the request form modal
     return (
       <Button
         className="w-full sm:w-auto gap-2 font-semibold shadow-sm"
@@ -100,8 +90,6 @@ export function ServiceDetailView({
     );
   };
 
-  // Convert comma-separated service areas string into a clean array
-  // Example: "Mirpur, Gulshan, Dhanmondi" -> ["Mirpur", "Gulshan", "Dhanmondi"]
   const serviceAreas = service.serviceArea
     ? service.serviceArea
         .split(",")
@@ -272,7 +260,7 @@ export function ServiceDetailView({
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                   <span className="text-muted-foreground">Service Areas</span>
-                  <div className="flex flex-wrap sm:justify-end gap-1 max-w-[200px]">
+                  <div className="flex flex-wrap sm:justify-end gap-1 max-w-50">
                     {serviceAreas.length > 0 ? (
                       serviceAreas.map((area, index) => (
                         <Badge
@@ -329,16 +317,28 @@ export function ServiceDetailView({
                 </div>
               </div>
 
-              {/* Technician contact info (email only — public safe) */}
-              <div className="space-y-2 text-sm border-t border-border/50 pt-4">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <User className="h-3.5 w-3.5 shrink-0 text-primary" />
-                  <span>{service.technicianName}</span>
-                </div>
+              {/* Technician details from their public profile */}
+              <div className="space-y-2.5 text-sm border-t border-border/50 pt-4">
+                {service.technicianArea && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
+                    <span>{service.technicianArea}</span>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="h-3.5 w-3.5 shrink-0 text-primary" />
                   <span className="break-all">{service.technicianEmail}</span>
                 </div>
+
+                {service.technicianBio && (
+                  <div className="flex gap-2 border-t border-border/50 pt-3">
+                    <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      {service.technicianBio}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

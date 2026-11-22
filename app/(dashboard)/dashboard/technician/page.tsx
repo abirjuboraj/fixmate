@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AUTH_URL, BookingItem, type ServiceItem } from "@/types";
 import { getTechnicianServices } from "@/lib/api/services";
@@ -38,6 +38,7 @@ async function TechnicianOverviewContent() {
     const result = await getTechnicianServices(`${AUTH_URL}/api/services/own`);
     services = result?.data ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load technician services:", error);
   }
 
@@ -47,6 +48,7 @@ async function TechnicianOverviewContent() {
     const bookingsResult = await getTechnicianBookings();
     bookings = bookingsResult?.data ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load technician bookings:", error);
   }
 

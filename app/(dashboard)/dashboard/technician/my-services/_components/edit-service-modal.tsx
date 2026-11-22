@@ -21,6 +21,7 @@ import {
   type UpdateServicePayload,
 } from "@/types";
 import { updateService } from "@/lib/action/services";
+import { uploadImage } from "@/lib/uploadImage";
 
 interface EditServiceModalProps {
   service: ServiceItem;
@@ -44,14 +45,42 @@ export function EditServiceModal({
   );
   const [serviceArea, setServiceArea] = useState(service.serviceArea);
   const [description, setDescription] = useState(service.description);
-  const [image, setImage] = useState(service.image);
+  // The existing ImgBB URL is kept unless a new local file is chosen.
+  const image = service.image;
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
 
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+
+  const isDirty =
+    title.trim() !== service.title ||
+    category !== service.category ||
+    serviceMode !== service.serviceMode ||
+    Number(basePrice) !== Number(service.basePrice) ||
+    estimatedDuration.trim() !== service.estimatedDuration ||
+    serviceArea.trim() !== service.serviceArea ||
+    description.trim() !== service.description ||
+    imageFile !== null;
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    if (!isDirty) {
+      toast.info("No changes were made");
+      return;
+    }
 
     if (!title.trim()) {
       setErrorMessage("Please enter a service title.");
@@ -82,14 +111,25 @@ export function EditServiceModal({
       setErrorMessage("Please enter what the repair service includes.");
       return;
     }
-    if (!image.trim()) {
-      setErrorMessage("Image URL cannot be empty.");
+    if (!image && !imageFile) {
+      setErrorMessage("Please choose a service image.");
       return;
     }
 
     setIsSaving(true);
 
     try {
+      // Same upload flow as "Add Service": upload the chosen local file to
+      // ImgBB first, otherwise keep the existing image URL.
+      let finalImage = image;
+      if (imageFile) {
+        const uploadResult = await uploadImage(imageFile);
+        if (!uploadResult.success || !uploadResult.url) {
+          throw new Error(uploadResult.message || "Failed to upload image.");
+        }
+        finalImage = uploadResult.url;
+      }
+
       const payload: UpdateServicePayload = {
         title: title.trim(),
         category,
@@ -98,7 +138,7 @@ export function EditServiceModal({
         estimatedDuration: estimatedDuration.trim(),
         serviceArea: serviceArea.trim(),
         description: description.trim(),
-        image: image.trim(),
+        image: finalImage,
       };
 
       const result = await updateService(service._id as string, payload);
@@ -132,7 +172,7 @@ export function EditServiceModal({
     >
       {/* stopPropagation: clicks inside the modal must not close it */}
       <div
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg"
+        className="no-scrollbar w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal header */}
@@ -251,16 +291,34 @@ export function EditServiceModal({
               />
             </div>
 
-            {/* Image URL (kept simple: the current ImgBB URL is pre-filled.
-                Paste a new ImgBB URL here if you want a different banner.) */}
+            {/* Banner image — same local file upload as Add Service, with the
+                current image shown as a preview when the modal opens. */}
             <div className="space-y-1.5">
-              <Label htmlFor="edit-image">Service Image (ImgBB URL)</Label>
-              <Input
-                id="edit-image"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder="https://i.ibb.co/..."
-              />
+              <Label htmlFor="edit-image">Service Banner Image</Label>
+              <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-muted/20 p-3 sm:flex-row sm:items-center">
+                <div className="h-20 w-32 shrink-0 overflow-hidden rounded-lg border border-border/70 bg-muted/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl || image}
+                    alt="Current service banner"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <Input
+                    id="edit-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer file:cursor-pointer file:text-xs file:font-semibold file:text-primary file:border-0 file:bg-transparent text-xs"
+                  />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {imageFile
+                      ? "New image selected — it will be uploaded when you save."
+                      : "Choose a new image to replace the current banner."}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Description */}
@@ -287,7 +345,11 @@ export function EditServiceModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSaving} className="gap-2">
+            <Button
+              type="submit"
+              disabled={isSaving || !isDirty}
+              className="gap-2"
+            >
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />

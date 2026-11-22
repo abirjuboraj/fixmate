@@ -4,9 +4,7 @@ import {
   CreditCard,
   Receipt,
   CalendarDays,
-  DollarSign,
   User,
-  Wrench,
   CheckCircle2,
   ArrowRight,
 } from "lucide-react";
@@ -29,6 +27,18 @@ export const metadata = {
   title: "Payment History | FixMate Customer Portal",
   description: "View all your completed repair transactions and payment receipts.",
 };
+
+// Format once outside JSX — calling Date.now() during render is impure.
+function formatPaidDate(value?: Date | string) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export default async function CustomerPaymentsPage() {
   const session = await getSession();
@@ -95,7 +105,7 @@ export default async function CustomerPaymentsPage() {
                 {payments.map((p) => (
                   <TableRow key={p._id || p.stripeSessionId}>
                     <TableCell>
-                      <div className="font-semibold text-foreground text-sm truncate max-w-[220px]">
+                      <div className="font-semibold text-foreground text-sm leading-snug md:line-clamp-2 lg:line-clamp-none">
                         {p.serviceTitle}
                       </div>
                     </TableCell>
@@ -126,13 +136,7 @@ export default async function CustomerPaymentsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span>
-                          {new Date(p.paidAt || Date.now()).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
+                        <span>{formatPaidDate(p.paidAt)}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -202,12 +206,7 @@ export default async function CustomerPaymentsPage() {
                     )}
                   </div>
                   <p>
-                    <strong>Date:</strong>{" "}
-                    {new Date(p.paidAt || Date.now()).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
+                    <strong>Date:</strong> {formatPaidDate(p.paidAt)}
                   </p>
                 </div>
               </div>

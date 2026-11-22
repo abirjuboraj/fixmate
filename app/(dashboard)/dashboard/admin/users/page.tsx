@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AUTH_URL } from "@/types";
 import type { AdminUser } from "@/types";
@@ -59,6 +59,7 @@ export default async function AdminUsersPage({
     );
     users = (result?.data as AdminUser[]) ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     fetchError =
       error instanceof Error ? error.message : "Failed to load users";
   }

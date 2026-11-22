@@ -18,8 +18,6 @@ export const uploadImage = async (file: File) => {
 
         const result = await res.json();
 
-        console.log(result);
-
         if (!res.ok || !result.success) {
             throw new Error("Image upload failed");
         }

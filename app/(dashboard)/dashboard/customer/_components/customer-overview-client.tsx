@@ -254,7 +254,7 @@ export function CustomerOverviewClient({
           </div>
           <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
             <Zap className="h-3.5 w-3.5 text-amber-500" />
-            Currently active or requested
+            Currently active
           </p>
           <Link
             href="/dashboard/customer/bookings"
@@ -419,7 +419,7 @@ export function CustomerOverviewClient({
                   {cat.name}
                 </span>
                 <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 group-hover:underline">
-                  Find Tech
+                  Find Technician
                   <ArrowUpRight className="h-2.5 w-2.5" />
                 </span>
               </Link>

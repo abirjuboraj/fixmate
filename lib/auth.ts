@@ -1,16 +1,14 @@
 import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
 import client, { ensureConnected, isTransientDbError } from "./db"
+import { jwt } from "better-auth/plugins"
 
-
-await ensureConnected().catch(() => {
-
-})
+await ensureConnected().catch(() => {})
 
 const db = client.db("fixmate")
 
 const baseAdapter = mongodbAdapter(db, { client })
- 
+
 const READ_METHODS = new Set(["findOne", "findMany", "count"])
 
 const resilientAdapter = new Proxy(baseAdapter, {
@@ -47,6 +45,14 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
+  plugins: [jwt()],
+  session: {
+    cookieCache: {
+      enabled: true,
+      strategy: "jwt",
+      maxAge: 7 * 24 * 60 * 60,
+    },
+  },
   user: {
     additionalFields: {
       role: {
@@ -79,4 +85,17 @@ export const auth = betterAuth({
     },
   },
   database: resilientAdapter,
+  databaseHooks: {
+    user: {
+      create: {
+        async before(user) {
+          if (user.role === "customer" || user.role === "technician") {
+            return
+          }
+
+          return { data: { ...user, role: "customer" } }
+        },
+      },
+    },
+  },
 })

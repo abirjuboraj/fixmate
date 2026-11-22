@@ -15,7 +15,8 @@ const CATEGORIES = [
 const QUICK_LINKS = [
   { name: "Home", href: "/" },
   { name: "All Services", href: "/services" },
-  { name: "How It Works & About", href: "/about" },
+  { name: "How It Works", href: "/#how-it-works" },
+  { name: "About", href: "/about" },
 ];
 
 function XIcon({ className = "h-4 w-4" }: { className?: string }) {

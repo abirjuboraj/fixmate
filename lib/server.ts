@@ -5,9 +5,7 @@ import { redirect } from "next/navigation"
 import { cache } from "react"
 import { auth } from "./auth"
 
-// React cache() de-duplicates this call inside a single server request.
-// The layout's requireRole(), the page, and authFetch() all share one result
-// instead of hitting MongoDB several times per navigation.
+
 export const getSession = cache(async () => {
 
     const session = await auth.api.getSession(
@@ -20,13 +18,11 @@ export const getSession = cache(async () => {
 })
 
 export const getToken = async (): Promise<string> => {
-    const session = await getSession();
+   const jwtToken = await auth.api.getToken({
+    headers: await headers(),
+   });
 
-    if (!session || !session.session?.token) {
-        redirect("/unauthorized");
-    }
-
-    return session.session.token;
+   return jwtToken?.token;
 }
 
 export const authFetch = async (api: string) => {
@@ -37,14 +33,16 @@ export const authFetch = async (api: string) => {
         }
     })
 
+    if (res.status === 401 || res.status === 403) {
+        redirect("/unauthorized");
+    }
+
     if (!res.ok) {
         const errorData = await res.json().catch(() => null);
         throw new Error(errorData?.message ?? `Request failed with status ${res.status}`);
     }
 
-    if (res.status === 401 || res.status === 403) {
-        redirect("/unauthorized");
-    }
+    
 
     return res.json();
 }

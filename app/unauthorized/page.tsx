@@ -18,18 +18,12 @@ export const metadata = {
   description: "You do not have permission to access this area on FixMate.",
 };
 
-/**
- * Server Component: Unauthorized Page.
- * - Detects whether the visitor is a guest (logged out) or an authenticated user (logged in).
- * - Guests see a "Sign In to Continue" CTA linking to /sign-in.
- * - Authenticated users see a direct "Go to Your Dashboard" CTA routing to their role-specific dashboard.
- */
+
 export default async function UnauthorizedPage() {
-  // Check the current visitor's session
+
   const session = await getSession();
   const isLoggedIn = !!session?.user;
 
-  // Extract user details if logged in
   const userName = session?.user?.name || "User";
   const userRole = ((session?.user as { role?: string })?.role || "customer") as UserRole;
   const dashboardHref = ROLE_DEFAULT_ROUTES[userRole] || "/dashboard/customer";
@@ -53,7 +47,7 @@ export default async function UnauthorizedPage() {
           </div>
 
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Unauthorized Access
+            Forbidden Access
           </h1>
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">

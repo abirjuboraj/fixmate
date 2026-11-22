@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Menu,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
   LogOut,
   User,
   ArrowLeft,
@@ -98,33 +98,34 @@ export function DashboardTopbar({
   return (
     <header className="relative sticky top-0 z-30 flex h-16 w-full items-center justify-between bg-background/95 px-4 sm:px-6 shadow-[0_1px_14px_-8px_rgba(0,0,0,0.25)] backdrop-blur-xl">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-primary/35 to-transparent" />
-      {/* Left side: Toggles */}
-      <div className="flex items-center gap-3">
-        {/* Mobile menu sheet toggle button */}
+      {/* Left side: sidebar toggles */}
+      <div className="flex items-center gap-2">
+        {/* Mobile / tablet: opens the sidebar sheet */}
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-full lg:hidden"
+          className="h-9 w-9 rounded-lg border-border/80 bg-card shadow-xs transition-colors hover:border-primary/40 hover:text-primary lg:hidden"
           onClick={onMobileMenuToggle}
-          aria-label="Open mobile dashboard menu"
+          aria-label="Open dashboard menu"
         >
-          <Menu className="h-5 w-5" />
+          <PanelLeft className="h-4 w-4 text-primary" />
         </Button>
 
-        {/* Desktop collapse toggle button */}
+        {/* Desktop: collapses / expands the fixed sidebar */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="hidden lg:flex h-8 w-8 rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          className="hidden h-9 w-9 rounded-lg border-border/80 bg-card shadow-xs transition-colors hover:border-primary/40 hover:text-primary lg:inline-flex"
           onClick={onDesktopCollapseToggle}
           aria-label={
             isDesktopCollapsed ? "Expand sidebar" : "Collapse sidebar"
           }
+          title={isDesktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isDesktopCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <PanelLeftOpen className="h-4 w-4 text-primary" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <PanelLeftClose className="h-4 w-4 text-primary" />
           )}
         </Button>
 

@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { CalendarClock } from "lucide-react";
 import { getAllBookings } from "@/lib/api/bookings";
 import type { BookingItem } from "@/types";
@@ -39,6 +40,7 @@ export default async function AdminBookingsPage({
     const result = await getAllBookings("all");
     bookings = (result?.data as BookingItem[]) ?? [];
   } catch (error) {
+    unstable_rethrow(error);
     fetchError =
       error instanceof Error ? error.message : "Failed to load bookings";
   }

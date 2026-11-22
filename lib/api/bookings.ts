@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { AUTH_URL } from "@/types";
 import { authFetch } from "../server";
 
@@ -9,6 +10,8 @@ export const getMyBookings = async () => {
     const res = await authFetch(`${AUTH_URL}/api/bookings/own`);
     return res;
   } catch (error) {
+    // Let Next.js handle redirect()/notFound() signals instead of logging them
+    unstable_rethrow(error);
     console.error("Error fetching customer bookings:", error);
     return { success: false, data: [] };
   }
@@ -25,6 +28,7 @@ export const getTechnicianBookings = async () => {
     const res = await authFetch(`${AUTH_URL}/api/bookings/technician`);
     return res;
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Error fetching technician bookings:", error);
     return { success: false, data: [] };
   }

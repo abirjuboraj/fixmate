@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { AUTH_URL, PaymentRecord } from "@/types";
 import { authFetch } from "../server";
 
@@ -12,6 +13,7 @@ export const verifyStripeSession = async (sessionId: string) => {
     );
     return res;
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Payment session verification error:", error);
     return {
       success: false,
@@ -31,6 +33,7 @@ export const getMyPayments = async (): Promise<{
     const res = await authFetch(`${AUTH_URL}/api/payment/my-payments`);
     return res;
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Fetch payment history error:", error);
     return { success: false, data: [] };
   }
@@ -48,6 +51,7 @@ export const getAllPaymentsAndRevenue = async () => {
 
     return res;
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Fetch payment history error:", error);
 
     return {

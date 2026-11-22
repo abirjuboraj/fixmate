@@ -189,13 +189,6 @@ export function RequestRepairModal({
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="p-4 sm:p-5 space-y-4">
-              {/* Error message (validation + server errors like duplicates) */}
-              {errorMessage && (
-                <p className="text-xs sm:text-sm font-medium text-destructive bg-destructive/10 rounded-lg border border-destructive/20 px-3 py-2">
-                  {errorMessage}
-                </p>
-              )}
-
               {/* Name & Email — read-only, filled from the session */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
