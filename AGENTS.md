@@ -8,178 +8,92 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# FixMate — Project Architecture & Progress Log
+# FixMate — Frontend Architecture
 
-## 1. Project Overview
-FixMate is a full-stack, role-based repair service platform connecting device & home appliance owners with verified technicians and admin moderation. Built with Next.js App Router (Client), Express.js (Server), MongoDB, Better Auth, and Stripe.
+## 1. Overview
 
-### G. Unauthorized Access Page (`/unauthorized`)
-- **Server Component** (`app/unauthorized/page.tsx`): Role & session aware 403 access restricted view.
-  - **Guests / Logged-out**: Contextual notice explaining that the page is for verified members, providing a primary "Sign In to Continue" button (linking to `/sign-in`) and "Browse Services".
-  - **Authenticated Users**: Shows their user name and role, explaining that their account role does not have authorization for that section, providing a primary "Go to [Role] Dashboard" button routing directly to their specific dashboard (`/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`) and "Home".
+FixMate is a role-based repair-service platform (customers, technicians, admins).
+This repository is the **Next.js 16 App Router frontend**. The Express REST API lives
+in `../fixmate-server` and uses the same MongoDB Atlas database (`fixmate`).
 
-### H. Customer My Bookings Route (`/dashboard/customer/bookings`)
-- **Server Component** (`app/(dashboard)/dashboard/customer/bookings/page.tsx`): Verifies customer session server-side and fetches own bookings using `getMyBookings()`.
-- **Client Component** (`app/(dashboard)/dashboard/customer/bookings/_components/customer-bookings-client.tsx`):
-  - Responsive presentation: desktop data table (`Table`) and mobile card list.
-  - Visual status badges: Requested (amber), Accepted (blue), In Progress (purple), Completed (emerald), Rejected (destructive), Cancelled (muted).
-  - Payment badges: Paid (emerald), Unpaid (amber).
-  - Conditional cancellation: Cancel button visible only when `status === 'requested'`. Prompts an alert confirmation modal before setting status to `'cancelled'`.
-  - Conditional payment: "Pay Now" button visible only when `status === 'completed'` and `paymentStatus === 'unpaid'`. Connects to Stripe payment handler.
-  - Replaces button with a "Paid" badge once completed and paid.
-  - Empty state with CTA linking to `/services`.
-- **Actions & API**:
-  - `lib/api/bookings.ts`: `getMyBookings()`
-  - `lib/action/bookings.ts`: `cancelBooking(id)` and `initiateBookingPayment(id)` with TODO hooks for your backend routes.
+- Authentication is handled by **Better Auth** (email/password + Google).
+- The frontend mints a **JWT** through Better Auth's `jwt()` plugin
+  (`auth.api.getToken()` in `lib/server.ts`) and sends it as a Bearer token to the
+  Express API. The backend verifies it against Better Auth's JWKS endpoint.
+- Payments use Stripe Checkout (`mode: 'payment'`, no webhooks).
 
-### I. Technician Manage Requests Route (`/dashboard/technician/requests`)
-- **Server Component** (`app/(dashboard)/dashboard/technician/requests/page.tsx`): Verifies technician session server-side and fetches assigned requests via `getTechnicianBookings()`.
-- **Client Component** (`app/(dashboard)/dashboard/technician/requests/_components/technician-requests-client.tsx`):
-  - **Status Filter Tabs**: Filter requests by *All Requests*, *Requested*, *Accepted*, *In Progress*, and *Completed* with real-time count badges.
-  - **Status Pipeline Action Buttons**:
-    - `requested`: **Accept** (green) / **Reject** (red) buttons.
-    - `accepted`: **Start Work** (blue) button transitions job to `in-progress`.
-    - `in-progress`: **Mark Completed** (purple) button opens a modal.
-    - `completed`, `rejected`, `cancelled`: No actions. Displays payment badge for completed jobs.
-  - **Mark Completed Modal**: Pre-fills the base price into a final amount input, allows technician adjustment for parts/diagnostics, and submits with validation.
-  - **Responsive Dual Layout**: Full detailed data table on desktop and touch-friendly card list on mobile.
-- **Actions & API**:
-  - `lib/api/bookings.ts`: `getTechnicianBookings()`
-  - `lib/action/bookings.ts`: `updateBookingStatus(bookingId, status, finalAmount)`
+## 2. Directory structure
 
----
+```text
+app/
+├── (auth)/            # sign-in, sign-up (split-screen auth layout)
+├── (public)/          # home, /services, /services/[id], /about, payment pages
+├── (dashboard)/       # dashboard shell (server layout) + role dashboards
+├── api/auth/[...all]/ # Better Auth catch-all route handler
+├── unauthorized/      # status-aware 401 / 403 page
+└── not-found.tsx
+components/
+├── home/              # hero, featured services, how it works, categories
+│                      # carousel, why choose us, stats counter, testimonials
+├── navbar/            # public navbar + mobile drawer + user dropdown
+├── dashboard/         # client shell, sidebar, topbar, skeleton
+├── footer/, shared/, ui/
+hooks/                 # use-highlight (5s row highlight)
+lib/                   # auth, auth-client, server helpers, api/, action/, db.ts
+types/index.ts         # shared interfaces and constants
+```
 
-## 2. Completed Milestones & Current Progress
+Server Components fetch data; interactive pieces are small Client Components.
 
-### A. Authentication & User Schema
-- Preserved existing MongoDB integration and Better Auth configuration.
-- Client types inferred using `inferAdditionalFields<typeof auth>()`.
-- Default user role set to `"customer"`, with `"technician"` selectable during sign-up. `"admin"` is assigned strictly via database or admin plugin.
-- Added custom authentication layout, sign-in, and sign-up with client-side password validation (min 6 characters, uppercase, lowercase) and ImgBB photo selection support.
+## 3. Main routes & features
 
-### B. Layouts & Navigation
-- **Public Layout**: Sticky responsive Navbar with active route highlighting, user profile menu, and footer with legal and modern X social icons.
-- **Dashboard Layout**: Role-based sidebar and topbar supporting Customer, Technician, and Admin roles with responsive sheet drawer for mobile/tablet.
-- **Role Routing**: Server-side redirect at `/dashboard` routing directly to `/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`.
-- Custom 404 repair-themed error page implemented at `app/not-found.tsx`.
+| Route | Purpose |
+| --- | --- |
+| `/` | Hero, featured services, how it works, popular categories (Embla carousel), why choose us |
+| `/services` | Server-side search, category/mode filters and sorting via URL params |
+| `/services/[id]` | Full service details + technician summary (photo, name, email, area, bio) |
+| `/about` | Professional About page |
+| `/sign-in`, `/sign-up` | Auth with JWT cookie cache and a server-side role guard |
+| `/unauthorized` | `?status=401` → "Unauthorized Access"; `?status=403` → "Forbidden Access" |
+| `/payment/success`, `/payment/cancel` | Stripe receipt with copyable transaction ID / cancellation notice |
+| `/dashboard` | Server-side redirect to the signed-in role's dashboard |
+| `/dashboard/customer` | Overview, bookings, payment history, profile |
+| `/dashboard/technician` | Overview, add service, my services, manage requests, profile |
+| `/dashboard/admin` | Platform overview, users, service approval, bookings, transactions, profile |
 
-### C. Technician Add Service (`/dashboard/technician/add-service`)
-- Server Component page verifying session and `"technician"` role.
-- Client Component form capturing: Title, Category (7 official categories), Service Mode (`Home Visit` / `Shop Drop-off`), Base Price, Estimated Duration, Service Area, Description, and Banner Image.
-- Banner image uploaded via ImgBB server action (`uploadImage`).
-- Defaults to `approvalStatus: 'pending'` and `isAvailable: true` awaiting admin moderation.
-- Technician info read-only from session and appended on backend.
+Highlights:
+- **Status filters are instant** — admin services/bookings fetch all rows once and
+  filter in the client; only mutations (`router.refresh()`) hit the server.
+- **Shared highlight flow** (`lib/highlight.ts` + `hooks/use-highlight.ts`): overview
+  "Review / Details / Update" links pass `?highlight=<id>` + `#anchor`; the target row
+  scrolls into view, glows with a full-border outline for 5s, then fades out.
+- **Responsive loaders** — only menu-level `loading.tsx` skeletons exist; there is no
+  dashboard-shell loader. Overview pages use scoped `<Suspense>` skeletons.
+- **Category deep links** — homepage cards link to `/services?category=<name>`.
 
-### D. Public Services Route (`/services`) — Challenge 1 Compliant
-- Implemented full Server/Client separation:
-  - **Server Component** (`app/(public)/services/page.tsx`): Fetches public approved & available services using `getAllPublicServices()` with server-side query parameters (`search`, `category`, `serviceMode`, `sort`).
-  - **Client Component** (`app/(public)/services/_components/services-browser-client.tsx`):
-    - **Live Real-time Search**: Search input on the far-left searches as the user types (with 300ms debounce and loading spinner). No search button needed.
-    - **Side-by-Side Controls**: Top row places search bar on the far-left, and the service mode filter and sort dropdown side-by-side on the far-right.
-    - **Category Pills**: Clean horizontal row placed directly underneath the search and controls row.
-    - **Clean Dynamic Empty State**: Removed redundant active filter badges. Renders a focused empty state illustration with a direct "Reset Filters" action.
-  - **Service Card** (`app/(public)/services/_components/service-card.tsx`): Uniform aspect-ratio image, category tag, mode badge, price, technician attribution, and view details CTA.
-  - **Skeleton Loader** (`app/(public)/services/_components/services-skeleton-grid.tsx`): Animated skeleton cards matching real card layout during loading transitions.
-- **Dedicated Central Types** (`types/index.ts`): All interfaces (`PublicServicesQueryParams`, `PublicServicesResponse`, `SortOption`, etc.) are centralized in `types/index.ts`.
-- **Deep-linking Ready**: Passing `?category=AC` opens the page with the AC category filter pre-selected and queried from the server, ready for the upcoming Homepage "Popular Categories" section.
+## 4. Server helpers & conventions
 
-### E. Service Details Route (`/services/[id]`)
-- **Server Component** (`app/(public)/services/[id]/page.tsx`): Fetches public approved service details and verifies `approvalStatus === 'approved'` and `isAvailable === true`, else calls `notFound()`. Reads session server-side for role awareness.
-- **Client Component** (`app/(public)/services/[id]/_components/service-detail-view.tsx`): Displays large aspect-video banner, title, duration, area pills, description, role-restricted "Request Repair" button (with callbackURL for logged-out users, disabled notice for tech/admin), and sticky side-by-side pricing & verified technician cards with generous bottom padding.
+- `lib/server.ts`
+  - `getSession()` — React `cache()`d Better Auth session lookup.
+  - `getToken()` — returns the plugin JWT from `auth.api.getToken({ headers })`.
+  - `authFetch()` / `protectedMutation()` — attach the Bearer token; on 401/403 they
+    redirect to `/unauthorized?status=<code>` **before** generic error handling.
+  - `requireRole()` — redirects with `401` (no session) or `403` (wrong role).
+- Any server-side `catch` that can wrap `redirect()`/`notFound()` calls
+  `unstable_rethrow(error)` first, so Next's internal signals are not swallowed.
+- `lib/db.ts` keeps one resilient MongoClient and reconnects if the driver closes
+  its topology; `lib/auth.ts` wraps the Better Auth adapter with retries for reads.
+- Toast notifications use **Sonner** (`import { toast } from "sonner"`).
+- Styling: Tailwind CSS v4 with OKLCH theme tokens; shadcn/ui components; Lucide icons.
 
-### F. Homepage Extra Section: Popular Categories & Why Choose Us
-- **Popular Categories** (`components/home/popular-categories.tsx`): Clickable category cards featuring the 7 official repair categories (`Smartphone`, `Laptop & PC`, `AC`, `Refrigerator`, `TV`, `Washing Machine`, `Electrical`) with custom icons and descriptions. Each card deep-links to `/services?category=<CategoryName>`, pre-filtering the services browser.
-- **Why Choose Us** (`components/home/why-choose-us.tsx`): Divided into a clean, dedicated trust section showcasing:
-  1. **Core Trust Pillars**: 100% Verified Technicians, Pay After Service, Live Tracking, and Quality Guarantee.
-  2. **Platform Stats & Metrics**: Satisfied customers (2,500+), repairs completed (4,800+), satisfaction rate (99.2%), and average rating (4.9/5).
-  3. **Customer Testimonials**: Authentic customer feedback cards with star ratings and reviewer avatars.
+## 5. Tech stack
 
-### G. Unauthorized Access Page (`/unauthorized`)
-- **Server Component** (`app/unauthorized/page.tsx`): Role & session aware 403 access restricted view.
-  - **Guests / Logged-out**: Contextual notice explaining that the page is for verified members, providing a primary "Sign In to Continue" button (linking to `/sign-in`) and "Browse Services".
-  - **Authenticated Users**: Shows their user name and role, explaining that their account role does not have authorization for that section, providing a primary "Go to [Role] Dashboard" button routing directly to their specific dashboard (`/dashboard/customer`, `/dashboard/technician`, or `/dashboard/admin`) and "Home".
+- Next.js 16.4.5 (Turbopack), React 19.3.1, TypeScript 5
+- Tailwind CSS v4, shadcn/ui (`@base-ui/react`), Lucide React, tw-animate-css
+- Better Auth 1.7.25 (+ JWT plugin + MongoDB adapter), MongoDB driver 7.9
+- Embla Carousel, Framer Motion, react-countup, Sonner
+- ESLint 9, Prettier, `npm run typecheck` / `npm run lint` / `npm run build`
 
-### H. Customer My Bookings Route (`/dashboard/customer/bookings`)
-- **Server Component** (`app/(dashboard)/dashboard/customer/bookings/page.tsx`): Verifies customer session server-side and fetches own bookings using `getMyBookings()`.
-- **Client Component** (`app/(dashboard)/dashboard/customer/bookings/_components/customer-bookings-client.tsx`):
-  - Responsive presentation: desktop data table (`Table`) and mobile card list.
-  - Visual status badges: Requested (amber), Accepted (blue), In Progress (purple), Completed (emerald), Rejected (destructive), Cancelled (muted).
-  - Payment badges: Paid (emerald), Unpaid (amber).
-  - Conditional cancellation: Cancel button visible only when `status === 'requested'`. Prompts an alert confirmation modal before setting status to `'cancelled'`.
-  - Conditional payment: "Pay Now" button visible only when `status === 'completed'` and `paymentStatus === 'unpaid'`. Connects to Stripe payment handler.
-  - Replaces button with a "Paid" badge once completed and paid.
-  - Empty state with CTA linking to `/services`.
-- **Actions & API**:
-  - `lib/api/bookings.ts`: `getMyBookings()`
-  - `lib/action/bookings.ts`: `cancelBooking(id)` and `initiateBookingPayment(id)` with TODO hooks for your backend routes.
+## 6. Scripts
 
-### I. Technician Manage Requests Route (`/dashboard/technician/requests`)
-- **Server Component** (`app/(dashboard)/dashboard/technician/requests/page.tsx`): Verifies technician session server-side and fetches assigned requests via `getTechnicianBookings()`.
-- **Client Component** (`app/(dashboard)/dashboard/technician/requests/_components/technician-requests-client.tsx`):
-  - **Status Filter Tabs**: Filter requests by *All Requests*, *Requested*, *Accepted*, *In Progress*, and *Completed* with real-time count badges.
-  - **Status Pipeline Action Buttons**:
-    - `requested`: **Accept** (green) / **Reject** (red) buttons.
-    - `accepted`: **Start Work** (blue) button transitions job to `in-progress`.
-    - `in-progress`: **Mark Completed** (purple) button opens a modal.
-    - `completed`, `rejected`, `cancelled`: No actions. Displays payment badge for completed jobs.
-  - **Mark Completed Modal**: Pre-fills the base price into a final amount input, allows technician adjustment for parts/diagnostics, and submits with validation.
-  - **Responsive Dual Layout**: Full detailed data table on desktop and touch-friendly card list on mobile.
-- **Actions & API**:
-  - `lib/api/bookings.ts`: `getTechnicianBookings()`
-  - `lib/action/bookings.ts`: `updateBookingStatus(bookingId, status, finalAmount)`
-
-### J. Stripe Payment Flow (No Webhook)
-- **Frontend Action** (`lib/action/bookings.ts`): `initiateBookingPayment(bookingId)` calls `POST /api/payment/create-checkout-session` with `{ bookingId }`, receives a Stripe Checkout URL and redirects with `window.location.href`.
-- **Backend** (`controllers/payment.controller.js`):
-  - `createCheckoutSession`: Looks up booking by `bookingId`, builds a Stripe `mode: 'payment'` session using `basePrice`/`finalAmount` as the line item, saves a pending payment record, and returns `{ url }`.
-  - `verifyCheckoutSession`: Called from the success page via `GET /api/payment/verify?session_id=…`. Retrieves the Stripe session, checks `payment_status === 'paid'`, marks booking `paymentStatus: 'paid'`, updates payment record, and returns the payment details.
-  - `getMyPayments`: Returns all payments for the authenticated customer via `GET /api/payment/my`.
-- **Payment Model** (`models/payment.model.js`): `insertPayment`, `findPaymentBySessionId`, `findPaymentsByCustomer`, `findAllPayments`. Schema fields: `bookingId`, `serviceTitle`, `customerName`, `customerEmail`, `technicianName`, `technicianEmail`, `amount`, `currency`, `transactionId`, `stripeSessionId`, `paymentStatus`, `paidAt`.
-- **Validator** (`validators/payment.validator.js`): Validates only `{ bookingId: string }` — all other data is fetched from DB inside the controller.
-- **Routes** (`routes/payment.routes.js`): `POST /api/payment/create-checkout-session`, `GET /api/payment/verify`, `GET /api/payment/my`.
-
-### K. Payment Success & Cancel Pages
-- **Success Page** (`app/(public)/payment/success/page.tsx`): Server Component that reads `?session_id` from search params and calls `verifyStripeSession(sessionId)`. On success shows a receipt (service title, amount, transaction ID, date). On failure shows an error state.
-- **Cancel Page** (`app/(public)/payment/cancel/page.tsx`): Clean UI informing the user their payment was cancelled. Contains a "Return to My Bookings" CTA linking back to `/dashboard/customer/bookings`.
-- Both pages use the public layout (Navbar + Footer) under the `(public)` route group.
-
-### L. Customer Payment History Route (`/dashboard/customer/payments`)
-- **Page** (`app/(dashboard)/dashboard/customer/payments/page.tsx`): Server Component; fetches payment history via `getMyPayments()`.
-- Responsive desktop table + mobile card list showing: service title, technician, amount, date paid, transaction ID, and "Paid" status badge.
-- Uses `PaymentRecord` interface from `types/index.ts`.
-
-### M. Admin Platform Transactions Route (`/dashboard/admin/transactions`)
-- **Server Component** (`app/(dashboard)/dashboard/admin/transactions/page.tsx`): Fetches all confirmed payments and total revenue using `getAllPaymentsAndRevenue()`.
-- **Client Component** (`app/(dashboard)/dashboard/admin/transactions/_components/admin-transactions-client.tsx`):
-  - **Revenue & Metrics Overview Cards**: Shows prominent Total Platform Revenue and Total Completed Transactions counter.
-  - **Interactive Search**: Real-time filter searching by customer name/email, technician name/email, service title, and transaction ID.
-  - **Transaction ID Copy Action**: Copy icon button beside each transaction ID with tooltip ("Copy Transaction ID" / "Copied!") and Sonner toast notification.
-  - **Responsive Dual Layout**: Full detailed data table on desktop (Customer, Technician, Service, Amount, Transaction ID, Date, Paid badge) and clean cards on mobile/tablet.
-  - **Empty State**: Friendly illustration and guidance when no transactions exist or match search.
-
-### N. Admin Overview Route (`/dashboard/admin`)
-- **Server Component** (`app/(dashboard)/dashboard/admin/page.tsx`): Concurrently fetches all users (`/api/admin/users`), services (`/api/admin/services`), bookings (`/api/admin/bookings`), and platform revenue (`/api/admin/transactions`).
-- **Client Component** (`app/(dashboard)/dashboard/admin/_components/admin-overview-client.tsx`):
-  - **Required Core Stats Cards**: Total Users (with customer count badge), Total Technicians (with active pros badge), Pending Services (with action needed badge), and Total Platform Revenue.
-  - **Interactive Visual Breakdown**:
-    - Animated progress bar chart showing service catalog distribution by category.
-    - Full booking status breakdown cards (Requested, Accepted, In Progress, Completed, Cancelled).
-  - **Live Action Tabs**: Tabbed interface switching between *Pending Services* (with direct Review button), *Recent Bookings*, and *New Users* (with direct Edit Role button).
-  - **Control Center Grid**: Quick-navigation cards directly linking to Users, Services, Bookings, and Transactions.
-
----
-
-## 3. Tech Stack & Standards
-- **Framework**: Next.js 16.4.5 (App Router, Turbopack, React 19)
-- **Styling**: Tailwind CSS v4 with OKLCH theme variables
-- **Component Library**: shadcn/ui exclusively
-- **Icons**: Lucide React
-- **Payments**: Stripe (`mode: 'payment'` only — no subscription, no webhook yet)
-- **Toast Notifications**: Sonner (`import { toast } from "sonner"`) — never `@/components/ui/toast`
-- **Backend**: Express.js at `C:\html\Projects_new_course\My Assignments\fixmate-server` (Port 5000) — deployed to Vercel via `api/index.js` + `vercel.json`
-- **Database**: MongoDB Atlas (`fixmate` database)
-
-## 4. Remaining Pages (Not Yet Built)
-- `/dashboard/technician` — Technician overview / stats
-- `/dashboard/technician/my-services` — Technician's listed services
-- `/dashboard/profile` — Shared profile update page (all roles)
+`npm run dev` · `npm run build` · `npm start` · `npm run lint` · `npm run typecheck` · `npm run format`

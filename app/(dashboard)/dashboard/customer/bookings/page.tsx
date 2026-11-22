@@ -30,7 +30,7 @@ export default async function CustomerBookingsPage({
   // Role verification (must be customer or admin accessing)
   const userRole = (session.user as { role?: string }).role || "customer";
   if (userRole !== "customer" && userRole !== "admin") {
-    redirect("/unauthorized");
+    redirect("/unauthorized?status=403");
   }
 
   // 2. Fetch customer bookings from backend API

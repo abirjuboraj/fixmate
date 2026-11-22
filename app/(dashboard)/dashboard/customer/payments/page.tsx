@@ -93,7 +93,7 @@ export default async function CustomerPaymentsPage() {
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="w-[240px]">Service Title</TableHead>
+                  <TableHead className="w-60">Service Title</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Transaction ID</TableHead>
@@ -112,7 +112,7 @@ export default async function CustomerPaymentsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
                         <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        <span className="truncate max-w-[130px]">{p.technicianName}</span>
+                        <span className="truncate max-w-32.5">{p.technicianName}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -121,7 +121,7 @@ export default async function CustomerPaymentsPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5 max-w-[200px]">
+                      <div className="flex items-center gap-1.5 max-w-50">
                         <span
                           className="font-mono text-xs text-muted-foreground truncate"
                           title={p.transactionId}

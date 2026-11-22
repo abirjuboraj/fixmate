@@ -34,7 +34,7 @@ export const authFetch = async (api: string) => {
     })
 
     if (res.status === 401 || res.status === 403) {
-        redirect("/unauthorized");
+        redirect(`/unauthorized?status=${res.status}`);
     }
 
     if (!res.ok) {
@@ -61,7 +61,7 @@ export const protectedMutation = async (api: string, method: string, data?: unkn
     })
 
     if (res.status === 401 || res.status === 403) {
-        redirect("/unauthorized");
+        redirect(`/unauthorized?status=${res.status}`);
     }
 
     if (!res.ok) {
@@ -79,8 +79,12 @@ export const protectedMutation = async (api: string, method: string, data?: unkn
 export const requireRole = async (role: string) => {
     const session = await getSession();
 
-    if (!session || session?.user.role !== role) {
-        redirect("/unauthorized");
+    if (!session) {
+        redirect("/unauthorized?status=401");
+    }
+
+    if (session.user.role !== role) {
+        redirect("/unauthorized?status=403");
     }
 
     return session;

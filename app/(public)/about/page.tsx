@@ -179,7 +179,7 @@ export default function AboutPage() {
       {/* ── Numbers ── */}
       <section className="py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-border/70 bg-gradient-to-br from-primary/5 via-card to-card p-4 shadow-xs sm:p-8 lg:p-12">
+          <div className="rounded-3xl border border-border/70 bg-linear-to-br from-primary/5 via-card to-card p-4 shadow-xs sm:p-8 lg:p-12">
             <StatsCounter />
           </div>
         </div>

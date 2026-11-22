@@ -14,18 +14,10 @@ import {
   Sparkles,
   Phone,
   MapPin,
-  CalendarDays,
-  FileText,
   User,
   ChevronRight,
   ShieldCheck,
   Zap,
-  CheckSquare,
-  PackageCheck,
-  Compass,
-  ArrowRight,
-  Flame,
-  BadgeDollarSign,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -109,34 +101,6 @@ function getStatusBadge(status: BookingStatus) {
       );
   }
 }
-
-// Smart Field Technician Diagnostic & Service Checklist items
-const FIELD_PROTOCOL_ITEMS = [
-  {
-    title: "Pre-Visit Verification",
-    desc: "Call the client to confirm device model, symptoms, and arrival address before departure.",
-    badge: "Prep",
-    color: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
-  },
-  {
-    title: "On-Site Safety & Diagnostics",
-    desc: "Check power surge safety and test fault conditions before opening enclosures or replacing parts.",
-    badge: "Inspection",
-    color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
-  },
-  {
-    title: "Clear Pricing Alignment",
-    desc: "Disclose necessary spare parts or diagnostic adjustments before proceeding with repairs.",
-    badge: "Transparency",
-    color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
-  },
-  {
-    title: "Operational Demo & Closure",
-    desc: "Demonstrate the restored appliance to the customer, finalize the job amount, and enable Stripe checkout.",
-    badge: "Delivery",
-    color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  },
-];
 
 export function TechnicianOverviewClient({
   technicianName,
@@ -410,7 +374,7 @@ export function TechnicianOverviewClient({
                       </span>
                     )}
                     {booking.address && (
-                      <span className="flex items-center gap-1 truncate max-w-[240px]">
+                      <span className="flex items-center gap-1 truncate max-w-60">
                         <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         {booking.address}
                       </span>

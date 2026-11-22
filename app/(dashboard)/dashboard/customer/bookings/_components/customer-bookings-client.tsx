@@ -286,7 +286,7 @@ export function CustomerBookingsClient({
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="w-[300px]">Service &amp; Category</TableHead>
+                  <TableHead className="w-75">Service &amp; Category</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Preferred Date</TableHead>
                   <TableHead>Amount</TableHead>
@@ -336,7 +336,7 @@ export function CustomerBookingsClient({
                             )}
                           </div>
                           <div className="space-y-0.5 min-w-0">
-                            <p className="font-semibold text-foreground text-sm truncate max-w-[210px]">
+                            <p className="line-clamp-2 h-10 w-50 whitespace-normal wrap-break-word text-sm font-semibold leading-5 text-foreground">
                               {booking.serviceTitle}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -350,7 +350,7 @@ export function CustomerBookingsClient({
                       <TableCell>
                         <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
                           <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                          <span className="truncate max-w-[130px]">
+                          <span className="truncate max-w-32.5">
                             {booking.technicianName}
                           </span>
                         </div>
@@ -512,7 +512,7 @@ export function CustomerBookingsClient({
                           ${amount?.toFixed(2)}
                         </span>
                       </div>
-                      <h4 className="font-bold text-foreground text-sm line-clamp-1">
+                      <h4 className="line-clamp-2 text-sm font-bold leading-snug text-foreground">
                         {booking.serviceTitle}
                       </h4>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">

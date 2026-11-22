@@ -30,7 +30,7 @@ export default async function TechnicianRequestsPage({
   // 2. Role verification (must be technician or admin)
   const userRole = (session.user as { role?: string }).role || "customer";
   if (userRole !== "technician" && userRole !== "admin") {
-    redirect("/unauthorized");
+    redirect("/unauthorized?status=403");
   }
 
   // 3. Fetch technician bookings from backend API
