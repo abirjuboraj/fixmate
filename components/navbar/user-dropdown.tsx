@@ -27,6 +27,7 @@ import {
   getUserInitials,
   renderRoleIcon,
 } from "@/components/shared/user-badge";
+import { toast } from "sonner";
 
 export interface UserDropdownProps {
   user: {
@@ -60,12 +61,14 @@ export function UserDropdown({ user, onSignOut }: UserDropdownProps) {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            toast.success("Signed out successfully! See you soon")
             router.push("/sign-in");
             router.refresh();
           },
         },
       });
     } catch {
+      toast.error("Failed to sign out! Try again")
       router.push("/");
       router.refresh();
     }
