@@ -7,9 +7,11 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      {/* min-h-dvh keeps the footer below the fold even when a page is empty
+          or its content is still loading. */}
+      <main className="min-h-dvh flex-1">{children}</main>
       <Footer />
     </div>
   );

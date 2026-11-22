@@ -91,8 +91,8 @@ export function Footer() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
 
       {/* Main Footer Links */}
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-5">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-y-8 md:grid-cols-3 lg:grid-cols-5">
           {/* Brand: full row on mobile/tablet, two columns on desktop */}
           <div className="col-span-2 space-y-4 md:col-span-3 lg:col-span-2">
             <Logo showTagline={true} />
@@ -217,7 +217,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Copyright — only real project routes are linked above */}
-        <div className="mt-12 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
+        <div className="mt-8 border-t border-border/60 pt-5 text-center text-xs text-muted-foreground lg:mt-12 lg:pt-6">
           <p>© {new Date().getFullYear()} FixMate Platform. All rights reserved.</p>
         </div>
       </div>

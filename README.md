@@ -7,7 +7,7 @@ job pipeline; admins moderate services and oversee the platform.
 
 ## Live URL
 
-https://fixmate.vercel.app
+https://fixmate-mu.vercel.app
 
 > Replace this with your final deployed URL if it differs.
 
@@ -66,7 +66,7 @@ https://fixmate.vercel.app
 
 ```bash
 npm install
-cp .env.example .env   # fill in MONGODB_URI, BETTER_AUTH_URL, NEXT_PUBLIC_API_URL, etc.
+cp .env.example .env   # fill in MongoDB, Better Auth, ImgBB, Google OAuth and API URL values
 npm run dev            # http://localhost:3000
 ```
 
