@@ -17,8 +17,6 @@ https://fixmate-mu.vercel.app
 | ----- | ---------------- | ----------- |
 | Admin | admin@gmail.com  | Admin10@    |
 
-> Sign in at `/sign-in`, then open **Dashboard → Platform Overview** (you will be
-> routed to `/dashboard/admin`).
 
 ## Key features
 
