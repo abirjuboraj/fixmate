@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   MapPin,
   Clock,
@@ -74,7 +73,8 @@ export function ServiceCard({ service }: ServiceCardProps) {
       <div className="flex flex-1 flex-col p-5 space-y-4">
         {/* Title */}
         <div className="space-y-1">
-          <h3 className="text-base sm:text-lg font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+          {/* Full title on every screen — no truncation, just natural wrapping */}
+          <h3 className="min-h-11 text-base leading-snug font-bold text-foreground group-hover:text-primary transition-colors sm:text-lg">
             {service.title}
           </h3>
           <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">

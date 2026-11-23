@@ -341,7 +341,7 @@ export function AdminBookingsView({
                             alt={booking.serviceTitle}
                           />
                           <div className="min-w-0">
-                            <p className="font-medium text-foreground line-clamp-1 max-w-[200px]">
+                            <p className="line-clamp-2 min-h-10 max-w-[200px] whitespace-normal break-words text-sm font-medium leading-snug text-foreground">
                               {booking.serviceTitle}
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
@@ -422,7 +422,7 @@ export function AdminBookingsView({
                           <span className="text-[11px] font-bold text-primary uppercase tracking-wide">
                             {booking.category}
                           </span>
-                          <h4 className="font-semibold text-foreground text-sm line-clamp-1">
+                          <h4 className="line-clamp-2 min-h-10 text-sm font-semibold leading-snug text-foreground">
                             {booking.serviceTitle}
                           </h4>
                         </div>

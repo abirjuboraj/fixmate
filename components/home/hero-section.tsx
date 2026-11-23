@@ -4,10 +4,6 @@ import { ArrowRight, ShieldCheck, Star, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeroSearch } from "@/components/home/hero-search";
 
-// High-resolution hero image supplied for the project: a FixMate technician
-// installing a pendant light in a customer's home.
-// Cache-busting query so Next's image optimizer serves the latest file after
-// the banner image is replaced with the same filename.
 const REPAIR_HERO_IMAGE =
   "/images/FixMate%20Living%20Room%20Light%20Repair.png?v=2";
 
@@ -46,7 +42,7 @@ export function HeroSection() {
           {/* Subtle Tagline */}
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-medium text-neutral-200 backdrop-blur-md border border-white/15 sm:px-3.5 sm:text-[11px] lg:text-xs">
             <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
-            <span>Doorstep Visits &amp; Shop Drop-Offs Available</span>
+            <span>Your Repair, Our Expertise</span>
           </div>
 
           {/* Clean & Bold Headline */}
@@ -56,11 +52,8 @@ export function HeroSection() {
             </h1>
             <p className="max-w-full text-xs text-neutral-300 leading-relaxed sm:text-base lg:text-lg">
               <span className="block lg:inline">
-               Get reliable expert help for your devices and home appliances. Connect with trusted local technicians, stay updated on every step and enjoy hassle-free service from start to finish.
-              </span>{" "}
-              {/* <span className="block lg:inline">
-                Track your service in real time and pay only after completion.
-              </span> */}
+              Get expert repairs for your devices and home appliances. Connect with our trusted local technicians and enjoy reliable services
+              </span>
             </p>
           </div>
 

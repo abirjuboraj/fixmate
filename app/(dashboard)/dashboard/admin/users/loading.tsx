@@ -23,6 +23,12 @@ export default function LoadingAdminUsers() {
         </div>
       </div>
 
+      {/* Result count + reset */}
+      <div className="flex items-center justify-between text-sm">
+        <div className="h-4 w-28 rounded bg-muted" />
+        <div className="h-7 w-16 rounded-lg bg-muted" />
+      </div>
+
       {/* Desktop table skeleton */}
       <div className="hidden md:block rounded-xl border border-border/70 bg-card overflow-hidden">
         {/* header row */}

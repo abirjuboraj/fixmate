@@ -649,72 +649,7 @@ export function AdminOverviewClient({
         )}
       </div>
 
-      <div>
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
-          Admin Control Center
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link
-            href="/dashboard/admin/users"
-            className="group rounded-2xl border border-border/70 bg-card p-5 hover:border-primary/50 hover:shadow-xs transition-all space-y-2"
-          >
-            <div className="h-9 w-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-              <Users className="h-4 w-4" />
-            </div>
-            <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-              User Management
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Review accounts, change roles between customer, technician, and admin.
-            </p>
-          </Link>
-
-          <Link
-            href="/dashboard/admin/services"
-            className="group rounded-2xl border border-border/70 bg-card p-5 hover:border-primary/50 hover:shadow-xs transition-all space-y-2"
-          >
-            <div className="h-9 w-9 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-              <CheckCircle2 className="h-4 w-4" />
-            </div>
-            <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-              Service Moderation
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Approve, reject, or filter technician repair listings and categories.
-            </p>
-          </Link>
-
-          <Link
-            href="/dashboard/admin/bookings"
-            className="group rounded-2xl border border-border/70 bg-card p-5 hover:border-primary/50 hover:shadow-xs transition-all space-y-2"
-          >
-            <div className="h-9 w-9 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-              <CalendarCheck2 className="h-4 w-4" />
-            </div>
-            <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-              All Bookings
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Inspect job pipelines, timeline progression, and technician status.
-            </p>
-          </Link>
-
-          <Link
-            href="/dashboard/admin/transactions"
-            className="group rounded-2xl border border-border/70 bg-card p-5 hover:border-primary/50 hover:shadow-xs transition-all space-y-2"
-          >
-            <div className="h-9 w-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <DollarSign className="h-4 w-4" />
-            </div>
-            <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-              Platform Ledger
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Stripe checkout records, receipts, and total platform revenue.
-            </p>
-          </Link>
-        </div>
-      </div>
+     
     </div>
   );
 }
