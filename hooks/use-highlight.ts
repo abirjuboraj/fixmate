@@ -13,21 +13,28 @@ export function useHighlight(
   useEffect(() => {
     if (!highlightId) return;
 
-    let element: HTMLElement | null = null;
-    if (rowPrefix) {
-      element = document.getElementById(`${rowPrefix}${highlightId}`);
-    }
-    if (!element && cardPrefix) {
-      element = document.getElementById(`${cardPrefix}${highlightId}`);
-    }
+    const candidates = [rowPrefix, cardPrefix]
+      .filter(Boolean)
+      .map((prefix) => document.getElementById(`${prefix}${highlightId}`))
+      .filter((element): element is HTMLElement => element !== null);
 
-    element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const element =
+      candidates.find((candidate) => candidate.getClientRects().length > 0) ??
+      candidates[0];
+
+    const frame = requestAnimationFrame(() => {
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
 
     const timer = setTimeout(
       () => setIsHighlighting(false),
       HIGHLIGHT_DURATION_MS,
     );
-    return () => clearTimeout(timer);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
   }, [highlightId, rowPrefix, cardPrefix]);
 
   return isHighlighting;

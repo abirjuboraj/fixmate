@@ -137,6 +137,9 @@ export function CustomerOverviewClient({
     (b) => b.status === "completed" && b.paymentStatus === "unpaid"
   );
 
+  // Record-specific deep links from the stat cards / payment notification
+  const firstActiveBooking = activeBookingsList[0];
+
   return (
     <div className="space-y-8 w-full">
       {/* -------------------- Top Hero Welcome Banner -------------------- */}
@@ -191,7 +194,13 @@ export function CustomerOverviewClient({
             </div>
           </div>
           <Button size="sm" asChild className="bg-amber-600 hover:bg-amber-700 text-white font-semibold shrink-0">
-            <Link href="/dashboard/customer/bookings">
+            <Link
+              href={withHighlight(
+                "/dashboard/customer/bookings",
+                pendingPayments[0]?._id,
+                "booking-row-",
+              )}
+            >
               Pay Now
               <ArrowRight className="h-4 w-4 ml-1.5" />
             </Link>
@@ -257,7 +266,11 @@ export function CustomerOverviewClient({
             Currently active
           </p>
           <Link
-            href="/dashboard/customer/bookings"
+            href={withHighlight(
+              "/dashboard/customer/bookings",
+              firstActiveBooking?._id,
+              "booking-row-",
+            )}
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-amber-600 dark:text-amber-400 group-hover:underline"
           >
             <span>Track Progress</span>

@@ -15,12 +15,19 @@ import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import type { ServiceItem } from "@/types"
 import { deleteService, toggleServiceAvailability } from "@/lib/action/services"
+import { useHighlight } from "@/hooks/use-highlight"
+import {
+  HIGHLIGHT_CARD_CLASS,
+  HIGHLIGHT_ROW_CLASS,
+  HIGHLIGHT_TRANSITION,
+} from "@/lib/highlight"
 import { EditServiceModal } from "./edit-service-modal"
 import { ConfirmDeleteModal } from "./confirm-delete-modal"
 
 interface MyServicesViewProps {
   services: ServiceItem[]
   fetchError: string | null
+  highlightId?: string
 }
 
 const getApprovalBadge = (status: string) => {
@@ -63,7 +70,16 @@ const ServiceImage = ({ src, alt }: { src: string; alt: string }) => {
   )
 }
 
-export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
+export function MyServicesView({
+  services,
+  fetchError,
+  highlightId,
+}: MyServicesViewProps) {
+  const isHighlighting = useHighlight(
+    highlightId,
+    "service-row-",
+    "service-card-",
+  )
   const [serviceList, setServiceList] = useState<ServiceItem[]>(services)
 
   const [editingService, setEditingService] = useState<ServiceItem | null>(null)
@@ -190,10 +206,10 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-muted/30 text-left">
-              <th className="px-4 py-3 font-semibold text-muted-foreground">
+              <th className="w-[45%] px-4 py-3 font-semibold text-muted-foreground lg:w-[35%]">
                 Service
               </th>
-              <th className="px-4 py-3 font-semibold text-muted-foreground">
+              <th className="hidden px-4 py-3 font-semibold text-muted-foreground lg:table-cell">
                 Category
               </th>
               <th className="px-4 py-3 font-semibold text-muted-foreground">
@@ -217,25 +233,29 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
               return (
                 <tr
                   key={service._id}
-                  className="border-b border-border/40 transition-colors last:border-0 hover:bg-muted/20"
+                  id={`service-row-${service._id}`}
+                  className={`border-b border-border/40 last:border-0 hover:bg-muted/20 ${HIGHLIGHT_TRANSITION} ${
+                    isHighlighting && service._id === highlightId
+                      ? HIGHLIGHT_ROW_CLASS
+                      : ""
+                  }`}
                 >
                   {/* Image + title */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <ServiceImage src={service.image} alt={service.title} />
-                      <div className="min-w-0">
-                        <p className="line-clamp-1 font-medium text-foreground">
+                      <div className="min-w-0 max-w-[240px] lg:max-w-[280px]">
+                        {/* Two lines max, with normal wrapping so the title is
+                            never cut to a single line on tablet. */}
+                        <p className="line-clamp-2 whitespace-normal text-sm font-medium leading-snug text-foreground">
                           {service.title}
-                        </p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          {service.serviceMode} • {service.serviceArea}
                         </p>
                       </div>
                     </div>
                   </td>
 
-                  {/* Category */}
-                  <td className="px-4 py-3 text-muted-foreground">
+                  {/* Category — hidden on tablet to give the title room */}
+                  <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                     {service.category}
                   </td>
 
@@ -326,7 +346,12 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
           return (
             <div
               key={service._id}
-              className="overflow-hidden rounded-xl border border-border/70 bg-card"
+              id={`service-card-${service._id}`}
+              className={`overflow-hidden rounded-xl border bg-card ${HIGHLIGHT_TRANSITION} ${
+                isHighlighting && service._id === highlightId
+                  ? HIGHLIGHT_CARD_CLASS
+                  : "border-border/70"
+              }`}
             >
               {service.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -344,14 +369,11 @@ export function MyServicesView({ services, fetchError }: MyServicesViewProps) {
               <div className="space-y-3 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="leading-snug font-semibold text-foreground">
+                    <h3 className="text-sm font-semibold leading-snug text-foreground">
                       {service.title}
                     </h3>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {service.category} • {service.serviceMode}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {service.serviceArea}
+                      {service.category}
                     </p>
                   </div>
                   <Badge

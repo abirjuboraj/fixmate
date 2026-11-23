@@ -10,6 +10,7 @@ import { UserRole } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getSidebarIcon } from "@/components/dashboard/sidebar-icons";
+import { toast } from "sonner";
 
 interface DashboardSidebarProps {
   userRole: UserRole;
@@ -33,12 +34,14 @@ export function DashboardSidebar({
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            toast.success("Successfully signed out. See you soon!")
             router.push("/sign-in");
             router.refresh();
           },
         },
       });
     } catch {
+      toast.error("Failed to sign out. Try again")
       router.push("/");
       router.refresh();
     }

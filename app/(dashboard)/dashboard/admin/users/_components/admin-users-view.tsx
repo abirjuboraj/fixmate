@@ -33,6 +33,12 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import { useHighlight } from "@/hooks/use-highlight";
+import {
+  HIGHLIGHT_CARD_CLASS,
+  HIGHLIGHT_ROW_CLASS,
+  HIGHLIGHT_TRANSITION,
+} from "@/lib/highlight";
 import {
   getRoleBadgeStyle,
   formatRoleLabel,
@@ -50,6 +56,7 @@ interface AdminUsersViewProps {
   currentRole: string;
   currentCategory: string;
   adminEmail: string;
+  highlightId?: string;
 }
 
 
@@ -71,8 +78,14 @@ export function AdminUsersView({
   currentRole,
   currentCategory,
   adminEmail,
+  highlightId,
 }: AdminUsersViewProps) {
   const router = useRouter();
+  const isHighlighting = useHighlight(
+    highlightId,
+    "user-row-",
+    "user-card-",
+  );
 
   // The role change waiting for the admin to confirm (null = modal closed)
   const [roleTarget, setRoleTarget] = useState<{
@@ -343,7 +356,15 @@ export function AdminUsersView({
                   const isSelf = user.email === adminEmail;
 
                   return (
-                    <TableRow key={user._id}>
+                    <TableRow
+                      key={user._id}
+                      id={`user-row-${user._id}`}
+                      className={`${HIGHLIGHT_TRANSITION} ${
+                        isHighlighting && user._id === highlightId
+                          ? HIGHLIGHT_ROW_CLASS
+                          : ""
+                      }`}
+                    >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
@@ -406,7 +427,12 @@ export function AdminUsersView({
               return (
                 <div
                   key={user._id}
-                  className="rounded-xl border border-border bg-card p-4 space-y-3"
+                  id={`user-card-${user._id}`}
+                  className={`rounded-xl border bg-card p-4 space-y-3 ${HIGHLIGHT_TRANSITION} ${
+                    isHighlighting && user._id === highlightId
+                      ? HIGHLIGHT_CARD_CLASS
+                      : "border-border"
+                  }`}
                 >
                   <div className="flex items-start gap-3">
                     <Avatar className="h-10 w-10 shrink-0">

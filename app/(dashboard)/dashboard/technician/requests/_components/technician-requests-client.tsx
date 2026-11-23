@@ -604,8 +604,8 @@ export function TechnicianRequestsClient({
             </Table>
           </div>
 
-          {/* ── MOBILE CARDS VIEW (Visible on md & down) ── */}
-          <div className="lg:hidden space-y-4">
+          {/* ── CARD VIEW: 1 column on phones, 2 on tablet ── */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
             {filteredBookings.map((booking, index) => {
               const bookingId = booking._id || "";
               const isBookingBusy = !!loadingAction && loadingAction.startsWith(`${bookingId}:`);

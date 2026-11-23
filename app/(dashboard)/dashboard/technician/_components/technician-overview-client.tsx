@@ -137,6 +137,11 @@ export function TechnicianOverviewClient({
     .filter((b) => b.status === "requested" || b.status === "in-progress" || b.status === "accepted")
     .slice(0, 6);
 
+  // Record-specific deep links from the stat cards
+  const firstUrgentRequest = urgentRequests[0];
+  const firstCompletedBooking = bookings.find((b) => b.status === "completed");
+  const firstService = services[0];
+
   return (
     <div className="space-y-8 w-full">
       {/* -------------------- Top Hero Welcome Banner -------------------- */}
@@ -156,7 +161,7 @@ export function TechnicianOverviewClient({
           </div>
 
           {/* Quick Action Button Group */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-3">
             <Button asChild className="gap-2 shadow-xs font-semibold">
               <Link href="/dashboard/technician/add-service">
                 <PlusCircle className="h-4 w-4" />
@@ -204,7 +209,11 @@ export function TechnicianOverviewClient({
             {requestedCount} awaiting your acceptance
           </p>
           <Link
-            href="/dashboard/technician/requests"
+            href={withHighlight(
+              "/dashboard/technician/requests",
+              firstUrgentRequest?._id,
+              "booking-row-",
+            )}
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary group-hover:underline"
           >
             <span>Manage Queue</span>
@@ -238,7 +247,11 @@ export function TechnicianOverviewClient({
             Verified customer deliveries
           </p>
           <Link
-            href="/dashboard/technician/requests"
+            href={withHighlight(
+              "/dashboard/technician/requests",
+              firstCompletedBooking?._id,
+              "booking-row-",
+            )}
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-emerald-600 dark:text-emerald-400 group-hover:underline"
           >
             <span>Completed History</span>
@@ -274,7 +287,11 @@ export function TechnicianOverviewClient({
               : "All services approved & live"}
           </p>
           <Link
-            href="/dashboard/technician/my-services"
+            href={withHighlight(
+              "/dashboard/technician/my-services",
+              firstService?._id,
+              "service-row-",
+            )}
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:underline"
           >
             <span>Manage Services</span>

@@ -14,7 +14,14 @@ export const metadata = {
   description: "Manage your repair service listings.",
 };
 
-export default async function TechnicianMyServicesPage() {
+export default async function TechnicianMyServicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const highlightId =
+    typeof params.highlight === "string" ? params.highlight : "";
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -72,7 +79,11 @@ export default async function TechnicianMyServicesPage() {
       </div>
 
       {/* The interactive part (table, modals, toggle) is a client component */}
-      <MyServicesView services={services} fetchError={fetchError} />
+      <MyServicesView
+        services={services}
+        fetchError={fetchError}
+        highlightId={highlightId}
+      />
     </div>
   );
 }

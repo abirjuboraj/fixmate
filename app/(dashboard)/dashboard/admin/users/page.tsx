@@ -43,6 +43,7 @@ export default async function AdminUsersPage({
   const currentRole = typeof params.role === "string" ? params.role : "";
   const currentCategory =
     typeof params.category === "string" ? params.category : "";
+  const highlightId = typeof params.highlight === "string" ? params.highlight : "";
 
   const query = new URLSearchParams();
   if (currentSearch) query.set("search", currentSearch);
@@ -89,6 +90,7 @@ export default async function AdminUsersPage({
         currentRole={currentRole}
         currentCategory={currentCategory}
         adminEmail={adminEmail}
+        highlightId={highlightId}
       />
     </div>
   );

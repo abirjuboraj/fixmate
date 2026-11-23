@@ -152,6 +152,10 @@ export function AdminOverviewClient({
   const recentBookingsList = [...bookings].slice(0, 5);
   const recentUsersList = [...users].slice(0, 5);
 
+  // Record-specific deep links from the stat cards / notification badges
+  const firstPendingService = pendingList[0];
+  const firstTechnician = users.find((u) => u.role === "technician");
+
   return (
     <div className="space-y-8">
 
@@ -218,7 +222,11 @@ export function AdminOverviewClient({
             Verified repair specialists
           </p>
           <Link
-            href="/dashboard/admin/users?role=technician"
+            href={withHighlight(
+              "/dashboard/admin/users?role=technician",
+              firstTechnician?._id,
+              "user-row-",
+            )}
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-amber-600 dark:text-amber-400 group-hover:underline"
           >
             <span>View Technicians</span>
@@ -263,7 +271,11 @@ export function AdminOverviewClient({
             Awaiting admin moderation
           </p>
           <Link
-            href="/dashboard/admin/services?status=pending"
+            href={withHighlight(
+              "/dashboard/admin/services?status=pending",
+              firstPendingService?._id,
+              "service-row-",
+            )}
             className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-rose-600 dark:text-rose-400 group-hover:underline"
           >
             <span>Review Submissions</span>
@@ -619,7 +631,13 @@ export function AdminOverviewClient({
                       <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                     <Button variant="outline" size="sm" asChild className="self-end sm:self-center text-xs">
-                      <Link href={`/dashboard/admin/users?search=${encodeURIComponent(user.email)}`}>
+                      <Link
+                        href={withHighlight(
+                          `/dashboard/admin/users?search=${encodeURIComponent(user.email)}`,
+                          user._id,
+                          "user-row-",
+                        )}
+                      >
                         Edit Role
                       </Link>
                     </Button>

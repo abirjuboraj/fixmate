@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserRole } from "@/types";
+import { toast } from "sonner";
 
 interface DashboardTopbarProps {
   userRole: UserRole;
@@ -53,12 +54,14 @@ export function DashboardTopbar({
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            toast.success("Successfully signed out. See you soon!")
             router.push("/sign-in");
             router.refresh();
           },
         },
       });
     } catch {
+      toast.error("Failed to sign ou. Try again!")
       router.push("/");
       router.refresh();
     }
