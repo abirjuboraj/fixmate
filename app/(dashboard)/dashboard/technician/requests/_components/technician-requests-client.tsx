@@ -627,27 +627,27 @@ export function TechnicianRequestsClient({
                 <div
                   key={bookingId || index}
                   id={`booking-card-${bookingId}`}
-                  className={`rounded-2xl border bg-card p-4 shadow-xs space-y-3.5 ${HIGHLIGHT_TRANSITION} ${
+                  className={`flex flex-col gap-3.5 rounded-2xl border bg-card p-4 shadow-xs ${HIGHLIGHT_TRANSITION} ${
                     isHighlighting && booking._id === highlightId
                       ? HIGHLIGHT_CARD_CLASS
                       : "border-border/80"
                   }`}
                 >
                   {/* Card Header: Service Title & Status */}
-                  <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-3">
-                    <div className="space-y-0.5">
+                  <div className="flex min-h-14 items-start justify-between gap-2 border-b border-border/60 pb-3">
+                    <div className="min-w-0 space-y-0.5">
                       <p className="text-[11px] font-bold text-primary uppercase">
                         {booking.category}
                       </p>
-                      <h4 className="font-bold text-foreground text-sm line-clamp-1">
+                      <h4 className="line-clamp-2 min-h-10 text-sm font-bold leading-snug text-foreground">
                         {booking.serviceTitle}
                       </h4>
                     </div>
                     <div>{getStatusBadge(booking.status)}</div>
                   </div>
 
-                  {/* Customer Info */}
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  {/* Customer Info — fixed height keeps the next section aligned */}
+                  <div className="grid min-h-8 grid-cols-2 gap-2 text-xs">
                     <div>
                       <span className="text-muted-foreground block text-[11px]">
                         Customer
@@ -667,7 +667,7 @@ export function TechnicianRequestsClient({
                   </div>
 
                   {/* Date & Address */}
-                  <div className="space-y-1.5 text-xs border-t border-border/50 pt-2.5">
+                  <div className="min-h-12 space-y-1.5 border-t border-border/50 pt-2.5 text-xs">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
                       <span>Preferred Date: {formatDisplayDate(booking.preferredDate)}</span>
@@ -678,8 +678,8 @@ export function TechnicianRequestsClient({
                     </div>
                   </div>
 
-                  {/* Problem Description */}
-                  <div className="bg-muted/40 rounded-xl p-3 text-xs space-y-1">
+                  {/* Problem Description — reserve space for 3 lines */}
+                  <div className="min-h-28 space-y-1 rounded-xl bg-muted/40 p-3 text-xs">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground">
                       Problem Description
                     </span>
@@ -689,7 +689,7 @@ export function TechnicianRequestsClient({
                   </div>
 
                   {/* Pricing info */}
-                  <div className="flex items-center justify-between text-xs pt-1">
+                  <div className="flex min-h-6 items-center justify-between pt-1 text-xs">
                     <span className="text-muted-foreground">
                       Base Price: ${booking.basePrice?.toFixed(2)}
                     </span>
@@ -700,11 +700,12 @@ export function TechnicianRequestsClient({
                     )}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="border-t border-border/60 pt-3">
+                  {/* Action area — fixed height so the top border always sits
+                      at the same level, whether it holds buttons or text */}
+                  <div className="mt-auto flex min-h-12 flex-col justify-center border-t border-border/60 pt-3">
                     {/* Requested: Accept / Reject */}
                     {isRequested && (
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid w-full grid-cols-2 gap-2">
                         <Button
                           size="sm"
                           onClick={() => handleStatusChange(bookingId, "accepted")}
@@ -767,7 +768,7 @@ export function TechnicianRequestsClient({
 
                     {/* Completed: Payment badge */}
                     {isCompleted && (
-                      <div className="flex items-center justify-between text-xs">
+                      <div className="flex w-full items-center justify-between text-xs">
                         <span className="text-muted-foreground font-medium">
                           Customer Payment:
                         </span>
@@ -778,7 +779,7 @@ export function TechnicianRequestsClient({
                     {/* Cancelled / Rejected */}
                     {(booking.status === "rejected" ||
                       booking.status === "cancelled") && (
-                        <p className="text-center text-xs text-muted-foreground italic">
+                        <p className="w-full text-center text-xs text-muted-foreground italic">
                           No further action available.
                         </p>
                       )}
