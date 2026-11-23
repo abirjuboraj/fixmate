@@ -40,20 +40,15 @@ export default function SignInPage() {
 function SignInForm() {
   const searchParams = useSearchParams();
 
-  // Where to go after a successful login. The service details page sends
-  // logged-out users here as /sign-in?callbackURL=/services/<id> so they
-  // come BACK to the page they came from. Defaults to the dashboard.
   const rawCallback = searchParams.get("callbackURL") || "/dashboard";
   const callbackURL =
     rawCallback.startsWith("/") && !rawCallback.startsWith("//")
       ? rawCallback
       : "/dashboard";
 
-  // Guests redirected from a protected page arrive with ?reason=protected.
-  // Show a one-time toast explaining why they are here.
+  
   const reason = searchParams.get("reason");
-  // A ref (not state) guard makes sure the toast fires only once, even when
-  // React StrictMode mounts effects twice in development.
+  
   const reasonToastShown = useRef(false);
   useEffect(() => {
     if (reasonToastShown.current) return;
