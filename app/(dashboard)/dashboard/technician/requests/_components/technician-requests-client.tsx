@@ -24,6 +24,7 @@ import {
   RotateCcw,
   AlertTriangle,
   Eye,
+  MessageSquare,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ import {
   HIGHLIGHT_TRANSITION,
 } from "@/lib/highlight";
 import { toast } from "sonner";
+import { RatingDisplay } from "@/components/shared/rating-display";
 
 interface TechnicianRequestsClientProps {
   initialBookings: BookingItem[];
@@ -207,6 +209,9 @@ export function TechnicianRequestsClient({
     null
   );
   const [viewingProblemBooking, setViewingProblemBooking] = useState<BookingItem | null>(
+    null
+  );
+  const [viewingReviewBooking, setViewingReviewBooking] = useState<BookingItem | null>(
     null
   );
 
@@ -474,6 +479,21 @@ export function TechnicianRequestsClient({
                               </span>
                             )}
                           </div>
+
+                          {/* Customer rating + short feedback (stored on the booking) */}
+                          {typeof booking.rating === "number" && booking.rating > 0 && (
+                            <div className="mt-1.5 pt-1.5 border-t border-border/50 flex flex-wrap items-center gap-x-2 gap-y-1">
+                              <RatingDisplay rating={booking.rating} showCount={false} />
+                              <button
+                                type="button"
+                                onClick={() => setViewingReviewBooking(booking)}
+                                className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+                              >
+                                <Eye className="h-3 w-3" />
+                                View feedback
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </TableCell>
 
@@ -687,6 +707,26 @@ export function TechnicianRequestsClient({
                       &ldquo;{booking.problemDescription}&rdquo;
                     </p>
                   </div>
+
+                  {/* Customer feedback block — only shown once the customer reviews */}
+                  {typeof booking.rating === "number" && booking.rating > 0 && (
+                    <div className="space-y-1.5 rounded-xl border border-amber-500/25 bg-amber-500/5 p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                          Customer Feedback
+                        </span>
+                        <RatingDisplay rating={booking.rating} showCount={false} />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setViewingReviewBooking(booking)}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+                      >
+                        <Eye className="h-3 w-3" />
+                        View feedback
+                      </button>
+                    </div>
+                  )}
 
                   {/* Pricing info */}
                   <div className="flex min-h-6 items-center justify-between pt-1 text-xs">
@@ -1043,6 +1083,105 @@ export function TechnicianRequestsClient({
                 size="sm"
                 onClick={() => setViewingProblemBooking(null)}
                 className="font-medium text-xs"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: Customer rating + full review ── */}
+      {viewingReviewBooking && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="review-feedback-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in-0"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setViewingReviewBooking(null);
+            }
+          }}
+        >
+          <div className="relative w-full max-w-md max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-2xl border border-border/80 bg-card p-5 sm:p-6 shadow-xl space-y-4">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3 border-b border-border/60 pb-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <MessageSquare className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3
+                    id="review-feedback-title"
+                    className="text-base font-bold text-foreground"
+                  >
+                    Customer Feedback
+                  </h3>
+                  <p className="text-xs text-muted-foreground truncate">
+                    For &ldquo;{viewingReviewBooking.serviceTitle}&rdquo;
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingReviewBooking(null)}
+                className="shrink-0 rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                aria-label="Close feedback"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Booking summary */}
+            <div className="space-y-1.5 rounded-xl bg-muted/40 p-3 text-xs">
+              <p>
+                <strong className="text-foreground">Customer:</strong>{" "}
+                <span className="text-muted-foreground">
+                  {viewingReviewBooking.customerName}
+                </span>
+              </p>
+              <p>
+                <strong className="text-foreground">Reviewed on:</strong>{" "}
+                <span className="text-muted-foreground">
+                  {formatDisplayDate(viewingReviewBooking.reviewedAt)}
+                </span>
+              </p>
+            </div>
+
+            {/* Stars */}
+            <div className="flex justify-center rounded-xl border border-amber-500/25 bg-amber-500/5 p-3">
+              <RatingDisplay
+                rating={viewingReviewBooking.rating}
+                showCount={false}
+                size="md"
+              />
+            </div>
+
+            {/* Full review text */}
+            {viewingReviewBooking.review ? (
+              <div className="space-y-1.5">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  What the customer said
+                </span>
+                <div className="max-h-60 overflow-y-auto rounded-xl border border-border/70 bg-background p-4">
+                  <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                    {viewingReviewBooking.review}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-xs italic text-muted-foreground">
+                The customer left a rating without a written review.
+              </p>
+            )}
+
+            <div className="flex justify-end pt-1 border-t border-border/60">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewingReviewBooking(null)}
+                className="w-full sm:w-auto font-medium text-xs"
               >
                 Close
               </Button>

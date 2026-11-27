@@ -31,6 +31,17 @@ https://fixmate-mu.vercel.app
   final amount; server-enforced status pipeline.
 - **Payments** — Stripe Checkout (`mode: 'payment'`, no webhooks), success receipt
   with copyable transaction ID, and payment history for customers and admins.
+- **Ratings & reviews** — once a booking is completed and paid, the customer can
+  leave a 1–5 star rating and a short review (max 300 characters, one per booking).
+  The rating and review are stored on the booking; the average rating and review
+  count are computed on the server and shown on service cards and the service
+  details page. Technicians see the star rating in **Manage Requests** and open
+  the full feedback in a modal.
+- **Theme** — light-first palette with a toggle button in the public navbar,
+  dashboard topbar, and sign-in/sign-up header. `next-themes` saves the choice in
+  `localStorage` and applies a `.dark` class to `<html>` before hydration, so there
+  is no flash of the wrong theme on reload. The theme is changed only through the
+  button (no keyboard shortcut).
 - **Dashboards** — dedicated overviews and management pages for Customer,
   Technician, and Admin, with instant client-side status filters and scoped loading
   skeletons.
