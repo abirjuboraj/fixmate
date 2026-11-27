@@ -38,3 +38,19 @@ export const initiateBookingPayment = async (bookingId: string) => {
   const api = `${AUTH_URL}/api/payment/create-checkout-session`;
   return protectedMutation(api, "POST", { bookingId });
 };
+
+/**
+ * Customer rating + review for a completed, paid booking
+ */
+export interface SubmitReviewPayload {
+  rating: number;
+  review: string;
+}
+
+export const submitBookingReview = async (
+  bookingId: string,
+  payload: SubmitReviewPayload
+) => {
+  const api = `${AUTH_URL}/api/bookings/${bookingId}/review`;
+  return protectedMutation(api, "PATCH", payload);
+};

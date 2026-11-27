@@ -11,6 +11,7 @@ import {
 import { ServiceItem } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RatingDisplay } from "@/components/shared/rating-display";
 
 interface ServiceCardProps {
   service: ServiceItem;
@@ -80,6 +81,13 @@ export function ServiceCard({ service }: ServiceCardProps) {
           <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
             {service.description}
           </p>
+
+          <div className="flex flex-wrap items-center pt-0.5">
+            <RatingDisplay
+              rating={service.averageRating}
+              reviewCount={service.reviewCount}
+            />
+          </div>
         </div>
 
         {/* Service Metadata: Area & Duration */}

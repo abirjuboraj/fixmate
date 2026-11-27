@@ -75,6 +75,9 @@ export interface ServiceItem {
   approvalStatus: ServiceApprovalStatus;
   isAvailable: boolean;
   createdAt?: Date;
+  // Computed on the server from paid bookings that have a rating
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export interface AddServicePayload {
@@ -150,6 +153,10 @@ export interface BookingItem {
   finalAmount?: number;
   paymentStatus: PaymentStatus;
   createdAt?: Date;
+  // Set after a customer reviews a completed, paid booking
+  rating?: number;
+  review?: string;
+  reviewedAt?: Date | string;
 }
 
 
@@ -183,6 +190,8 @@ export interface ServiceDetailItem {
   approvalStatus: string;
   isAvailable: boolean;
   createdAt?: string;
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export interface PaymentRecord {

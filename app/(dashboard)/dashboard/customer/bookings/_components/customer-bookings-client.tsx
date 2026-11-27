@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Loader2,
   ArrowRight,
+  Star,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BookingItem, BookingStatus, PaymentStatus } from "@/types";
-import { cancelBooking, initiateBookingPayment } from "@/lib/action/bookings";
+import {
+  cancelBooking,
+  initiateBookingPayment,
+  submitBookingReview,
+} from "@/lib/action/bookings";
+import { ReviewModal } from "./review-modal";
 import { useHighlight } from "@/hooks/use-highlight";
 import {
   HIGHLIGHT_CARD_CLASS,
@@ -184,6 +190,11 @@ export function CustomerBookingsClient({
   // Loading state for Pay Now action
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
 
+  // Modal state for leaving a rating + review on a paid booking
+  const [reviewingBooking, setReviewingBooking] =
+    useState<BookingItem | null>(null);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
   /**
    * Handle Cancel Confirmation & Submission
    */
@@ -255,6 +266,52 @@ export function CustomerBookingsClient({
     }
   };
 
+  /**
+   * Handle submitting a rating + review for a paid booking
+   */
+  const handleSubmitReview = async (rating: number, review: string) => {
+    if (!reviewingBooking?._id) return;
+
+    setIsSubmittingReview(true);
+
+    try {
+      const res = await submitBookingReview(reviewingBooking._id, {
+        rating,
+        review,
+      });
+
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to submit your review.");
+      }
+
+      // Keep the UI instant — the server refresh confirms the saved data
+      const savedReview = (res?.data ?? {}) as Partial<BookingItem>;
+      setBookings((prev) =>
+        prev.map((b) =>
+          b._id === reviewingBooking._id
+            ? {
+                ...b,
+                ...savedReview,
+                rating: savedReview.rating ?? rating,
+                review: savedReview.review ?? review,
+              }
+            : b
+        )
+      );
+
+      toast.success("Thank you! Your review has been submitted.");
+      setReviewingBooking(null);
+      router.refresh();
+    } catch (err: unknown) {
+      console.error("Submit review error:", err);
+      const message =
+        err instanceof Error ? err.message : "Failed to submit your review.";
+      toast.error(message);
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* ── EMPTY STATE ── */}
@@ -307,6 +364,9 @@ export function CustomerBookingsClient({
                     booking.status === "completed" &&
                     booking.paymentStatus === "unpaid";
                   const isPaid = booking.paymentStatus === "paid";
+                  const hasReview =
+                    typeof booking.rating === "number" && booking.rating > 0;
+                  const canReview = isPaid && !hasReview;
 
                   return (
                     <TableRow
@@ -407,11 +467,29 @@ export function CustomerBookingsClient({
                           </Button>
                         )}
 
-                        {isPaid && (
-                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1">
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            Completed
-                          </span>
+                        {isPaid && canReview && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setReviewingBooking(booking)}
+                            className="h-8 gap-1.5 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-semibold text-xs shadow-2xs"
+                          >
+                            <Star className="h-3.5 w-3.5" />
+                            Leave Review
+                          </Button>
+                        )}
+
+                        {isPaid && hasReview && (
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              Completed
+                            </span>
+                            <span className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold inline-flex items-center gap-0.5">
+                              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                              You rated {booking.rating}/5
+                            </span>
+                          </div>
                         )}
 
                         {booking.status === "accepted" && (
@@ -475,6 +553,9 @@ export function CustomerBookingsClient({
                 booking.status === "completed" &&
                 booking.paymentStatus === "unpaid";
               const isPaid = booking.paymentStatus === "paid";
+              const hasReview =
+                typeof booking.rating === "number" && booking.rating > 0;
+              const canReview = isPaid && !hasReview;
 
               return (
                 <div
@@ -536,8 +617,8 @@ export function CustomerBookingsClient({
                   </div>
 
                   {/* Bottom: Action buttons */}
-                  {(canCancel || canPay) && (
-                    <div className="pt-2 border-t border-border/60">
+                  {(canCancel || canPay || isPaid) && (
+                    <div className="pt-2 border-t border-border/60 space-y-2">
                       {canCancel && (
                         <Button
                           variant="destructive"
@@ -564,6 +645,25 @@ export function CustomerBookingsClient({
                           )}
                           Pay with Stripe (${amount?.toFixed(2)})
                         </Button>
+                      )}
+
+                      {canReview && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setReviewingBooking(booking)}
+                          className="w-full gap-1.5 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-semibold text-xs"
+                        >
+                          <Star className="h-3.5 w-3.5" />
+                          Leave a Review
+                        </Button>
+                      )}
+
+                      {isPaid && hasReview && (
+                        <p className="text-center text-xs text-amber-600 dark:text-amber-400 font-semibold inline-flex w-full items-center justify-center gap-1">
+                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                          You rated {booking.rating}/5
+                        </p>
                       )}
                     </div>
                   )}
@@ -634,6 +734,16 @@ export function CustomerBookingsClient({
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── REVIEW MODAL ── */}
+      {reviewingBooking && (
+        <ReviewModal
+          booking={reviewingBooking}
+          isSubmitting={isSubmittingReview}
+          onSubmit={handleSubmitReview}
+          onClose={() => setReviewingBooking(null)}
+        />
       )}
     </div>
   );

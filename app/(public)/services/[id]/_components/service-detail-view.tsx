@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ServiceDetailItem } from "@/types";
 import { getUserInitials } from "@/components/shared/user-badge";
+import { RatingDisplay } from "@/components/shared/rating-display";
 import { RequestRepairModal } from "./request-repair-modal";
 
 interface ServiceDetailViewProps {
@@ -177,6 +178,13 @@ export function ServiceDetailView({
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400">
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                 <span className="text-xs font-medium">Available Now</span>
+              </div>
+
+              <div className="flex items-center px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30">
+                <RatingDisplay
+                  rating={service.averageRating}
+                  reviewCount={service.reviewCount}
+                />
               </div>
             </div>
 
