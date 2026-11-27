@@ -17,6 +17,7 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -132,22 +133,12 @@ export function DashboardTopbar({
           )}
         </Button>
 
-        {/* Brand/Role Context Tag */}
-        {/* <div className="flex items-center gap-2">
-          <Badge
-            variant="outline"
-            className={`hidden sm:inline-flex text-[11px] font-semibold capitalize items-center ${getRoleBadgeVariant(
-              userRole
-            )}`}
-          >
-            {getRoleIcon(userRole)}
-            {userRole} Portal
-          </Badge>
-        </div> */}
       </div>
 
       {/* Right side: Actions & User Dropdown */}
       <div className="flex items-center gap-3">
+        <ThemeToggle />
+
         <Button
           variant="ghost"
           size="sm"

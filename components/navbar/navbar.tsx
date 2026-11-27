@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { authClient, useSession } from "@/lib/auth-client";
 import { Logo } from "@/components/shared/logo";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/navbar/user-dropdown";
 import { MobileNavDrawer } from "@/components/navbar/mobile-nav-drawer";
@@ -90,42 +91,47 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Desktop Auth State */}
-        <div className="hidden items-center gap-2 md:flex lg:gap-3">
-          {isPending ? (
-            <div className="h-9 w-28 animate-pulse rounded-full bg-muted" />
-          ) : session && user ? (
-            <UserDropdown user={user} onSignOut={handleSignOut} />
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                asChild
-                size="sm"
-                className="rounded-full font-medium"
-              >
-                <Link href="/sign-in">Sign In</Link>
-              </Button>
-              <Button
-                asChild
-                size="sm"
-                className="rounded-full px-5 font-semibold shadow-sm"
-              >
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </div>
-          )}
-        </div>
+        {/* Right side: theme toggle + auth state / mobile menu */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
 
-        {/* Mobile Navigation Drawer Component */}
-        <div className="flex md:hidden items-center gap-2">
-          <MobileNavDrawer
-            navLinks={NAV_LINKS}
-            pathname={pathname}
-            user={user}
-            dashboardHref={dashboardHref}
-            onSignOut={handleSignOut}
-          />
+          {/* Desktop Auth State */}
+          <div className="hidden items-center gap-2 md:flex lg:gap-3">
+            {isPending ? (
+              <div className="h-9 w-28 animate-pulse rounded-full bg-muted" />
+            ) : session && user ? (
+              <UserDropdown user={user} onSignOut={handleSignOut} />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  asChild
+                  size="sm"
+                  className="rounded-full font-medium"
+                >
+                  <Link href="/sign-in">Sign In</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className="rounded-full px-5 font-semibold shadow-sm"
+                >
+                  <Link href="/sign-up">Sign Up</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Navigation Drawer Component */}
+          <div className="flex md:hidden items-center gap-2">
+            <MobileNavDrawer
+              navLinks={NAV_LINKS}
+              pathname={pathname}
+              user={user}
+              dashboardHref={dashboardHref}
+              onSignOut={handleSignOut}
+            />
+          </div>
         </div>
       </div>
     </header>

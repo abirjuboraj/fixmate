@@ -1,5 +1,6 @@
 import { ShieldCheck, Clock, CreditCard, Wrench } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 const HIGHLIGHTS = [
   {
@@ -93,8 +94,9 @@ export default function AuthLayout({
       {/* ── Form side ── */}
       <div className="relative flex min-h-screen flex-col overflow-hidden bg-muted/20">
         {/* Header — the Logo is the single link back home */}
-        <header className="relative z-10 flex items-center border-b border-border/60 bg-background/70 px-4 py-2.5 backdrop-blur-md sm:px-6">
+        <header className="relative z-10 flex items-center justify-between border-b border-border/60 bg-background/70 px-4 py-2.5 backdrop-blur-md sm:px-6">
           <Logo showTagline={false} />
+          <ThemeToggle />
         </header>
 
         <main className="relative z-10 flex flex-1 items-start justify-center px-4 pt-3 pb-0 sm:items-center sm:px-6 sm:pt-3 sm:pb-0">
